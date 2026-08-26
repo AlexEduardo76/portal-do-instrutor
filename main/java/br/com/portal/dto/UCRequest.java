@@ -1,0 +1,1 @@
+package br.com.portal.dto; import jakarta.validation.constraints.Min; import jakarta.validation.constraints.NotBlank; import jakarta.validation.constraints.NotNull; public record UCRequest(@NotBlank(message="Nome da UC é obrigatório") String nome,@NotNull @Min(1) Integer totalAulas) {}

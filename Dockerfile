@@ -1,20 +1,27 @@
-# ---------- ETAPA 1: build ----------
-FROM gradle:jdk21 AS build
+# ---------- ETAPA 1: BUILD ----------
+FROM eclipse-temurin:21-jdk AS build
+
 WORKDIR /app
 
-COPY build.gradle settings.gradle* ./
+COPY build.gradle .
+COPY settings.gradle .
+COPY gradlew .
+COPY gradle ./gradle
 COPY src ./src
 
-RUN gradle clean bootJar -x test --no-daemon
+RUN chmod +x gradlew
 
-# ---------- ETAPA 2: run ----------
-FROM eclipse-temurin:21-jre-alpine
+ENV GRADLE_OPTS="-Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
+
+RUN ./gradlew clean bootJar -x test --no-daemon
+
+# ---------- ETAPA 2: RUNTIME ----------
+FROM eclipse-temurin:21-jre
+
 WORKDIR /app
 
-# Pega o JAR gerado pelo plugin do Spring Boot.
-# Se o build gerar dois arquivos (um "-plain.jar" e outro sem
-# esse sufixo), use o SEM "-plain" — é o executável de verdade.
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/*SNAPSHOT.jar app.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT:-8080}"]

@@ -1,0 +1,1 @@
+package br.com.portal.dto; import java.util.List; public record RelatorioResponse(Long turmaId,Long ucId,String ucNome,int totalAulasRegistradas,List<AlunoFrequenciaResponse> alunos,List<AlunoFrequenciaResponse> alertas) {}

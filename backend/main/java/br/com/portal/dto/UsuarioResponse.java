@@ -1,0 +1,1 @@
+package br.com.portal.dto; import br.com.portal.model.Usuario; public record UsuarioResponse(Long id,String nome,String email,String status){ public static UsuarioResponse of(Usuario u){return new UsuarioResponse(u.getId(),u.getNome(),u.getEmail(),u.getStatus().name());} }

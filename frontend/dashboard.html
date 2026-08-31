@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Instrutor | Dashboard</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <a class="brand" href="dashboard.html">
+            <span class="brand-mark">PI</span>
+            <span class="brand-text"><strong>Portal do Instrutor</strong><span>Gestão acadêmica</span></span>
+        </a>
+        <div class="topbar-actions">
+            <div class="user-chip">
+                <span class="avatar" data-user-initials>U</span>
+                <span><strong data-user-name>Usuário</strong><span data-user-email>Instrutor</span></span>
+            </div>
+            <button class="btn btn-secondary btn-small" data-action="logout">Sair</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar"></aside>
+
+        <main class="content">
+            <div class="page-header">
+                <div><h1>Visão geral</h1><p>Acompanhe rapidamente a saúde acadêmica das suas turmas.</p></div>
+                <div class="actions"><a class="btn btn-primary" href="turmas.html">Nova turma</a></div>
+            </div>
+
+            <section class="grid grid-4" id="stats">
+                <div class="stat"><div class="label">Turmas ativas</div><div class="value" id="statTurmas">—</div><div class="hint">Turmas vinculadas ao instrutor</div></div>
+                <div class="stat"><div class="label">Alunos ativos</div><div class="value" id="statAlunos">—</div><div class="hint">Somatório das turmas ativas</div></div>
+                <div class="stat"><div class="label">UCs ativas</div><div class="value" id="statUCs">—</div><div class="hint">Unidades curriculares em andamento</div></div>
+                <div class="stat"><div class="label">Aulas registradas</div><div class="value" id="statAulas">—</div><div class="hint">Chamadas salvas no histórico</div></div>
+                <div class="stat"><div class="label">Alertas</div><div class="value" id="statAlertas">—</div><div class="hint">Alunos abaixo de 75% ou com faltas seguidas</div></div>
+            </section>
+
+            <section class="card" style="margin-top:18px">
+                <div class="card-title"><div><h2>Minhas turmas</h2><p>Acesse a administração completa ou registre frequência direto pela turma.</p></div></div>
+                <div id="listaTurmasDashboard" class="grid grid-3"></div>
+            </section>
+        </main>
+    </div>
+</div>
+<div class="toast-area"></div>
+<script src="js/auth.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>

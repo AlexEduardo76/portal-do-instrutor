@@ -1,0 +1,1 @@
+package br.com.portal.dto; import jakarta.validation.constraints.NotBlank; import java.time.LocalDate; public record AlunoRequest(@NotBlank(message="Nome do aluno é obrigatório") String nome,@NotBlank(message="Matrícula é obrigatória") String matricula,LocalDate dataNascimento) {}

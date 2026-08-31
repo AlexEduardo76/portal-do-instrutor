@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Instrutor | Turmas</title>
+    <link rel="stylesheet" href="css/turma.css">
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <a class="brand" href="dashboard.html"><span class="brand-mark">PI</span><span class="brand-text"><strong>Portal do Instrutor</strong><span>Gestão acadêmica</span></span></a>
+        <div class="topbar-actions"><div class="user-chip"><span class="avatar" data-user-initials>U</span><span><strong data-user-name>Usuário</strong><span data-user-email>Instrutor</span></span></div><button class="btn btn-secondary btn-small" data-action="logout">Sair</button></div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar"></aside>
+        <main class="content">
+            <div class="page-header">
+                <div><h1>Turmas</h1><p>Crie, acompanhe e acesse rapidamente suas turmas ativas.</p></div>
+                <button class="btn btn-primary" id="btnNovaTurma">Nova turma</button>
+            </div>
+
+            <section class="grid grid-3" id="cardsTurmas"></section>
+
+            <section class="card" style="margin-top:18px">
+                <div class="card-title"><div><h2>Lista de turmas</h2><p>Use a administração para manter alunos e unidades curriculares.</p></div></div>
+                <div class="table-wrap"><table><thead><tr><th>Código</th><th>Turma</th><th>Alunos</th><th>UCs</th><th>Aulas</th><th style="text-align:right">Ações</th></tr></thead><tbody id="corpoTurmas"></tbody></table></div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+        <div class="modal-header"><div><h2 id="modalTitulo">Turma</h2><p>Informe os dados principais.</p></div><button class="btn btn-secondary icon-btn" id="modalFechar" type="button">Fechar</button></div>
+        <form id="formTurma" class="form-grid">
+            <div class="field full"><label for="nomeTurma">Nome da turma</label><input id="nomeTurma" type="text" minlength="3" maxlength="100" required></div>
+            <div class="field"><label for="codigoTurma">Código</label><input id="codigoTurma" type="text" maxlength="30" placeholder="Opcional"></div>
+        </form>
+        <div class="form-actions"><button class="btn btn-secondary" id="modalCancelar" type="button">Cancelar</button><button class="btn btn-primary" id="modalSalvar" type="submit" form="formTurma">Salvar</button></div>
+    </div>
+</div>
+<div class="toast-area"></div>
+<script src="js/auth.js"></script>
+<script src="js/turmas.js"></script>
+</body>
+</html>

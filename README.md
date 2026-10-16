@@ -1,4 +1,4 @@
-# Portal do Instrutor - Backend (Spring Boot)
+# Portal do Instrutor 
 
 Backend completo do Portal do Instrutor (SENAC) em Java 21 + Spring Boot 4.1.0.
 

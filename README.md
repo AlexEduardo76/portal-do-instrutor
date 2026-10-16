@@ -16,42 +16,42 @@
 
 <br/>
 
-[Sobre](#-sobre-o-projeto) •
-[Funcionalidades](#-funcionalidades) •
-[Tecnologias](#-tecnologias) •
-[Como rodar](#-como-rodar) •
-[API](#-api-rest) •
-[Segurança](#-segurança) •
-[Testes](#-testes) •
-[Deploy](#-deploy)
+[Sobre](#sobre-o-projeto) •
+[Funcionalidades](#funcionalidades) •
+[Tecnologias](#tecnologias) •
+[Como rodar](#como-rodar) •
+[API](#api-rest) •
+[Segurança](#segurança) •
+[Testes](#testes) •
+[Deploy](#deploy)
 
 </div>
 
 ---
 
-## 📖 Sobre o projeto
+## Sobre o projeto
 
 O **Portal do Instrutor** é uma aplicação web desenvolvida para o dia a dia de instrutores do **Senac**. Ele reúne em uma única interface as tarefas que normalmente ficam espalhadas entre planilhas e anotações: acompanhar turmas, lançar frequência, registrar notas, consultar o calendário e documentar ocorrências dos alunos.
 
 A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que também serve o **front-end estático** na mesma origem. Isso significa um único deploy, nenhuma configuração de CORS e uma sessão simples baseada em cookie.
 
-> 🎓 Projeto educacional desenvolvido no contexto do Senac.
+> Projeto educacional desenvolvido no contexto do Senac.
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 | Módulo | O que faz |
 |---|---|
-| 🔐 **Autenticação** | Login por **usuário, e-mail ou CPF** (com ou sem pontuação), com opção "lembrar de mim" |
-| 📊 **Dashboard** | Visão geral em uma única chamada: totais, próximas aulas, alunos com frequência em atenção, pendências de notas e atividades recentes |
-| 🏫 **Turmas** | Cadastro, edição e exclusão de turmas, com código, curso, turno, sala e carga horária |
-| 👩‍🎓 **Alunos** | Cadastro por turma com matrícula e CPF validado; remoção lógica (sem perder histórico) |
-| 📚 **Unidades Curriculares** | Gerenciamento das UCs de cada turma |
-| ✅ **Frequência** | Chamada por data, com *upsert*: salvar de novo atualiza em vez de duplicar |
-| 📝 **Avaliações e notas** | Criação de avaliações (gera notas pendentes para todos os alunos ativos) e lançamento de notas |
-| 🗓️ **Calendário** | Eventos por período, com tipos como aula, prova, entrega, feriado, recesso, reunião e anotação |
-| 📋 **Ocorrências** | Registro e histórico de observações por aluno e turma |
+| **Autenticação** | Login por **usuário, e-mail ou CPF** (com ou sem pontuação), com opção "lembrar de mim" |
+| **Dashboard** | Visão geral em uma única chamada: totais, próximas aulas, alunos com frequência em atenção, pendências de notas e atividades recentes |
+| **Turmas** | Cadastro, edição e exclusão de turmas, com código, curso, turno, sala e carga horária |
+| **Alunos** | Cadastro por turma com matrícula e CPF validado; remoção lógica (sem perder histórico) |
+| **Unidades Curriculares** | Gerenciamento das UCs de cada turma |
+| **Frequência** | Chamada por data, com *upsert*: salvar de novo atualiza em vez de duplicar |
+| **Avaliações e notas** | Criação de avaliações (gera notas pendentes para todos os alunos ativos) e lançamento de notas |
+| **Calendário** | Eventos por período, com tipos como aula, prova, entrega, feriado, recesso, reunião e anotação |
+| **Ocorrências** | Registro e histórico de observações por aluno e turma |
 
 ### Regras de negócio em destaque
 
@@ -62,7 +62,7 @@ A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que tam
 
 ---
 
-## 🧰 Tecnologias
+## Tecnologias
 
 <table>
   <tr>
@@ -89,7 +89,7 @@ A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que tam
 
 ---
 
-## 🗂️ Estrutura do projeto
+## Estrutura do projeto
 
 ```text
 portal-do-instrutor/
@@ -118,7 +118,7 @@ portal-do-instrutor/
 
 ---
 
-## 🚀 Como rodar
+## Como rodar
 
 ### Pré-requisitos
 
@@ -139,7 +139,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Acesse **http://localhost:8080** 🎉
+Acesse **http://localhost:8080**
 
 ### Opção 2 · Gradle + PostgreSQL local
 
@@ -153,7 +153,7 @@ cd backend
 ./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
 
-### 🔑 Acesso de demonstração
+### Acesso de demonstração
 
 Quando `SEED_SENHA` está definida (mínimo de 8 caracteres), a aplicação cria um usuário de demonstração na primeira execução:
 
@@ -163,11 +163,11 @@ Quando `SEED_SENHA` está definida (mínimo de 8 caracteres), a aplicação cria
 | E-mail | `instrutor@senac.br` |
 | Senha | o valor de `SEED_SENHA` (ex.: `senac123`) |
 
-> ⚠️ **Nunca** use o usuário demo em produção. Deixe `SEED_SENHA` vazia para que ele não seja criado.
+> **Atenção:** nunca use o usuário demo em produção. Deixe `SEED_SENHA` vazia para que ele não seja criado.
 
 ---
 
-## ⚙️ Variáveis de ambiente
+## Variáveis de ambiente
 
 | Variável | Descrição | Padrão |
 |---|---|---|
@@ -195,12 +195,12 @@ O schema é versionado com **Flyway** (`backend/src/main/resources/db/migration`
 
 ---
 
-## 🔌 API REST
+## API REST
 
 Todas as rotas ficam sob o prefixo `/api` e exigem sessão autenticada, exceto `/api/auth/**` e `/actuator/health`. O arquivo [`api.http`](./api.http) traz exemplos prontos para o **REST Client** do VS Code.
 
 <details>
-<summary><b>🔐 Autenticação</b></summary>
+<summary><b>Autenticação</b></summary>
 
 | Método | Rota | Descrição |
 |---|---|---|
@@ -211,7 +211,7 @@ Todas as rotas ficam sob o prefixo `/api` e exigem sessão autenticada, exceto `
 </details>
 
 <details>
-<summary><b>🏫 Turmas, alunos e unidades curriculares</b></summary>
+<summary><b>Turmas, alunos e unidades curriculares</b></summary>
 
 | Método | Rota | Descrição |
 |---|---|---|
@@ -232,7 +232,7 @@ Todas as rotas ficam sob o prefixo `/api` e exigem sessão autenticada, exceto `
 </details>
 
 <details>
-<summary><b>✅ Frequência</b></summary>
+<summary><b>Frequência</b></summary>
 
 | Método | Rota | Descrição |
 |---|---|---|
@@ -242,7 +242,7 @@ Todas as rotas ficam sob o prefixo `/api` e exigem sessão autenticada, exceto `
 </details>
 
 <details>
-<summary><b>📝 Avaliações e notas</b></summary>
+<summary><b>Avaliações e notas</b></summary>
 
 | Método | Rota | Descrição |
 |---|---|---|
@@ -254,7 +254,7 @@ Todas as rotas ficam sob o prefixo `/api` e exigem sessão autenticada, exceto `
 </details>
 
 <details>
-<summary><b>📋 Ocorrências, calendário e dashboard</b></summary>
+<summary><b>Ocorrências, calendário e dashboard</b></summary>
 
 | Método | Rota | Descrição |
 |---|---|---|
@@ -285,7 +285,7 @@ Content-Type: application/json
 
 ---
 
-## 🔒 Segurança
+## Segurança
 
 - **Sessão HTTP** com cookie `JSESSIONID` configurado como `HttpOnly` e `SameSite=Lax`
 - **Senhas com BCrypt**
@@ -297,7 +297,7 @@ Content-Type: application/json
 
 ---
 
-## 🧪 Testes
+## Testes
 
 ```bash
 cd backend
@@ -312,7 +312,7 @@ cd backend
 
 ---
 
-## ☁️ Deploy
+## Deploy
 
 ### Docker
 
@@ -342,7 +342,7 @@ docker run -p 8080:8080 \
 
 ---
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Contribuições são bem-vindas!
 
@@ -354,7 +354,7 @@ Contribuições são bem-vindas!
 
 ---
 
-## 👤 Autor
+## Autor
 
 **Alex Eduardo Oliveira dos Santos**
 
@@ -362,12 +362,12 @@ Contribuições são bem-vindas!
 
 ---
 
-## 📄 Licença
+## Licença
 
 Projeto educacional desenvolvido no contexto do **Senac**. Defina aqui a licença de sua preferência (por exemplo, MIT) antes de abrir o repositório para uso público.
 
 <div align="center">
 
-<sub>Feito com ☕ e Spring Boot</sub>
+<sub>Desenvolvido com Spring Boot</sub>
 
 </div>

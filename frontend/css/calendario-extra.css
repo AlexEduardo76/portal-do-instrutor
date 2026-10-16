@@ -1,0 +1,383 @@
+/* =========================================================
+   PORTAL DO INSTRUTOR | calendario-extra.css
+
+   Complemento visual da página de Calendário.
+
+   O calendario.css controla cabeçalho, grade semanal, legenda,
+   formulário e modal. Mas o js/calendario.js gera os dias com
+   os nomes .cal-dia, .cal-chip, .evento-item etc., que o
+   calendario.css não conhecia. Este arquivo estiliza esses nomes
+   mantendo a mesma ideia visual: dia com número, eventos em
+   faixas coloridas por tipo, dia atual em azul e dia selecionado
+   com contorno laranja.
+
+   Também importa a estrutura compartilhada (shell.css).
+========================================================= */
+
+@import url("shell.css");
+
+
+/* =========================================================
+   CORES POR TIPO DE EVENTO
+   O js/calendario.js coloca .tipo-AULA, .tipo-PROVA etc.
+   no chip, na legenda e no item do dia.
+
+   --tipo      cor da faixa e do ponto
+   --tipo-bg   fundo do chip
+   --tipo-txt  texto sobre o fundo
+========================================================= */
+
+.tipo-AULA     { --tipo: var(--blue-600);   --tipo-bg: var(--blue-100);   --tipo-txt: var(--blue-800); }
+.tipo-CONTEUDO { --tipo: var(--success);    --tipo-bg: #DDF3E8;           --tipo-txt: #146C43; }
+.tipo-PROVA    { --tipo: var(--orange-500); --tipo-bg: var(--orange-100); --tipo-txt: #8A4B00; }
+.tipo-ENTREGA  { --tipo: var(--orange-700); --tipo-bg: #F8DDBD;           --tipo-txt: #6E3B00; }
+.tipo-FERIADO  { --tipo: var(--danger);     --tipo-bg: #F9E0DD;           --tipo-txt: #962D22; }
+.tipo-RECESSO  { --tipo: #A8574E;           --tipo-bg: #F4E4E1;           --tipo-txt: #7A3B34; }
+.tipo-REUNIAO  { --tipo: var(--blue-900);   --tipo-bg: #D6E2EF;           --tipo-txt: var(--blue-900); }
+.tipo-ANOTACAO { --tipo: var(--text-soft);  --tipo-bg: #EDF1F5;           --tipo-txt: #3D4C5B; }
+.tipo-OUTRO    { --tipo: #8896A5;           --tipo-bg: #F1F4F7;           --tipo-txt: #4A5968; }
+
+
+/* =========================================================
+   DIA DA GRADE
+========================================================= */
+
+.cal-dia {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    min-height: 118px;
+    padding: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: background .15s ease, box-shadow .15s ease;
+}
+
+.cal-dia:hover {
+    background: var(--blue-50);
+}
+
+.cal-dia:focus-visible {
+    outline: 3px solid var(--blue-600);
+    outline-offset: -3px;
+    border-radius: 0;
+}
+
+.cal-dia.fim-semana {
+    background: #FAFBFD;
+}
+
+.cal-dia.fim-semana:hover {
+    background: var(--blue-50);
+}
+
+/* dias do mês anterior e do seguinte */
+.cal-dia.fora {
+    background: #F5F7FA;
+}
+
+.cal-dia.fora .cal-num {
+    color: #9AA8B8;
+}
+
+.cal-dia.fora .cal-itens {
+    opacity: .65;
+}
+
+/* dia selecionado: contorno laranja */
+.cal-dia.selecionado,
+.cal-dia.selecionado:hover {
+    background: #FFFAF3;
+    box-shadow: inset 0 0 0 2px var(--orange-500);
+}
+
+
+/* =========================================================
+   TOPO DO DIA: número e botão "+"
+========================================================= */
+
+.cal-dia-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.cal-num {
+    display: inline-grid;
+    place-items: center;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: .84rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+}
+
+/* hoje: círculo azul */
+.cal-dia.hoje .cal-num {
+    background: var(--blue-700);
+    color: #fff;
+}
+
+/* selecionado: círculo laranja */
+.cal-dia.selecionado .cal-num {
+    background: var(--orange-500);
+    color: var(--blue-900);
+}
+
+.cal-add {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid var(--blue-100);
+    border-radius: 50%;
+    background: #fff;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--blue-700);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s ease, background .15s ease, color .15s ease;
+}
+
+.cal-dia:hover .cal-add,
+.cal-dia:focus-within .cal-add,
+.cal-dia.selecionado .cal-add {
+    opacity: 1;
+}
+
+.cal-add:hover {
+    background: var(--blue-700);
+    border-color: var(--blue-700);
+    color: #fff;
+}
+
+.cal-add:focus-visible {
+    opacity: 1;
+}
+
+/* em telas de toque não existe hover: o "+" fica sempre visível */
+@media (hover: none) {
+    .cal-add {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   EVENTOS DENTRO DO DIA
+========================================================= */
+
+.cal-itens {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.cal-chip {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 4px 6px;
+    overflow: hidden;
+    border: 0;
+    border-left: 3px solid var(--tipo, var(--blue-600));
+    border-radius: 5px;
+    background: var(--tipo-bg, var(--blue-100));
+    font: inherit;
+    font-size: .72rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--tipo-txt, var(--blue-800));
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+button.cal-chip {
+    cursor: pointer;
+    transition: box-shadow .15s ease;
+}
+
+button.cal-chip:hover {
+    box-shadow: 0 0 0 1px var(--tipo, var(--blue-600));
+}
+
+button.cal-chip:focus-visible {
+    outline: 2px solid var(--blue-600);
+    outline-offset: 1px;
+}
+
+/* aula vinda da agenda: só informa, não abre edição */
+.cal-chip-aula {
+    background: #fff;
+    box-shadow: inset 0 0 0 1px var(--tipo-bg, var(--blue-100));
+    cursor: default;
+}
+
+.cal-hora {
+    margin-right: 2px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.cal-mais {
+    padding-left: 2px;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--text-soft);
+}
+
+
+/* =========================================================
+   LEGENDA
+========================================================= */
+
+.legenda-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-soft);
+}
+
+.legenda-cor {
+    flex: 0 0 10px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--tipo, var(--blue-600));
+}
+
+
+/* =========================================================
+   DIA SELECIONADO: LISTA DE EVENTOS
+========================================================= */
+
+#eventosDiaSelecionado {
+    margin-top: 18px;
+}
+
+.evento-item {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--tipo, var(--blue-600));
+    border-radius: var(--radius-md);
+    background: #fff;
+}
+
+.evento-item + .evento-item {
+    margin-top: 10px;
+}
+
+.evento-hora {
+    padding-top: 2px;
+    font-size: .88rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--blue-700);
+}
+
+.evento-corpo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.evento-corpo strong {
+    font-size: .98rem;
+    color: var(--text);
+}
+
+.evento-tipo {
+    align-self: flex-start;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--tipo-bg, var(--blue-100));
+    font-size: .74rem;
+    font-weight: 700;
+    color: var(--tipo-txt, var(--blue-800));
+}
+
+.evento-corpo small {
+    font-size: .8rem;
+    color: var(--text-soft);
+}
+
+.evento-corpo p {
+    margin-top: 2px;
+    font-size: .88rem;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 700px) {
+    .cal-dia {
+        min-height: 66px;
+        padding: 4px;
+    }
+
+    .cal-num {
+        min-width: 24px;
+        height: 24px;
+        font-size: .78rem;
+    }
+
+    /* espaço curto: o evento vira uma faixa colorida */
+    .cal-chip {
+        height: 6px;
+        padding: 0;
+        border-left-width: 0;
+        background: var(--tipo, var(--blue-600));
+        font-size: 0;
+    }
+
+    .cal-chip-aula {
+        background: var(--tipo, var(--blue-600));
+        box-shadow: none;
+    }
+
+    .cal-hora {
+        display: none;
+    }
+
+    .cal-add {
+        display: none;
+    }
+
+    .evento-item {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 12px;
+    }
+
+    .evento-hora {
+        grid-column: 1 / -1;
+    }
+}
+
+
+/* botões Anterior / Hoje / Próximo numa linha só em telas largas */
+@media (min-width: 861px) {
+    .card-title .actions {
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+    }
+}

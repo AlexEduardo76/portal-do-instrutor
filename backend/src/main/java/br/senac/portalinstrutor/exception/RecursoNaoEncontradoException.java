@@ -1,0 +1,7 @@
+package br.senac.portalinstrutor.exception;
+
+public class RecursoNaoEncontradoException extends RuntimeException {
+    public RecursoNaoEncontradoException(String mensagem) {
+        super(mensagem);
+    }
+}

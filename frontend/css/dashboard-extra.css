@@ -1,0 +1,10 @@
+/* =========================================================
+   PORTAL DO INSTRUTOR | dashboard-extra.css
+
+   Complemento da página de Dashboard.
+   O dashboard.css traz as variáveis, os cards e os indicadores.
+   Aqui entra a estrutura compartilhada (topo, menu lateral,
+   avisos e estados) que o resto das telas também usa.
+========================================================= */
+
+@import url("shell.css");

@@ -1,8 +1,13 @@
 target/
 build/
+.gradle/
+.kilo/
+node_modules/
 .git/
 .idea/
+.vscode/
 *.iml
 .env
-.vscode/
+.env.*
+!.env.example
 *.log

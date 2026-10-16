@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notas</title>
+  <link rel="icon" type="image/png" href="https://www.ap.senac.br/img/logo-white.png">
+  <link rel="stylesheet" href="css/notas.css">
+  <link rel="stylesheet" href="css/notas-extra.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- TOPBAR (montada pelo js/navigation.js) -->
+  <header class="topbar"></header>
+
+  <div class="layout">
+    <!-- MENU LATERAL (montado pelo js/navigation.js) -->
+    <aside class="sidebar" aria-label="Menu principal"></aside>
+
+    <main class="content">
+
+      <!-- CABEÇALHO DA PÁGINA -->
+      <div class="page-header">
+        <div>
+          <h1>Registro de notas</h1>
+          <p>Registre o percentual de desempenho dos alunos da turma selecionada.</p>
+        </div>
+        <a class="btn btn-secondary" id="btnVoltarTurma" href="turmas.html">Voltar para turmas</a>
+      </div>
+
+      <!-- DADOS DA TURMA -->
+      <section class="card">
+        <div class="card-title">
+          <div>
+            <h2>Dados da turma</h2>
+            <p>Selecione a turma e a avaliação para carregar os alunos.</p>
+          </div>
+          <button class="btn btn-secondary" id="btnNovaAvaliacao" type="button" disabled>+ Nova avaliação</button>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="turma">Turma</label>
+            <select id="turma" name="turma" required>
+              <option value="">Selecione uma turma</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="avaliacao">Avaliação</label>
+            <select id="avaliacao" name="avaliacao" required disabled>
+              <option value="">Selecione uma avaliação</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- NOTAS -->
+      <section class="card">
+        <div class="card-title">
+          <div>
+            <h2>Notas dos alunos</h2>
+            <p id="resumoNotas">Selecione uma turma para carregar os alunos.</p>
+          </div>
+          <button class="btn btn-primary" id="btnSalvar" type="button" disabled>Salvar notas</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Aluno</th>
+                <th>Desempenho (%)</th>
+              </tr>
+            </thead>
+            <tbody id="listaAlunos"></tbody>
+          </table>
+        </div>
+
+        <div id="listaAlunosVazia" class="empty" hidden></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast-area" aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/notas.js"></script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+/* =========================================================
+   PORTAL DO INSTRUTOR | notas.css
+   Página de Notas | identidade SENAC (60-30-10)
+
+   60% neutro  -> fundo, cards, tabela
+   30% azul    -> topbar, títulos, cabeçalho da tabela
+   10% laranja -> botão primário, marca "PI", borda da topbar, foco
+
+   ATENÇÃO: os hex de azul e laranja são aproximações das cores
+   Senac. Confirme no Manual da Marca e ajuste só o :root.
+   Mesmas variáveis do dashboard.css e do turma.css.
+========================================================= */
+
+:root {
+    --blue-900: #00315D;
+    --blue-800: #003B73;
+    --blue-700: #004A8D;
+    --blue-600: #1A5FA3;
+    --blue-100: #E3EDF7;
+    --blue-50:  #F0F5FA;
+
+    --orange-500: #F7941D;
+    --orange-600: #E07F0B;
+    --orange-700: #B45F00;
+    --orange-100: #FDEBD3;
+
+    --bg:        #F4F7FB;
+    --surface:   #FFFFFF;
+    --border:    #DDE5EE;
+    --text:      #1C2B3A;
+    --text-soft: #5B6B7C;
+
+    --success: #1E8E5A;
+    --danger:  #C0392B;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 2px rgba(0, 49, 93, .06);
+    --shadow-md: 0 4px 16px rgba(0, 49, 93, .08);
+    --shadow-lg: 0 24px 48px rgba(0, 31, 61, .28);
+
+    --sidebar-width: 260px;
+    --topbar-height: 68px;
+
+    --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+
+/* =========================================================
+   BASE
+========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+body {
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+    margin: 0;
+    color: var(--blue-700);
+    line-height: 1.2;
+}
+
+h1 { font-size: 1.9rem; font-weight: 700; }
+h2 { font-size: 1.2rem; font-weight: 650; }
+h3 { font-size: 1.05rem; font-weight: 650; }
+
+p {
+    margin: 0;
+    color: var(--text-soft);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+:focus-visible {
+    outline: 3px solid var(--orange-500);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+
+/* =========================================================
+   ESTRUTURA
+========================================================= */
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    text-align: left;
+}
+
+.layout {
+    flex: 1;
+    width: 100%;
+}
+
+.content {
+    width: 100%;
+    max-width: 1100px;
+    min-width: 0;
+    margin: 0 auto;
+    padding: 32px 36px 56px;
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: var(--topbar-height);
+    padding: 0 28px;
+    background: var(--blue-700);
+    color: #fff;
+    border-bottom: 3px solid var(--orange-500);
+    box-shadow: var(--shadow-sm);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: var(--orange-500);
+    color: var(--blue-900);
+    font-size: .95rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.brand-text strong {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.brand-text span {
+    font-size: .75rem;
+    color: rgba(255, 255, 255, .72);
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 14px 5px 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .1);
+}
+
+.user-chip > span:last-child {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.user-chip strong {
+    font-size: .88rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.user-chip > span:last-child > span {
+    font-size: .72rem;
+    color: rgba(255, 255, 255, .72);
+}
+
+.avatar {
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--blue-700);
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+/* botão secundário sobre fundo azul precisa ser claro */
+.topbar .btn-secondary {
+    border-color: rgba(255, 255, 255, .55);
+    color: #fff;
+}
+
+.topbar .btn-secondary:hover {
+    background: #fff;
+    border-color: #fff;
+    color: var(--blue-700);
+}
+
+
+/* =========================================================
+   CABEÇALHO DA PÁGINA
+========================================================= */
+
+.page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-header p {
+    margin-top: 6px;
+}
+
+
+/* =========================================================
+   BOTÕES
+========================================================= */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease,
+                border-color .15s ease, box-shadow .15s ease;
+}
+
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+/* ação principal da tela */
+.btn-primary {
+    background: var(--orange-500);
+    color: var(--blue-900);
+    box-shadow: 0 2px 0 var(--orange-600);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--orange-600);
+}
+
+.btn-primary:active:not(:disabled) {
+    box-shadow: none;
+    transform: translateY(1px);
+}
+
+.btn-secondary {
+    background: transparent;
+    border-color: var(--blue-700);
+    color: var(--blue-700);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--blue-700);
+    color: #fff;
+}
+
+.btn-small {
+    padding: 7px 14px;
+    font-size: .84rem;
+}
+
+.icon-btn {
+    padding: 6px 12px;
+    font-size: .82rem;
+}
+
+.btn-danger {
+    background: transparent;
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: var(--danger);
+    color: #fff;
+}
+
+
+/* =========================================================
+   CARD E TABELA
+========================================================= */
+
+.card {
+    padding: 24px 26px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.card + .card {
+    margin-top: 24px;
+}
+
+.card-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.card-title p {
+    margin-top: 4px;
+    font-size: .88rem;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: .93rem;
+}
+
+th {
+    padding: 12px 16px;
+    background: var(--blue-50);
+    border-bottom: 2px solid var(--blue-100);
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--blue-700);
+    text-align: left;
+    white-space: nowrap;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+tbody tr {
+    transition: background .12s ease;
+}
+
+tbody tr:hover {
+    background: var(--blue-50);
+}
+
+/* nome do aluno em destaque */
+td:first-child {
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* coluna de ações alinhada à direita */
+th:last-child,
+td:last-child {
+    text-align: right;
+    white-space: nowrap;
+}
+
+td:last-child .btn + .btn,
+td:last-child a + a,
+td:last-child a + .btn {
+    margin-left: 8px;
+}
+
+.empty-state,
+td.empty {
+    padding: 36px 16px;
+    text-align: center;
+    color: var(--text-soft);
+}
+
+
+
+/* =========================================================
+   FORMULÁRIO "DADOS DA AULA"
+========================================================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #C5D2E0;
+    border-radius: var(--radius-md);
+    font: inherit;
+    color: var(--text);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+select {
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23004A8D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--blue-600);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--blue-700);
+    box-shadow: 0 0 0 3px var(--blue-100);
+}
+
+input:user-invalid,
+select:user-invalid {
+    border-color: var(--danger);
+}
+
+
+/* =========================================================
+   CAMPOS DE NOTA (gerados pelo JS)
+========================================================= */
+
+/* percentual de desempenho: 0 a 100 */
+td input[type="number"] {
+    width: 120px;
+    min-height: 38px;
+    padding: 6px 12px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+td select {
+    width: auto;
+    min-width: 150px;
+    min-height: 38px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--blue-100);
+    color: var(--blue-700);
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.badge-success { background: #DDF3E8; color: #146C43; }
+.badge-danger  { background: #F9E0DD; color: #962D22; }
+.badge-warning { background: var(--orange-100); color: var(--orange-700); }
+
+/* mensagem exibida quando não há alunos; some se estiver vazia */
+.empty {
+    margin-top: 16px;
+    padding: 36px 16px;
+    border: 1px dashed #C5D2E0;
+    border-radius: var(--radius-md);
+    background: var(--blue-50);
+    text-align: center;
+    color: var(--text-soft);
+}
+
+.empty:empty {
+    display: none;
+}
+
+/* tabela sem linhas (antes de escolher a turma) */
+.table-wrap:has(tbody:empty) {
+    display: none;
+}
+
+/* =========================================================
+   TOASTS
+========================================================= */
+
+.toast-area {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 360px;
+}
+
+.toast {
+    padding: 12px 16px;
+    background: var(--blue-900);
+    color: #fff;
+    border-left: 4px solid var(--orange-500);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.toast.success { border-left-color: var(--success); }
+.toast.error   { border-left-color: var(--danger); }
+
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 860px) {
+    .content {
+        padding: 24px 18px 40px;
+    }
+
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .user-chip {
+        padding: 4px;
+    }
+
+    .user-chip > span:last-child {
+        display: none;
+    }
+
+    h1 { font-size: 1.5rem; }
+}
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-title {
+        flex-direction: column;
+    }
+
+    .card-title .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .brand-text span {
+        display: none;
+    }
+
+    .card {
+        padding: 18px 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}

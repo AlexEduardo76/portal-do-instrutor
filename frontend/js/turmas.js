@@ -1,134 +1,219 @@
+// ====== ESTADO ======
 let turmas = [];
-let turmaEditando = null;
+let contagens = { alunos: null, ucs: null };
+let editandoId = null;
 
-function abrirModalTurma(turma = null) {
-    turmaEditando = turma;
-    document.getElementById("modalTitulo").textContent = turma ? "Editar turma" : "Nova turma";
-    document.getElementById("nomeTurma").value = turma?.nome || "";
-    document.getElementById("codigoTurma").value = turma?.codigo || "";
-    document.getElementById("modalBackdrop").classList.add("active");
-    document.getElementById("nomeTurma").focus();
-}
+const backdrop = () => el("modalBackdrop");
 
-function fecharModalTurma() {
-    turmaEditando = null;
-    document.getElementById("formTurma").reset();
-    document.getElementById("modalBackdrop").classList.remove("active");
-}
-
-function renderizarCards() {
-    const container = document.getElementById("cardsTurmas");
-    if (!turmas.length) {
-        container.innerHTML = `<div class="card" style="grid-column:1/-1"><div class="empty"><strong>Nenhuma turma cadastrada</strong>Crie a primeira turma para iniciar o cadastro de alunos, unidades curriculares e frequência.</div></div>`;
-        return;
-    }
-
-    container.innerHTML = turmas.map(turma => `
-        <article class="stat">
-            <div class="label">${escapeHtml(turma.codigo || "Turma")}</div>
-            <div class="value" style="font-size:20px">${escapeHtml(turma.nome)}</div>
-            <div class="hint">${turma.totalAlunos ?? 0} aluno(s) · ${turma.totalUcs ?? 0} UC(s) · ${turma.aulasRegistradas ?? 0} aula(s)</div>
-            <div class="actions" style="margin-top:14px;flex-wrap:wrap">
-                <a class="btn btn-secondary btn-small" href="turma.html?turmaId=${turma.id}">Administrar</a>
-                <a class="btn btn-accent btn-small" href="frequencia.html?turmaId=${turma.id}">Frequência</a>
-            </div>
-        </article>
-    `).join("");
-}
-
-function renderizarTabela() {
-    const tbody = document.getElementById("corpoTurmas");
-    if (!turmas.length) {
-        tbody.innerHTML = `<tr><td colspan="6"><div class="empty">Nenhuma turma encontrada.</div></td></tr>`;
-        return;
-    }
-
-    tbody.innerHTML = turmas.map(turma => `
-        <tr>
-            <td>${escapeHtml(turma.codigo || "—")}</td>
-            <td><strong>${escapeHtml(turma.nome)}</strong></td>
-            <td>${turma.totalAlunos ?? 0}</td>
-            <td>${turma.totalUcs ?? 0}</td>
-            <td>${turma.aulasRegistradas ?? 0}</td>
-            <td><div class="row-actions" style="justify-content:flex-end;display:flex;gap:8px;flex-wrap:wrap">
-                <a class="btn btn-secondary btn-small" href="turma.html?turmaId=${turma.id}">Abrir</a>
-                <button class="btn btn-secondary btn-small" data-edit="${turma.id}">Editar</button>
-                <button class="btn btn-danger btn-small" data-delete="${turma.id}">Excluir</button>
-            </div></td>
-        </tr>
-    `).join("");
-
-    tbody.querySelectorAll("[data-edit]").forEach(button => button.addEventListener("click", () => {
-        abrirModalTurma(turmas.find(turma => Number(turma.id) === Number(button.dataset.edit)));
-    }));
-    tbody.querySelectorAll("[data-delete]").forEach(button => button.addEventListener("click", () => excluirTurma(Number(button.dataset.delete))));
+// ====== BUSCA NO BANCO ======
+function contarPorTurma(linhas) {
+    const mapa = {};
+    linhas.forEach((l) => (mapa[l.turma_id] = (mapa[l.turma_id] || 0) + 1));
+    return mapa;
 }
 
 async function carregarTurmas() {
-    turmas = await apiFetch("/turmas");
-    renderizarCards();
-    renderizarTabela();
+    try {
+        const resultado = await api.get("/turmas");
+        turmas = resultado;
+    } catch (err) {
+        console.error("Erro ao buscar turmas:", err);
+        return mostrarErro("Não foi possível conectar ao servidor.");
+    }
+
+    contagens = { alunos: null, ucs: null };
+
+    if (turmas.length) {
+        const ids = turmas.map((t) => t.id);
+        try {
+            const [alunos, ucs] = await Promise.all([
+                api.get(`/turmas/alunos/contagem?ids=${ids.join(",")}`),
+                api.get(`/turmas/ucs/contagem?ids=${ids.join(",")}`)
+            ]);
+            contagens.alunos = alunos;
+            contagens.ucs = ucs;
+        } catch (err) {
+            console.warn("Erro ao buscar contagens:", err);
+        }
+    }
+
+    renderizar();
 }
 
-async function salvarTurma(event) {
-    event.preventDefault();
-    const body = {
-        nome: document.getElementById("nomeTurma").value.trim(),
-        codigo: document.getElementById("codigoTurma").value.trim() || null
-    };
-    const button = document.getElementById("modalSalvar");
-    button.disabled = true;
-    button.textContent = "Salvando...";
+function mostrarErro(mensagem) {
+    setHTML("cardsTurmas", estadoErro(mensagem));
+    setHTML("corpoTurmas", `<tr><td colspan="6">${estadoErro(mensagem)}</td></tr>`);
+    toast(mensagem, "erro");
+}
+
+// ====== RENDERIZAÇÃO ======
+const numero = (grupo, id) => (grupo === null ? "—" : grupo[id] || 0);
+
+function textoAlunos(t) {
+    const cadastrados = numero(contagens.alunos, t.id);
+    const previstos = t.qtdAlunos ?? null;
+    if (previstos === null) return cadastrados;
+    return cadastrados === "—" ? previstos : `${cadastrados}/${previstos}`;
+}
+
+const textoUcs = (t) => t.qtdUcs ?? numero(contagens.ucs, t.id);
+const textoHoras = (t) => t.horas ?? "—";
+
+function renderizar() {
+    if (!turmas.length) {
+        setHTML("cardsTurmas", estadoVazio("Você ainda não tem turmas. Clique em “+ Nova turma” para começar."));
+        setHTML("corpoTurmas", `<tr><td colspan="6">${estadoVazio("Nenhuma turma cadastrada.")}</td></tr>`);
+        return;
+    }
+
+    setHTML("cardsTurmas", turmas.map((t) => `
+        <article class="card turma-card" data-turma-id="${esc(t.id)}" title="Clique para ver os alunos">
+            <span class="turma-codigo">${esc(t.codigo || "Sem código")}</span>
+            <h3>${esc(t.nome)}</h3>
+            <p class="turma-meta">
+                <strong>${textoAlunos(t)}</strong> alunos ·
+                <strong>${textoUcs(t)}</strong> UCs ·
+                <strong>${textoHoras(t)}</strong> horas
+            </p>
+            <div class="turma-links">
+                <button type="button" class="btn btn-primary btn-small" data-acao="alunos" data-id="${esc(t.id)}">Alunos</button>
+                <a class="btn btn-secondary btn-small" href="frequencia.html?turma=${encodeURIComponent(t.id)}">Frequência</a>
+                <a class="btn btn-secondary btn-small" href="notas.html?turma=${encodeURIComponent(t.id)}">Notas</a>
+            </div>
+        </article>`).join(""));
+
+    setHTML("corpoTurmas", turmas.map((t) => `
+        <tr>
+            <td>${esc(t.codigo || "—")}</td>
+            <td><strong>${esc(t.nome)}</strong></td>
+            <td>${textoAlunos(t)}</td>
+            <td>${textoUcs(t)}</td>
+            <td>${textoHoras(t)}</td>
+            <td style="text-align:right">
+                <button type="button" class="btn btn-secondary btn-small" data-acao="alunos" data-id="${esc(t.id)}">Alunos</button>
+                <button type="button" class="btn btn-secondary btn-small" data-acao="editar" data-id="${esc(t.id)}">Editar</button>
+                <button type="button" class="btn btn-secondary btn-small btn-danger" data-acao="excluir" data-id="${esc(t.id)}">Excluir</button>
+            </td>
+        </tr>`).join(""));
+}
+
+// ====== MODAL ======
+function abrirModal(turma = null) {
+    editandoId = turma ? turma.id : null;
+    el("modalTitulo").textContent = turma ? "Editar turma" : "Nova turma";
+    el("nomeTurma").value = turma ? turma.nome : "";
+    el("codigoTurma").value = turma?.codigo || "";
+    el("qtdAlunosTurma").value = turma?.qtdAlunos ?? "";
+    el("qtdUcsTurma").value = turma?.qtdUcs ?? "";
+    el("horasTurma").value = turma?.horas ?? "";
+    el("avisoCamposTurma").hidden = true;
+
+    const m = backdrop();
+    m.classList.add("open");
+    m.style.display = "flex";
+    el("nomeTurma").focus();
+}
+
+function fecharModal() {
+    const m = backdrop();
+    m.classList.remove("open");
+    m.style.display = "none";
+    el("formTurma").reset();
+    editandoId = null;
+}
+
+// ====== SALVAR / EXCLUIR ======
+async function salvarTurma(evento) {
+    evento.preventDefault();
+
+    const nome = el("nomeTurma").value.trim();
+    const codigo = el("codigoTurma").value.trim() || null;
+
+    if (nome.length < 3) return toast("O nome da turma precisa ter pelo menos 3 caracteres.", "erro");
+
+    const lerNumero = (id) => { const v = el(id).value.trim(); return v === "" ? null : Number(v); };
+    const qtdAlunos = lerNumero("qtdAlunosTurma");
+    const qtdUcs = lerNumero("qtdUcsTurma");
+    const horas = lerNumero("horasTurma");
+    for (const [valor, rotulo] of [[qtdAlunos, "quantidade de alunos"], [qtdUcs, "quantidade de UCs"], [horas, "horas"]]) {
+        if (valor !== null && (!Number.isInteger(valor) || valor < 0 || valor > 9999)) {
+            return toast(`Informe um número inteiro válido em ${rotulo} (de 0 a 9999).`, "erro");
+        }
+    }
+    const dados = { nome, codigo, qtdAlunos, qtdUcs, horas };
+
+    const botao = el("modalSalvar");
+    botao.disabled = true;
 
     try {
-        const turma = turmaEditando
-            ? await apiFetch(`/turmas/${turmaEditando.id}`, { method: "PUT", body })
-            : await apiFetch("/turmas", { method: "POST", body });
-        localStorage.setItem("turmaIdAtual", turma.id);
-        fecharModalTurma();
+        if (editandoId) {
+            await api.put(`/turmas/${editandoId}`, dados);
+            toast("Turma atualizada.", "sucesso");
+        } else {
+            const criada = await api.post("/turmas", dados);
+            toast("Turma criada.", "sucesso");
+            editandoId = criada.id;
+        }
+        fecharModal();
         await carregarTurmas();
-        showToast(turmaEditando ? "Turma atualizada." : "Turma criada.");
-    } catch (error) {
-        showToast(error.message, "error");
+        if (editandoId && !turmas.find(t => t.id === editandoId)) {
+            abrirAlunos(editandoId);
+        }
+    } catch (err) {
+        console.error("Erro ao salvar turma:", err);
+        toast(err.message || "Não foi possível salvar a turma.", "erro");
     } finally {
-        button.disabled = false;
-        button.textContent = "Salvar";
+        botao.disabled = false;
     }
 }
 
 async function excluirTurma(id) {
-    const turma = turmas.find(item => Number(item.id) === Number(id));
-    if (!confirm(`Excluir a turma "${turma?.nome || id}"? O sistema bloqueará se houver alunos, UCs ou histórico.`)) return;
+    const turma = turmas.find((t) => String(t.id) === String(id));
+    if (!turma) return;
+
+    const alunos = contagens.alunos ? contagens.alunos[turma.id] || 0 : null;
+    const aviso = alunos
+        ? `\n\nOs ${alunos} aluno(s), frequências, avaliações e notas desta turma também serão apagados.`
+        : "\n\nAlunos, frequências, avaliações e notas desta turma também serão apagados.";
+
+    if (!confirm(`Excluir a turma "${turma.nome}"?${aviso}\n\nEsta ação não pode ser desfeita.`)) return;
 
     try {
-        await apiFetch(`/turmas/${id}`, { method: "DELETE" });
-        if (Number(localStorage.getItem("turmaIdAtual")) === Number(id)) localStorage.removeItem("turmaIdAtual");
+        await api.delete(`/turmas/${id}`);
+        toast("Turma excluída.", "sucesso");
         await carregarTurmas();
-        showToast("Turma excluída.");
-    } catch (error) {
-        showToast(error.message, "error");
+    } catch (err) {
+        console.error("Erro ao excluir turma:", err);
+        toast(err.message || "Não foi possível excluir a turma.", "erro");
     }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    if (!exigirLogin()) return;
-    aplicarNavegacao("turmas");
-    setupUserArea();
+// ====== EVENTOS ======
+document.addEventListener("DOMContentLoaded", () => {
+    el("btnNovaTurma").addEventListener("click", () => abrirModal());
+    el("modalFechar").addEventListener("click", fecharModal);
+    el("modalCancelar").addEventListener("click", fecharModal);
+    el("formTurma").addEventListener("submit", salvarTurma);
 
-    document.getElementById("btnNovaTurma").addEventListener("click", () => abrirModalTurma());
-    document.getElementById("modalFechar").addEventListener("click", fecharModalTurma);
-    document.getElementById("modalCancelar").addEventListener("click", fecharModalTurma);
-    document.getElementById("modalBackdrop").addEventListener("click", event => {
-        if (event.target.id === "modalBackdrop") fecharModalTurma();
+    backdrop().addEventListener("click", (e) => { if (e.target === backdrop()) fecharModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && backdrop().classList.contains("open")) fecharModal(); });
+
+    el("cardsTurmas").addEventListener("click", (e) => {
+        const botao = e.target.closest("button[data-acao]");
+        if (botao) return abrirAlunos(botao.dataset.id);
+        if (e.target.closest("a")) return;
+        const card = e.target.closest(".turma-card[data-turma-id]");
+        if (card) abrirAlunos(card.dataset.turmaId);
     });
-    document.getElementById("formTurma").addEventListener("submit", salvarTurma);
 
-    try {
-        await sincronizarSessao();
-        setupUserArea();
-        await carregarTurmas();
-    } catch (error) {
-        showToast(error.message, "error");
-        document.getElementById("cardsTurmas").innerHTML = `<div class="card" style="grid-column:1/-1"><div class="empty"><strong>Erro ao carregar turmas</strong>${escapeHtml(error.message)}</div></div>`;
-    }
+    el("corpoTurmas").addEventListener("click", (e) => {
+        const botao = e.target.closest("button[data-acao]");
+        if (!botao) return;
+        const id = botao.dataset.id;
+        if (botao.dataset.acao === "alunos") abrirAlunos(id);
+        if (botao.dataset.acao === "editar") abrirModal(turmas.find((t) => String(t.id) === String(id)));
+        if (botao.dataset.acao === "excluir") excluirTurma(id);
+    });
+
+    carregarTurmas();
 });

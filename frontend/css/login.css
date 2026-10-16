@@ -1,273 +1,232 @@
-/* ==========================================================================
-   PORTAL DO INSTRUTOR - SENAC CSS (css/portal.css)
-   ========================================================================== */
-
-/* --- VARIÁVEIS E CORES CORPORATIVAS SENAC --- */
+/* ==========================================
+   VARIÁVEIS DE CORES (Regra 60 - 30 - 10)
+   ================================---------- */
 :root {
-  --senac-orange: #f37021;
-  --senac-orange-hover: #d95e14;
-  --senac-blue: #004587;
-  --senac-blue-dark: #002d5a;
-  
-  --bg-main: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --border-color: #e2e8f0;
+  /* 60% - Fundo e superfícies principais (Branco e cinza neutro) */
+  --bg-page: #F4F6F9;
+  --bg-card: #FFFFFF;
+  --text-main: #2C3E50;
+  --text-muted: #666666;
 
-  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  
-  --transition: all 0.2s ease-in-out;
+  /* 30% - Estrutura, Cabeçalhos e Títulos (Azul Institucional Senac) */
+  --brand-blue: #004A87;
+  --brand-blue-hover: #00335D;
+  --border-color: #E2E8F0;
+
+  /* 10% - Destaques, Botões e Interações (Laranja Senac) */
+  --accent-orange: #FF6600;
+  --accent-orange-hover: #E55C00;
+
+  /* Utilitários */
+  --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --border-radius: 10px;
+  --box-shadow: 0 8px 24px rgba(0, 74, 135, 0.08);
 }
 
-/* --- RESET & GLOBAL --- */
-*, *::before, *::after {
-  box-sizing: border-box;
+/* ==========================================
+   ESTILOS GLOBAIS (60% Fundo)
+   ================================---------- */
+* {
   margin: 0;
   padding: 0;
-}
-
-html, body {
-  height: 100%;
+  box-sizing: border-box;
 }
 
 body {
   font-family: var(--font-family);
-  background-color: var(--bg-main);
-  color: var(--text-primary);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* --- COMPONENTES DE REUSO --- */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.85rem 1.5rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  transition: var(--transition);
-  cursor: pointer;
-  font-size: 1rem;
-  border: none;
-  width: 100%;
-}
-
-.btn-primary {
-  background-color: var(--senac-orange);
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background-color: var(--senac-orange-hover);
-  transform: translateY(-1px);
-}
-
-/* --- LAYOUT DA PÁGINA DE LOGIN --- */
-.login-page {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  background-color: var(--bg-page); /* 60% - Fundo geral limpo */
+  color: var(--text-main);
   min-height: 100vh;
-}
-
-/* Lado institucional (Azul SENAC) */
-.login-side {
-  background: linear-gradient(135deg, var(--senac-blue) 0%, var(--senac-blue-dark) 100%);
-  color: #ffffff;
-  padding: 4rem 10%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
-  overflow: hidden;
 }
 
-.login-side::after {
-  content: "";
-  position: absolute;
-  bottom: -100px;
-  right: -100px;
-  width: 300px;
-  height: 300px;
-  background: rgba(243, 112, 33, 0.15); /* Detalhe em Laranja SENAC */
-  border-radius: 50%;
-  pointer-events: none;
+/* ==========================================
+   CABEÇALHO (30% Azul Senac)
+   ================================---------- */
+.site-header {
+  background-color: var(--brand-blue); /* 30% - Estrutura principal */
+  color: #FFFFFF;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Marca SENAC integrada com a imagem */
-.brand-mark {
-  display: inline-block;
-  width: 100px;
-  height: 45px;
-  text-indent: -9999px; /* Oculta as letras 'PI' */
-  background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Senac_logo.svg/960px-Senac_logo.svg.png');
-  background-repeat: no-repeat;
-  background-position: center left;
-  background-size: contain;
-}
-
-.brand-text {
+.senac-brand {
   display: flex;
-  flex-direction: column;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  padding-left: 0.85rem;
+  align-items: center;
+  text-decoration: none;
+  color: #FFFFFF;
+  gap: 0.75rem;
+  width: fit-content;
 }
 
-.brand-text strong {
+.senac-brand strong {
   font-size: 1.1rem;
-  line-height: 1.2;
+  letter-spacing: 0.3px;
 }
 
-.brand-text span {
-  font-size: 0.8rem;
-  opacity: 0.85;
-}
-
-.login-side .line {
-  height: 4px;
-  width: 48px;
-  background-color: var(--senac-orange);
-  margin: 3rem 0 2rem 0;
-  border-radius: 2px;
-}
-
-.login-side h1 {
-  font-size: 2.25rem;
-  line-height: 1.3;
-  margin-bottom: 1.25rem;
-  font-weight: 700;
-}
-
-.login-side p {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.05rem;
-  max-width: 500px;
-}
-
-.login-side small {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* Painel do Formulário */
-.login-panel {
+/* ==========================================
+   ÁREA DE LOGIN E CARD CENTRAL
+   ================================---------- */
+.login-main {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background-color: var(--bg-main);
+  padding: 2rem 1rem;
 }
 
-.auth-card {
-  background-color: #ffffff;
-  padding: 2.5rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
+.login-card {
+  background-color: var(--bg-card);
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
+  padding: 2.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
 }
 
-.auth-card h2 {
-  color: var(--senac-blue);
-  font-size: 1.75rem;
-  margin-bottom: 0.25rem;
-}
-
-.auth-card > p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  margin-bottom: 2rem;
-}
-
-.auth-form {
+/* Faixa azul com a logo (a logo é branca) */
+.login-brand {
   display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  margin: -2.5rem -2.5rem 1.75rem;
+  padding: 1.4rem 1rem;
+  background: var(--brand-blue);
+    border-bottom: 3px solid var(--accent-orange);
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+.login-brand img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
 }
 
-.field label {
-  font-size: 0.875rem;
+.login-header-text {
+  margin-bottom: 1.75rem;
+  text-align: center;
+}
+
+.login-header-text h2 {
+  color: var(--brand-blue); /* 30% - Título em azul corporativo */
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.login-header-text p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* ==========================================
+   FORMULÁRIO E INPUTS
+   ================================---------- */
+.input-group {
+  margin-bottom: 1.25rem;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
 }
 
-.field input {
+.input-group input {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   font-size: 0.95rem;
-  transition: var(--transition);
-  background-color: #ffffff;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.field input:focus {
+.input-group input:focus {
   outline: none;
-  border-color: var(--senac-orange);
-  box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.15);
+  border-color: var(--brand-blue); /* 30% - Foco estrutural */
+  box-shadow: 0 0 0 3px rgba(0, 74, 135, 0.12);
+  background-color: #FFFFFF;
 }
 
-.help {
-  font-size: 0.875rem;
+/* Opções de Login (Lembrar-me / Esqueceu a senha) */
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-options label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.login-options input[type="checkbox"] {
+  accent-color: var(--brand-blue);
+}
+
+.login-options a {
+  color: var(--brand-blue); /* 30% */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-options a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   BOTÃO DE AÇÃO (10% - Laranja Senac)
+   ================================---------- */
+.btn-login {
+  width: 100%;
+  background-color: var(--accent-orange); /* 10% - Ponto focal de conversão */
+  color: #FFFFFF;
+  border: none;
+  padding: 0.85rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 4px 12px rgba(255, 102, 0, 0.25);
+}
+
+.btn-login:hover {
+  background-color: var(--accent-orange-hover);
+}
+
+.btn-login:active {
+  transform: scale(0.99);
+}
+
+/* ==========================================
+   RODAPÉ
+   ================================---------- */
+.site-footer {
   text-align: center;
-}
-
-.auth-footer {
-  margin-top: 2rem;
-  padding-top: 1.25rem;
+  padding: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
   border-top: 1px solid var(--border-color);
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  text-align: center;
+  background-color: var(--bg-card);
 }
-
-/* --- RESPONSIVIDADE --- */
-@media (max-width: 900px) {
-  .login-page {
-    grid-template-columns: 1fr;
-  }
-
-  .login-side {
-    padding: 3rem 2rem;
-  }
-
-  .login-side .line {
-    margin: 2rem 0 1.5rem 0;
-  }
-
-  .login-side h1 {
-    font-size: 1.75rem;
-  }
-
-  .login-panel {
-    padding: 3rem 1.5rem;
-  }
+.login-erro {
+    background: #fdecea;
+    color: #b3261e;
+    border: 1px solid #f5c2be;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
 }

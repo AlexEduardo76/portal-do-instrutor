@@ -1,174 +1,176 @@
-let turmaId = null;
-let turma = null;
+// ====== ESTADO ======
 let alunos = [];
-let ucs = [];
-let aulas = [];
-let relatorio = null;
-let presencas = new Map();
+let jaRegistrada = false;
+let cargaAtual = 0;
 
-function getTurmaId() {
-    return new URLSearchParams(window.location.search).get("turmaId");
+const dataBR = (iso) => iso.split("-").reverse().join("/");
+
+// ====== TURMAS (select) ======
+async function carregarTurmas() {
+    try {
+        const data = await api.get("/turmas/resumo");
+        const select = el("turma");
+        select.innerHTML = '<option value="">Selecione uma turma</option>' +
+            data.map((t) => `<option value="${esc(t.id)}">${esc(t.nome)}${t.codigo ? " (" + esc(t.codigo) + ")" : ""}</option>`).join("");
+
+        if (!data.length) mostrarVazio("Você ainda não tem turmas cadastradas.");
+
+        const turmaUrl = new URLSearchParams(window.location.search).get("turma");
+        if (turmaUrl && data.some((t) => String(t.id) === turmaUrl)) {
+            select.value = turmaUrl;
+            carregarChamada();
+        }
+    } catch (err) {
+        console.error("Erro ao buscar turmas:", err);
+        toast("Não foi possível carregar as turmas.", "erro");
+        mostrarVazio("Não foi possível conectar ao servidor.");
+    }
 }
 
-async function carregar() {
-    turmaId = getTurmaId();
-    if (!turmaId) {
-        window.location.href = "turma.html";
-        return;
+function mostrarVazio(mensagem) {
+    setHTML("listaAlunos", "");
+    const vazio = el("listaAlunosVazia");
+    vazio.textContent = mensagem;
+    vazio.hidden = false;
+    el("btnSalvar").disabled = true;
+    el("btnTodosPresentes").disabled = true;
+}
+
+async function carregarChamada() {
+    const turmaId = el("turma").value;
+    const data = el("dataAula").value;
+    const carga = ++cargaAtual;
+
+    if (!turmaId || !data) {
+        alunos = [];
+        el("resumoChamada").textContent = "Selecione uma turma para carregar os alunos.";
+        return mostrarVazio(turmaId ? "Informe a data da aula." : "Nenhuma turma selecionada.");
     }
 
-    const user = usuarioAtual();
-    turma = await apiFetch(`/turmas/${turmaId}`);
-    if (turma.instrutor?.id && Number(turma.instrutor.id) !== user.id) throw new Error("A turma não pertence ao usuário atual.");
+    el("resumoChamada").textContent = "Carregando alunos...";
+    el("listaAlunosVazia").hidden = true;
 
-    document.getElementById("turma").value = turma.nome;
-    document.getElementById("btnVoltarTurma").href = `turma.html?turmaId=${turmaId}`;
+    try {
+        const [resAlunos, resFreq] = await Promise.all([
+            api.get(`/turmas/${turmaId}/alunos`),
+            api.get(`/turmas/${turmaId}/frequencias?data=${data}`)
+        ]);
 
-    [alunos, ucs] = await Promise.all([
-        apiFetch(`/alunos/turma/${turmaId}`),
-        apiFetch(`/ucs/turma/${turmaId}`)
-    ]);
+        if (carga !== cargaAtual) return;
 
-    const select = document.getElementById("uc");
-    select.innerHTML = `<option value="">Selecione uma UC</option>` + ucs.map(uc => `<option value="${uc.id}">${escapeHtml(uc.nome)} — ${uc.totalAulas} aulas</option>`).join("");
+        alunos = resAlunos;
+        jaRegistrada = resFreq.jaRegistrada;
+        const salvas = Object.fromEntries((resFreq.alunos || []).filter(f => f.presente !== null).map((f) => [f.id, f.presente]));
 
+        renderChamada(salvas);
+    } catch (err) {
+        if (carga !== cargaAtual) return;
+        console.error("Erro ao carregar chamada:", err);
+        el("resumoChamada").textContent = "Não foi possível carregar os alunos.";
+        toast("Não foi possível carregar a chamada.", "erro");
+        mostrarVazio("Erro ao carregar os alunos desta turma.");
+    }
+}
+
+function renderChamada(salvas) {
     if (!alunos.length) {
-        document.getElementById("listaAlunos").innerHTML = `<tr><td colspan="4"><div class="empty"><strong>Turma sem alunos</strong>Cadastre os alunos antes de registrar uma chamada.</div></td></tr>`;
-        document.getElementById("btnSalvar").disabled = true;
-    }
-}
-
-async function carregarUC() {
-    const ucId = document.getElementById("uc").value;
-    presencas.clear();
-    if (!ucId) {
-        aulas = [];
-        relatorio = null;
-        renderizar();
-        return;
+        el("resumoChamada").textContent = "Esta turma não tem alunos ativos.";
+        return mostrarVazio("Esta turma ainda não tem alunos cadastrados.");
     }
 
-    const uc = ucs.find(item => Number(item.id) === Number(ucId));
-    aulas = await apiFetch(`/frequencias/aulas?turmaId=${turmaId}&ucId=${ucId}`);
-    relatorio = await apiFetch(`/frequencias/relatorio?turmaId=${turmaId}&ucId=${ucId}`);
+    el("listaAlunosVazia").hidden = true;
 
-    const proxima = aulas.length ? Math.max(...aulas.map(a => a.numeroAula)) + 1 : 1;
-    document.getElementById("numeroAula").value = proxima;
-    document.getElementById("numeroAula").max = uc.totalAulas;
-    document.getElementById("dataAula").value = aulas.length ? aulas[aulas.length - 1].data : new Date().toISOString().slice(0, 10);
-
-    alunos.forEach(aluno => {
-        const info = relatorio.alunos.find(item => Number(item.id) === Number(aluno.id));
-        const ultimo = info?.faltas?.length ? !info.faltas[info.faltas.length - 1] : true;
-        presencas.set(aluno.id, ultimo);
-    });
-    renderizar();
-}
-
-function renderizar() {
-    const tbody = document.getElementById("listaAlunos");
-    const resumo = document.getElementById("resumoChamada");
-
-    if (!document.getElementById("uc").value) {
-        tbody.innerHTML = `<tr><td colspan="4"><div class="empty"><strong>Selecione uma unidade curricular</strong>A lista de alunos será preparada para a chamada.</div></td></tr>`;
-        resumo.textContent = "Selecione uma unidade curricular para iniciar.";
-        renderizarAulas();
-        renderizarAlertas();
-        return;
-    }
-
-    const uc = ucs.find(item => Number(item.id) === Number(document.getElementById("uc").value));
-    resumo.textContent = `${alunos.length} aluno(s) · Aula ${document.getElementById("numeroAula").value} de ${uc.totalAulas}`;
-
-    tbody.innerHTML = alunos.map(aluno => {
-        const presente = presencas.get(aluno.id) !== false;
-        const info = relatorio?.alunos?.find(item => Number(item.id) === Number(aluno.id));
-        const percentual = info?.percentualPresenca ?? 100;
-        const status = info?.alertaPercentual || info?.temDuasFaltasConsecutivas ? "Atenção" : "Regular";
-        const badge = status === "Atenção" ? "badge-warning" : "badge-success";
-        return `<tr>
-            <td><strong>${escapeHtml(aluno.nome)}</strong></td>
-            <td>${escapeHtml(aluno.matricula)}</td>
-            <td><div class="attendance-control"><div class="attendance-toggle">
-                <button type="button" class="${presente ? "active present" : ""}" data-presente="true" data-aluno="${aluno.id}">Presente</button>
-                <button type="button" class="${!presente ? "active absent" : ""}" data-presente="false" data-aluno="${aluno.id}">Ausente</button>
-            </div></div></td>
-            <td><div style="display:flex;align-items:center;gap:8px"><span class="badge ${badge}">${status}</span><div class="progress"><span style="width:${Math.max(0, Math.min(100, percentual))}%"></span></div><small>${percentual.toFixed(1)}%</small></div></td>
+    setHTML("listaAlunos", alunos.map((a) => {
+        const presente = salvas[a.id] === undefined ? true : salvas[a.id];
+        return `
+        <tr data-aluno-id="${esc(a.id)}">
+            <td>
+                <strong>${esc(a.nome)}</strong>
+                ${a.matricula ? `<small class="aluno-matricula">${esc(a.matricula)}</small>` : ""}
+            </td>
+            <td>
+                <div class="presenca-opcoes">
+                    <label class="opcao-presente"><input type="radio" name="p-${esc(a.id)}" value="1" ${presente ? "checked" : ""}> Presente</label>
+                    <label class="opcao-falta"><input type="radio" name="p-${esc(a.id)}" value="0" ${presente ? "" : "checked"}> Falta</label>
+                </div>
+            </td>
         </tr>`;
-    }).join("");
+    }).join(""));
 
-    tbody.querySelectorAll("[data-aluno]").forEach(button => button.addEventListener("click", () => {
-        presencas.set(Number(button.dataset.aluno), button.dataset.presente === "true");
-        renderizar();
+    el("btnSalvar").disabled = false;
+    el("btnTodosPresentes").disabled = false;
+    atualizarResumo();
+}
+
+function atualizarResumo() {
+    const total = alunos.length;
+    if (!total) return;
+    const presentes = document.querySelectorAll('#listaAlunos input[value="1"]:checked').length;
+    const faltas = total - presentes;
+
+    el("resumoChamada").textContent =
+        `${total} aluno(s) · ${presentes} presente(s) · ${faltas} falta(s)` +
+        (jaRegistrada ? " · Frequência já registrada nesta data (será atualizada ao salvar)" : "");
+}
+
+function marcarTodosPresentes() {
+    document.querySelectorAll('#listaAlunos input[value="1"]').forEach((r) => (r.checked = true));
+    atualizarResumo();
+}
+
+// ====== SALVAR ======
+async function salvarFrequencia() {
+    const turmaId = el("turma").value;
+    const data = el("dataAula").value;
+
+    if (!turmaId) return toast("Selecione uma turma.", "erro");
+    if (!data) return toast("Informe a data da aula.", "erro");
+
+    const hoje = new Date();
+    const hojeISO = new Date(hoje.getTime() - hoje.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    if (data > hojeISO) return toast("A data da aula não pode ser no futuro.", "erro");
+    if (!alunos.length) return toast("Não há alunos para registrar.", "erro");
+
+    const registros = [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")].map((linha) => ({
+        alunoId: Number(linha.dataset.alunoId),
+        presente: linha.querySelector("input:checked").value === "1",
     }));
 
-    renderizarAulas();
-    renderizarAlertas();
-}
+    const botao = el("btnSalvar");
+    botao.disabled = true;
+    botao.textContent = "Salvando...";
 
-function renderizarAulas() {
-    const tbody = document.getElementById("listaAulas");
-    if (!aulas.length) {
-        tbody.innerHTML = `<tr><td colspan="3"><div class="empty">Nenhuma aula registrada para esta UC.</div></td></tr>`;
-        return;
-    }
-    tbody.innerHTML = aulas.map(aula => `<tr><td>Aula ${aula.numeroAula}</td><td>${escapeHtml(aula.data)}</td><td><span class="badge badge-success">Concluída</span></td></tr>`).join("");
-}
-
-function renderizarAlertas() {
-    const container = document.getElementById("alertasFrequencia");
-    const alertas = relatorio?.alertas || [];
-    if (!alertas.length) {
-        container.innerHTML = `<div class="empty"><strong>Nenhum alerta</strong>Não há alunos em situação de alerta nesta UC.</div>`;
-        return;
-    }
-    container.innerHTML = `<div class="alert-box">${alertas.map(alerta => `<div class="alert-item"><strong>${escapeHtml(alerta.alunoNome)}</strong><div class="help">${escapeHtml(alerta.alunoMatricula)}</div><div style="margin-top:6px">${escapeHtml(alerta.mensagem)}</div></div>`).join("")}</div>`;
-}
-
-async function salvarFrequencia() {
-    const ucId = Number(document.getElementById("uc").value);
-    const data = document.getElementById("dataAula").value;
-    const numeroAula = Number(document.getElementById("numeroAula").value);
-    const uc = ucs.find(item => Number(item.id) === ucId);
-
-    if (!uc) return showToast("Selecione uma unidade curricular.", "error");
-    if (!data) return showToast("Informe a data da aula.", "error");
-    if (numeroAula < 1 || numeroAula > uc.totalAulas) return showToast(`Informe uma aula entre 1 e ${uc.totalAulas}.`, "error");
-    if (presencas.size !== alunos.length) return showToast("Marque a situação de todos os alunos.", "error");
-
-    const button = document.getElementById("btnSalvar");
-    button.disabled = true;
-    button.textContent = "Salvando...";
     try {
-        await apiFetch("/frequencias/salvar-aula", {
-            method: "POST",
-            body: {
-                numeroAula,
-                data,
-                ucId,
-                presencas: alunos.map(aluno => ({ alunoId: aluno.id, presente: presencas.get(aluno.id) }))
-            }
-        });
-        showToast(`Aula ${numeroAula} registrada com sucesso.`);
-        await carregarUC();
-    } catch (error) {
-        showToast(error.message, "error");
+        await api.put(`/turmas/${turmaId}/frequencias`, { data, registros });
+
+        jaRegistrada = true;
+        atualizarResumo();
+        toast("Frequência salva com sucesso.", "sucesso");
+
+        const nomeTurma = el("turma").selectedOptions[0].textContent;
+    } catch (err) {
+        console.error("Erro ao salvar frequência:", err);
+        toast(err.message || "Não foi possível salvar a frequência.", "erro");
     } finally {
-        button.disabled = false;
-        button.textContent = "Salvar frequência";
+        botao.disabled = false;
+        botao.textContent = "Salvar frequência";
     }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    if (!exigirLogin()) return;
-    setupUserArea();
-    try {
-        await carregar();
-        document.getElementById("uc").addEventListener("change", () => carregarUC().catch(error => showToast(error.message, "error")));
-        document.getElementById("btnSalvar").addEventListener("click", salvarFrequencia);
-        renderizar();
-    } catch (error) {
-        showToast(error.message, "error");
-        setTimeout(() => window.location.href = "turma.html", 1000);
-    }
+// ====== EVENTOS ======
+document.addEventListener("DOMContentLoaded", () => {
+    const campoData = el("dataAula");
+    const hoje = new Date();
+    const hojeISO = new Date(hoje.getTime() - hoje.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    campoData.value = hojeISO;
+    campoData.max = hojeISO;
+
+    el("turma").addEventListener("change", carregarChamada);
+    campoData.addEventListener("change", carregarChamada);
+    el("listaAlunos").addEventListener("change", atualizarResumo);
+    el("btnTodosPresentes").addEventListener("click", marcarTodosPresentes);
+    el("btnSalvar").addEventListener("click", salvarFrequencia);
+
+    mostrarVazio("Nenhuma turma selecionada.");
+    carregarTurmas();
 });

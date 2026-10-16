@@ -1,53 +1,268 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal do Instrutor | Dashboard</title>
-    <link rel="stylesheet" href="css/index.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard do Portal do Instrutor - Gestão acadêmica">
+  <title>Dashboard</title>
+  <link rel="icon" type="image/png" href="https://www.ap.senac.br/img/logo-white.png">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/dashboard-extra.css">
 </head>
 <body>
 <div class="app-shell">
-    <header class="topbar">
-        <a class="brand" href="dashboard.html">
-            <span class="brand-mark">PI</span>
-            <span class="brand-text"><strong>Portal do Instrutor</strong><span>Gestão acadêmica</span></span>
-        </a>
-        <div class="topbar-actions">
-            <div class="user-chip">
-                <span class="avatar" data-user-initials>U</span>
-                <span><strong data-user-name>Usuário</strong><span data-user-email>Instrutor</span></span>
-            </div>
-            <button class="btn btn-secondary btn-small" data-action="logout">Sair</button>
+
+  <!-- TOPBAR (preenchida pelo js/navigation.js) -->
+  <header class="topbar"></header>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Menu principal">
+      <nav class="sidebar-navigation">
+
+        <div class="sidebar-section">
+          <span class="sidebar-title">Principal</span>
+          <a class="nav-item active" href="dashboard.html" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">⌂</span><span>Dashboard</span>
+          </a>
         </div>
-    </header>
 
-    <div class="layout">
-        <aside class="sidebar"></aside>
+        <div class="sidebar-section">
+          <span class="sidebar-title">Acadêmico</span>
+          <a class="nav-item" href="turmas.html">
+            <span class="nav-icon" aria-hidden="true">▣</span><span>Turmas</span>
+          </a>
+          <a class="nav-item" href="frequencia.html">
+            <span class="nav-icon" aria-hidden="true">✓</span><span>Frequência</span>
+          </a>
+          <a class="nav-item" href="notas.html">
+            <span class="nav-icon" aria-hidden="true">✎</span><span>Notas</span>
+          </a>
+        </div>
 
-        <main class="content">
-            <div class="page-header">
-                <div><h1>Visão geral</h1><p>Acompanhe rapidamente a saúde acadêmica das suas turmas.</p></div>
-                <div class="actions"><a class="btn btn-primary" href="turmas.html">Nova turma</a></div>
+        <div class="sidebar-section">
+          <span class="sidebar-title">Planejamento</span>
+          <a class="nav-item" href="calendario.html">
+            <span class="nav-icon" aria-hidden="true">▦</span><span>Calendário</span>
+          </a>
+        </div>
+
+        <div class="sidebar-section">
+          <span class="sidebar-title">Gestão</span>
+          <a class="nav-item" href="relatorios.html">
+            <span class="nav-icon" aria-hidden="true">▥</span><span>Relatórios</span>
+          </a>
+        </div>
+
+        <div class="sidebar-footer">
+          <button type="button" class="nav-item nav-logout" data-action="logout">
+            <span class="nav-icon" aria-hidden="true">↪</span><span>Sair</span>
+          </button>
+        </div>
+
+      </nav>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="content">
+
+      <!-- CABEÇALHO -->
+      <section class="dashboard-header">
+        <div>
+          <span class="eyebrow">VISÃO GERAL</span>
+          <h1>Olá, <span data-user-first-name>Instrutor</span></h1>
+          <p>Aqui está um resumo das suas atividades acadêmicas.</p>
+        </div>
+      </section>
+
+      <!-- INDICADORES -->
+      <section class="dashboard-section" aria-labelledby="indicadores">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">RESUMO</span>
+            <h2 id="indicadores">Visão acadêmica</h2>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+
+          <a href="turmas.html" class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Total de turmas</span>
+              <span class="stat-icon" aria-hidden="true">▣</span>
             </div>
+            <strong class="stat-value" id="statTurmas">—</strong>
+            <span class="stat-description">Turmas vinculadas ao instrutor</span>
+          </a>
 
-            <section class="grid grid-4" id="stats">
-                <div class="stat"><div class="label">Turmas ativas</div><div class="value" id="statTurmas">—</div><div class="hint">Turmas vinculadas ao instrutor</div></div>
-                <div class="stat"><div class="label">Alunos ativos</div><div class="value" id="statAlunos">—</div><div class="hint">Somatório das turmas ativas</div></div>
-                <div class="stat"><div class="label">UCs ativas</div><div class="value" id="statUCs">—</div><div class="hint">Unidades curriculares em andamento</div></div>
-                <div class="stat"><div class="label">Aulas registradas</div><div class="value" id="statAulas">—</div><div class="hint">Chamadas salvas no histórico</div></div>
-                <div class="stat"><div class="label">Alertas</div><div class="value" id="statAlertas">—</div><div class="hint">Alunos abaixo de 75% ou com faltas seguidas</div></div>
-            </section>
+          <a href="turmas.html" class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Alunos registrados</span>
+              <span class="stat-icon" aria-hidden="true">◉</span>
+            </div>
+            <strong class="stat-value" id="statAlunos">—</strong>
+            <span class="stat-description">Alunos das turmas ativas</span>
+          </a>
 
-            <section class="card" style="margin-top:18px">
-                <div class="card-title"><div><h2>Minhas turmas</h2><p>Acesse a administração completa ou registre frequência direto pela turma.</p></div></div>
-                <div id="listaTurmasDashboard" class="grid grid-3"></div>
-            </section>
-        </main>
-    </div>
+          <a href="frequencia.html" class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Alertas de frequência</span>
+              <span class="stat-icon" aria-hidden="true">!</span>
+            </div>
+            <strong class="stat-value" id="statAlertas">—</strong>
+            <span class="stat-description">Alunos que precisam de atenção</span>
+          </a>
+
+          <a href="notas.html" class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Notas pendentes</span>
+              <span class="stat-icon" aria-hidden="true">✎</span>
+            </div>
+            <strong class="stat-value" id="statNotas">—</strong>
+            <span class="stat-description">Avaliações aguardando lançamento</span>
+          </a>
+
+          <a href="calendario.html" class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-label">Próximos eventos</span>
+              <span class="stat-icon" aria-hidden="true">▦</span>
+            </div>
+            <strong class="stat-value" id="statEventos">—</strong>
+            <span class="stat-description">Eventos acadêmicos</span>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- PRÓXIMAS AULAS E PENDÊNCIAS -->
+      <div class="dashboard-columns">
+
+        <section class="card" aria-labelledby="proximas-aulas">
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">AGENDA</span>
+              <h2 id="proximas-aulas">Próximas aulas</h2>
+            </div>
+            <a href="calendario.html" class="card-link">Ver calendário →</a>
+          </div>
+          <div id="listaProximasAulas" class="class-list">
+            <div class="loading-state"><span>Carregando próximas aulas...</span></div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="pendencias">
+          <div class="card-header">
+            <div>
+              <span class="eyebrow">ATENÇÃO</span>
+              <h2 id="pendencias">Pendências</h2>
+            </div>
+          </div>
+          <div id="listaPendencias" class="pending-list">
+            <div class="loading-state"><span>Verificando pendências...</span></div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- MINHAS TURMAS -->
+      <section class="card dashboard-section" aria-labelledby="minhas-turmas">
+        <div class="card-header">
+          <div>
+            <span class="eyebrow">TURMAS</span>
+            <h2 id="minhas-turmas">Minhas turmas</h2>
+            <p>Acompanhe rapidamente as turmas vinculadas ao seu perfil.</p>
+          </div>
+          <a href="turmas.html" class="btn btn-secondary btn-small">Ver todas</a>
+        </div>
+        <div id="listaTurmasDashboard" class="classes-grid">
+          <div class="loading-state"><span>Carregando turmas...</span></div>
+        </div>
+      </section>
+
+      <!-- ATIVIDADES RECENTES -->
+      <section class="card dashboard-section" aria-labelledby="atividades">
+        <div class="card-header">
+          <div>
+            <span class="eyebrow">HISTÓRICO</span>
+            <h2 id="atividades">Atividades recentes</h2>
+            <p>Últimas alterações realizadas no portal.</p>
+          </div>
+        </div>
+        <div id="listaAtividades" class="activity-list">
+          <div class="loading-state"><span>Carregando atividades...</span></div>
+        </div>
+      </section>
+
+      <!-- RESUMO DE FREQUÊNCIA -->
+      <section class="card dashboard-section" aria-labelledby="resumo-frequencia">
+        <div class="card-header">
+          <div>
+            <span class="eyebrow">FREQUÊNCIA</span>
+            <h2 id="resumo-frequencia">Acompanhamento de frequência</h2>
+            <p>Visão geral da presença dos alunos nas suas turmas.</p>
+          </div>
+          <a href="frequencia.html" class="btn btn-secondary btn-small">Ver frequência</a>
+        </div>
+        <div class="attendance-summary">
+          <div class="attendance-item">
+            <span>Presença média</span>
+            <strong id="attendanceMedia">—</strong>
+          </div>
+          <div class="attendance-item">
+            <span>Alunos em atenção</span>
+            <strong id="attendanceAtencao">—</strong>
+          </div>
+          <div class="attendance-item">
+            <span>Alunos com frequência regular</span>
+            <strong id="attendanceRegular">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESUMO DE NOTAS -->
+      <section class="card dashboard-section" aria-labelledby="resumo-notas">
+        <div class="card-header">
+          <div>
+            <span class="eyebrow">AVALIAÇÕES</span>
+            <h2 id="resumo-notas">Acompanhamento de notas</h2>
+            <p>Situação dos lançamentos de avaliações.</p>
+          </div>
+          <a href="notas.html" class="btn btn-secondary btn-small">Ver notas</a>
+        </div>
+        <div class="grades-summary">
+          <div class="grade-summary-item">
+            <span>Avaliações cadastradas</span>
+            <strong id="avaliacoesCadastradas">—</strong>
+          </div>
+          <div class="grade-summary-item">
+            <span>Lançamentos pendentes</span>
+            <strong id="lancamentosPendentes">—</strong>
+          </div>
+          <div class="grade-summary-item">
+            <span>Média geral</span>
+            <strong id="mediaGeral">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- RODAPÉ -->
+      <footer class="dashboard-footer">
+        <span>Portal do Instrutor</span>
+        <span>Ambiente acadêmico</span>
+        <a href="relatorios.html">Relatórios</a>
+      </footer>
+
+    </main>
+  </div>
 </div>
-<div class="toast-area"></div>
+
+<!-- TOASTS -->
+<div class="toast-area" aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/index.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/dashboard.js"></script>
 </body>
 </html>

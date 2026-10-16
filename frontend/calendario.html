@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendário</title>
+  <link rel="icon" type="image/png" href="https://www.ap.senac.br/img/logo-white.png">
+  <link rel="stylesheet" href="css/calendario.css">
+  <link rel="stylesheet" href="css/calendario-extra.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- TOPBAR (montada pelo js/navigation.js) -->
+  <header class="topbar"></header>
+
+  <div class="layout">
+    <!-- MENU LATERAL (montado pelo js/navigation.js) -->
+    <aside class="sidebar" aria-label="Menu principal"></aside>
+
+    <main class="content">
+
+      <div class="page-header">
+        <div>
+          <h1>Calendário</h1>
+          <p>Organize aulas, avaliações, conteúdos, entregas e outros compromissos acadêmicos.</p>
+        </div>
+      </div>
+
+      <!-- CALENDÁRIO -->
+      <section class="card">
+        <div class="card-title">
+          <div>
+            <h2 id="calendarioMesAno">Calendário</h2>
+            <p>Clique em um dia para ver os eventos. Clique duas vezes (ou use o “+” do dia) para adicionar um novo.</p>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary btn-small" id="btnMesAnterior" type="button">← Anterior</button>
+            <button class="btn btn-primary btn-small" id="btnMesAtual" type="button">Hoje</button>
+            <button class="btn btn-secondary btn-small" id="btnMesProximo" type="button">Próximo →</button>
+          </div>
+        </div>
+
+        <div class="calendar-weekdays" aria-hidden="true">
+          <div><span class="d-full">Segunda</span><span class="d-short">Seg</span></div>
+          <div><span class="d-full">Terça</span><span class="d-short">Ter</span></div>
+          <div><span class="d-full">Quarta</span><span class="d-short">Qua</span></div>
+          <div><span class="d-full">Quinta</span><span class="d-short">Qui</span></div>
+          <div><span class="d-full">Sexta</span><span class="d-short">Sex</span></div>
+          <div><span class="d-full">Sábado</span><span class="d-short">Sáb</span></div>
+          <div><span class="d-full">Domingo</span><span class="d-short">Dom</span></div>
+        </div>
+
+        <div id="calendarioContainer" class="calendar" role="group" aria-label="Dias do mês"></div>
+
+        <div id="legendaCalendario" class="calendar-legend"></div>
+      </section>
+
+      <!-- DIA SELECIONADO -->
+      <section class="card">
+        <div class="card-title">
+          <div>
+            <h2 id="diaSelecionadoTitulo">Dia selecionado</h2>
+            <p>Eventos e anotações deste dia.</p>
+          </div>
+          <button class="btn btn-primary" id="btnNovoEvento" type="button">+ Adicionar evento</button>
+        </div>
+
+        <form id="formAnotacao" class="quick-add" autocomplete="off">
+          <input id="anotacaoRapida" type="text" maxlength="100"
+                 placeholder="Escreva uma anotação para este dia e pressione Enter"
+                 aria-label="Anotação rápida para o dia selecionado">
+          <button class="btn btn-secondary" type="submit">Adicionar</button>
+        </form>
+
+        <div id="eventosDiaSelecionado"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL: ADICIONAR / EDITAR EVENTO -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTituloEvento">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTituloEvento">Novo evento</h2>
+        <p>Cadastre uma informação no dia selecionado.</p>
+      </div>
+      <button class="btn btn-secondary icon-btn" id="modalFecharEvento" type="button">Fechar</button>
+    </div>
+
+    <form id="formEvento" class="form-grid">
+      <div class="field full">
+        <label for="evtTitulo">Título</label>
+        <input id="evtTitulo" type="text" maxlength="100" placeholder="Ex.: Aplicação de teste" required>
+      </div>
+
+      <div class="field">
+        <label for="evtTipo">Tipo</label>
+        <select id="evtTipo" required>
+          <option value="AULA">Aula</option>
+          <option value="CONTEUDO">Conteúdo novo</option>
+          <option value="PROVA">Prova / Avaliação</option>
+          <option value="ENTREGA">Entrega de trabalho</option>
+          <option value="FERIADO">Feriado</option>
+          <option value="RECESSO">Recesso</option>
+          <option value="REUNIAO">Reunião</option>
+          <option value="ANOTACAO">Anotação</option>
+          <option value="OUTRO">Outro</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="evtData">Data</label>
+        <input id="evtData" type="date" required>
+      </div>
+
+      <div class="field">
+        <label for="evtHora">Horário</label>
+        <input id="evtHora" type="time">
+      </div>
+
+      <div class="field">
+        <label for="evtTurma">Turma</label>
+        <input id="evtTurma" type="text" list="listaTurmas" maxlength="60" placeholder="Todas as turmas">
+        <datalist id="listaTurmas"></datalist>
+      </div>
+
+      <div class="field full">
+        <label for="evtDescricao">Descrição</label>
+        <textarea id="evtDescricao" rows="4" maxlength="500" placeholder="Digite as informações do evento..."></textarea>
+      </div>
+    </form>
+
+    <div class="form-actions">
+      <button class="btn btn-danger" id="btnExcluirEvento" type="button" hidden>Excluir</button>
+      <button class="btn btn-secondary" id="btnCancelarEvento" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btnSalvarEvento" type="submit" form="formEvento">Salvar evento</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-area" aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/calendario.js"></script>
+</body>
+</html>

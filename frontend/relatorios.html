@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/relatorio.css"/>
+    <link rel="stylesheet" href="css/relatorios-extra.css"/>
+    <title>Relatórios</title>
+    <link rel="icon" type="image/png" href="https://www.ap.senac.br/img/logo-white.png">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- TOPBAR (montada pelo js/navigation.js) -->
+    <header class="topbar"></header>
+
+    <div class="layout">
+
+        <!-- MENU LATERAL (montado pelo js/navigation.js) -->
+        <aside class="sidebar" aria-label="Menu principal"></aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="content">
+
+            <!-- CABEÇALHO -->
+            <header class="page-header">
+                <div>
+                    <h1>Registro de ocorrências</h1>
+                    <p>Registre observações e ocorrências relacionadas aos alunos.</p>
+                </div>
+            </header>
+
+            <!-- NOVA OCORRÊNCIA -->
+            <section class="card">
+
+                <div class="card-title">
+                    <div>
+                        <h2>Nova ocorrência</h2>
+                        <p>Selecione a turma e o aluno para registrar uma ocorrência.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+
+                    <!-- TURMA -->
+                    <div class="field">
+                        <label for="turma">Turma</label>
+                        <select id="turma" name="turma" required>
+                            <option value="">Selecione uma turma</option>
+                        </select>
+                    </div>
+
+                    <!-- ALUNO -->
+                    <div class="field">
+                        <label for="aluno">Aluno</label>
+                        <select id="aluno" name="aluno" required disabled>
+                            <option value="">Selecione uma turma primeiro</option>
+                        </select>
+                    </div>
+
+                    <!-- DATA -->
+                    <div class="field">
+                        <label for="dataOcorrencia">Data</label>
+                        <input id="dataOcorrencia" name="dataOcorrencia" type="date" required>
+                    </div>
+
+                    <!-- OCORRÊNCIA -->
+                    <div class="field full">
+                        <label for="descricao">Ocorrência / Observação</label>
+                        <textarea
+                            id="descricao"
+                            name="descricao"
+                            rows="6"
+                            maxlength="2000"
+                            placeholder="Digite a ocorrência ou observação sobre o aluno..."
+                            required
+                        ></textarea>
+                        <small id="contadorDescricao">Registre aqui qualquer informação relevante sobre o aluno. (0/2000)</small>
+                    </div>
+
+                </div>
+
+                <!-- AÇÕES -->
+                <div class="form-actions" style="margin-top:18px">
+                    <button type="button" class="btn btn-secondary" id="btnLimpar">Limpar</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarOcorrencia">Salvar ocorrência</button>
+                </div>
+
+            </section>
+
+            <!-- HISTÓRICO -->
+            <section class="card" style="margin-top:18px">
+
+                <div class="card-title">
+                    <div>
+                        <h2>Histórico de ocorrências</h2>
+                        <p id="resumoOcorrencias">Selecione uma turma para visualizar as ocorrências registradas.</p>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Aluno</th>
+                            <th>Matrícula</th>
+                            <th>Ocorrência</th>
+                        </tr>
+                        </thead>
+                        <tbody id="listaOcorrencias"></tbody>
+                    </table>
+                </div>
+
+                <div id="listaOcorrenciasVazia" class="empty" hidden></div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</div>
+
+<div class="toast-area" aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/relatorios.js"></script>
+
+</body>
+
+</html>

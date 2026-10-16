@@ -1,37 +1,35 @@
-HELP.md
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+# Ferramentas / agentes
+.kilo/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
+# IDEs e editores
+.idea/
 .vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# Builds e dependências
+build/
+out/
+target/
+bin/
+.gradle/
+node_modules/
+dist/
+
+# Logs
+*.log
+app_*.log
+build_*.txt
+
+# Configurações locais / segredos
+.env
+.env.local
+*.local
+
+# Sistema
+.DS_Store
+Thumbs.db

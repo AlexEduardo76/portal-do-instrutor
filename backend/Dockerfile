@@ -3,24 +3,23 @@ FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /app
 
-COPY build.gradle .
-COPY settings.gradle .
-COPY gradlew .
-COPY gradle ./gradle
-COPY src ./src
+COPY backend/build.gradle backend/settings.gradle backend/gradlew ./
+COPY backend/gradle ./gradle
+COPY backend/src ./backend/src
+COPY frontend ./frontend
 
 RUN chmod +x gradlew
 
 ENV GRADLE_OPTS="-Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
 
-RUN ./gradlew clean bootJar -x test --no-daemon
+RUN cd backend && ../gradlew clean bootJar -x test --no-daemon
 
 # ---------- ETAPA 2: RUNTIME ----------
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY --from=build /app/build/libs/*SNAPSHOT.jar app.jar
+COPY --from=build /app/backend/build/libs/*SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 

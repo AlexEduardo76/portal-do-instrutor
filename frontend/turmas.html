@@ -3,45 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal do Instrutor | Turmas</title>
-    <link rel="stylesheet" href="css/turma.css">
+    <title>Turmas</title>
+    <link rel="icon" type="image/png" href="https://www.ap.senac.br/img/logo-white.png">
+    <link rel="stylesheet" href="css/turmas.css">
+    <link rel="stylesheet" href="css/turmas-extra.css">
 </head>
 <body>
 <div class="app-shell">
-    <header class="topbar">
-        <a class="brand" href="dashboard.html"><span class="brand-mark">PI</span><span class="brand-text"><strong>Portal do Instrutor</strong><span>Gestão acadêmica</span></span></a>
-        <div class="topbar-actions"><div class="user-chip"><span class="avatar" data-user-initials>U</span><span><strong data-user-name>Usuário</strong><span data-user-email>Instrutor</span></span></div><button class="btn btn-secondary btn-small" data-action="logout">Sair</button></div>
-    </header>
+    <!-- Topbar e menu lateral são montados pelo js/navigation.js -->
+    <header class="topbar"></header>
     <div class="layout">
-        <aside class="sidebar"></aside>
+        <aside class="sidebar" aria-label="Menu principal"></aside>
         <main class="content">
             <div class="page-header">
                 <div><h1>Turmas</h1><p>Crie, acompanhe e acesse rapidamente suas turmas ativas.</p></div>
-                <button class="btn btn-primary" id="btnNovaTurma">Nova turma</button>
+                <button class="btn btn-primary" id="btnNovaTurma" type="button">+ Nova turma</button>
             </div>
 
-            <section class="grid grid-3" id="cardsTurmas"></section>
+            <section class="grid grid-3" id="cardsTurmas">
+                <div class="loading-state"><span>Carregando turmas...</span></div>
+            </section>
 
             <section class="card" style="margin-top:18px">
                 <div class="card-title"><div><h2>Lista de turmas</h2><p>Use a administração para manter alunos e unidades curriculares.</p></div></div>
-                <div class="table-wrap"><table><thead><tr><th>Código</th><th>Turma</th><th>Alunos</th><th>UCs</th><th>Aulas</th><th style="text-align:right">Ações</th></tr></thead><tbody id="corpoTurmas"></tbody></table></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Código</th><th>Turma</th><th>Alunos</th><th>UCs</th><th>Horas</th><th style="text-align:right"></th></tr>
+                        </thead>
+                        <tbody id="corpoTurmas">
+                            <tr><td colspan="6" class="loading-state">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </main>
     </div>
 </div>
 
 <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-        <div class="modal-header"><div><h2 id="modalTitulo">Turma</h2><p>Informe os dados principais.</p></div><button class="btn btn-secondary icon-btn" id="modalFechar" type="button">Fechar</button></div>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+        <div class="modal-header">
+            <div><h2 id="modalTitulo">Turma</h2><p>Informe os dados principais.</p></div>
+            <button class="btn btn-secondary icon-btn" id="modalFechar" type="button">Fechar</button>
+        </div>
         <form id="formTurma" class="form-grid">
             <div class="field full"><label for="nomeTurma">Nome da turma</label><input id="nomeTurma" type="text" minlength="3" maxlength="100" required></div>
             <div class="field"><label for="codigoTurma">Código</label><input id="codigoTurma" type="text" maxlength="30" placeholder="Opcional"></div>
+            <div class="field"><label for="qtdAlunosTurma">Quantidade de alunos</label><input id="qtdAlunosTurma" type="number" min="0" max="9999" step="1" inputmode="numeric" placeholder="Opcional"></div>
+            <div class="field"><label for="qtdUcsTurma">Quantidade de UCs</label><input id="qtdUcsTurma" type="number" min="0" max="9999" step="1" inputmode="numeric" placeholder="Opcional"></div>
+            <div class="field"><label for="horasTurma">Horas</label><input id="horasTurma" type="number" min="0" max="9999" step="1" inputmode="numeric" placeholder="Opcional"></div>
         </form>
-        <div class="form-actions"><button class="btn btn-secondary" id="modalCancelar" type="button">Cancelar</button><button class="btn btn-primary" id="modalSalvar" type="submit" form="formTurma">Salvar</button></div>
+        <div class="form-actions">
+            <button class="btn btn-secondary" id="modalCancelar" type="button">Cancelar</button>
+            <button class="btn btn-primary" id="modalSalvar" type="submit" form="formTurma">Salvar</button>
+        </div>
     </div>
 </div>
-<div class="toast-area"></div>
+<!-- Alunos da turma: lista, cadastro, edição e remoção -->
+<div class="modal-backdrop" id="modalAlunosBackdrop">
+    <div class="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="alunosTitulo">
+        <div class="modal-header">
+            <div><h2 id="alunosTitulo">Alunos</h2><p id="alunosSubtitulo">Alunos matriculados nesta turma</p></div>
+            <button class="btn btn-secondary icon-btn" id="alunosFechar" type="button">Fechar</button>
+        </div>
+
+        <div class="alunos-corpo">
+            <form id="formAluno" class="aluno-form" autocomplete="off">
+                <div class="field"><label for="alunoNome">Nome</label><input id="alunoNome" type="text" minlength="3" maxlength="120" required></div>
+                <div class="field"><label for="alunoMatricula">Matrícula</label><input id="alunoMatricula" type="text" maxlength="30" required></div>
+                <div class="field"><label for="alunoCpf">CPF</label><input id="alunoCpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00"></div>
+                <div class="aluno-form-botoes">
+                    <button class="btn btn-primary" id="btnSalvarAluno" type="submit">Adicionar aluno</button>
+                    <button class="btn btn-secondary" id="btnCancelarEdicaoAluno" type="button" hidden>Cancelar</button>
+                </div>
+            </form>
+
+            <div class="alunos-lista-topo"><h3>Alunos da turma</h3><span id="alunosResumo"></span></div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Nome</th><th>Matrícula</th><th>CPF</th><th style="text-align:right"></th></tr></thead>
+                    <tbody id="corpoAlunos"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-secondary" id="alunosConcluir" type="button">Concluir</button>
+        </div>
+    </div>
+</div>
+<div class="toast-area" aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/navigation.js"></script>
 <script src="js/turmas.js"></script>
+<script src="js/alunos-turma.js"></script>
 </body>
 </html>

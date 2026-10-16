@@ -1,0 +1,233 @@
+# Portal do Instrutor - API Examples
+# Use com REST Client (VS Code) ou importe no Postman
+
+@baseUrl = http://localhost:8080/api
+@token =
+
+### AUTENTICAÇÃO
+
+# Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "identificador": "instrutor",
+  "senha": "senac123",
+  "lembrar": true
+}
+
+# Me (usuário logado)
+GET {{baseUrl}}/auth/me
+
+# Logout
+POST {{baseUrl}}/auth/logout
+
+### TURMAS
+
+# Listar turmas do instrutor
+GET {{baseUrl}}/turmas
+
+# Listar resumo (para selects)
+GET {{baseUrl}}/turmas/resumo
+
+# Contar alunos por turmas (ids separados por vírgula)
+GET {{baseUrl}}/turmas/alunos/contagem?ids=1,2,3
+
+# Contar UCs por turmas
+GET {{baseUrl}}/turmas/ucs/contagem?ids=1,2,3
+
+# Criar turma
+POST {{baseUrl}}/turmas
+Content-Type: application/json
+
+{
+  "nome": "Turma Teste",
+  "codigo": "TST001",
+  "curso": "Técnico em Informática",
+  "turno": "Noite",
+  "sala": "101",
+  "qtdAlunos": 30,
+  "qtdUcs": 5,
+  "horas": 800
+}
+
+# Atualizar turma
+PUT {{baseUrl}}/turmas/1
+Content-Type: application/json
+
+{
+  "nome": "Turma Atualizada",
+  "codigo": "TST001",
+  "curso": "Técnico em Informática",
+  "turno": "Noite",
+  "sala": "102",
+  "qtdAlunos": 35,
+  "qtdUcs": 6,
+  "horas": 900
+}
+
+# Excluir turma
+DELETE {{baseUrl}}/turmas/1
+
+### ALUNOS
+
+# Listar alunos de uma turma
+GET {{baseUrl}}/turmas/1/alunos
+
+# Cadastrar aluno
+POST {{baseUrl}}/turmas/1/alunos
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "matricula": "2024001",
+  "cpf": "12345678901"
+}
+
+# Atualizar aluno
+PUT {{baseUrl}}/alunos/1
+Content-Type: application/json
+
+{
+  "nome": "João Silva Santos",
+  "matricula": "2024001",
+  "cpf": "12345678901"
+}
+
+# Remover aluno (lógico)
+DELETE {{baseUrl}}/alunos/1
+
+### FREQUÊNCIA
+
+# Buscar frequência de uma turma em uma data
+GET {{baseUrl}}/turmas/1/frequencias?data=2026-10-14
+
+# Salvar frequência (upsert)
+PUT {{baseUrl}}/turmas/1/frequencias
+Content-Type: application/json
+
+{
+  "data": "2026-10-14",
+  "registros": [
+    { "alunoId": 1, "presente": true },
+    { "alunoId": 2, "presente": false },
+    { "alunoId": 3, "presente": true }
+  ]
+}
+
+### AVALIAÇÕES E NOTAS
+
+# Listar avaliações de uma turma
+GET {{baseUrl}}/turmas/1/avaliacoes
+
+# Criar avaliação (cria notas null para todos os alunos ativos)
+POST {{baseUrl}}/turmas/1/avaliacoes
+Content-Type: application/json
+
+{
+  "titulo": "Prova 1"
+}
+
+# Buscar notas de uma avaliação
+GET {{baseUrl}}/avaliacoes/1/notas
+
+# Salvar notas (upsert)
+PUT {{baseUrl}}/avaliacoes/1/notas
+Content-Type: application/json
+
+{
+  "registros": [
+    { "alunoId": 1, "valor": 85.5 },
+    { "alunoId": 2, "valor": 92.0 },
+    { "alunoId": 3, "valor": null }
+  ]
+}
+
+### OCORRÊNCIAS
+
+# Listar ocorrências de uma turma (limite 200)
+GET {{baseUrl}}/turmas/1/ocorrencias
+
+# Registrar ocorrência
+POST {{baseUrl}}/turmas/1/ocorrencias
+Content-Type: application/json
+
+{
+  "alunoId": 1,
+  "data": "2026-10-14",
+  "descricao": "Aluno faltou à aula sem justificativa."
+}
+
+### EVENTOS
+
+# Listar eventos do instrutor no período
+GET {{baseUrl}}/eventos?inicio=2026-10-01&fim=2026-10-31
+
+# Criar evento
+POST {{baseUrl}}/eventos
+Content-Type: application/json
+
+{
+  "titulo": "Reunião de Pais",
+  "tipo": "REUNIAO",
+  "data": "2026-10-20",
+  "hora": "19:00",
+  "turmaNome": "Turma Teste",
+  "descricao": "Reunião com pais dos alunos"
+}
+
+# Atualizar evento
+PUT {{baseUrl}}/eventos/1
+Content-Type: application/json
+
+{
+  "titulo": "Reunião de Pais - Atualizada",
+  "tipo": "REUNIAO",
+  "data": "2026-10-20",
+  "hora": "19:30",
+  "turmaNome": "Turma Teste",
+  "descricao": "Reunião com pais dos alunos - nova data"
+}
+
+# Excluir evento
+DELETE {{baseUrl}}/eventos/1
+
+### AULAS
+
+# Listar aulas no período
+GET {{baseUrl}}/aulas?inicio=2026-10-01T00:00:00-03:00&fim=2026-10-31T23:59:59-03:00
+
+# Criar aula
+POST {{baseUrl}}/aulas
+Content-Type: application/json
+
+{
+  "titulo": "Aula 01 - Introdução",
+  "dataHora": "2026-10-15T08:00:00-03:00",
+  "sala": "101",
+  "turmaId": 1
+}
+
+# Atualizar aula
+PUT {{baseUrl}}/aulas/1
+Content-Type: application/json
+
+{
+  "titulo": "Aula 01 - Introdução Atualizada",
+  "dataHora": "2026-10-15T08:00:00-03:00",
+  "sala": "102",
+  "turmaId": 1
+}
+
+# Excluir aula
+DELETE {{baseUrl}}/aulas/1
+
+### ATIVIDADES
+
+# Listar últimas atividades (feed do dashboard)
+GET {{baseUrl}}/atividades?limite=5
+
+### DASHBOARD
+
+# Dashboard completo (uma única chamada)
+GET {{baseUrl}}/dashboard

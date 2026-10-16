@@ -1,0 +1,446 @@
+/* =========================================================
+   PORTAL DO INSTRUTOR | shell.css
+
+   Estrutura compartilhada pelas telas internas:
+   - topo (marca e nome do usuário)
+   - menu lateral
+   - avisos (toast)
+   - estados de carregamento, vazio e erro
+
+   Usa as variáveis do :root de cada página (azul, laranja,
+   bordas, raios). Nenhuma cor nova foi criada aqui.
+
+   Quem carrega: cada página importa este arquivo pelo seu
+   "-extra.css", depois do CSS principal da página.
+
+   O js/navigation.js monta o topo e o menu com estas classes:
+   .senac-brand .brand-logo .topbar-user
+   .sidebar-navigation .sidebar-section .sidebar-title
+   .nav-item .nav-icon .sidebar-footer .nav-logout
+========================================================= */
+
+
+/* =========================================================
+   TOPO
+========================================================= */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: var(--topbar-height);
+    padding: 0 28px;
+    background: var(--blue-700);
+    color: #fff;
+    border-bottom: 3px solid var(--orange-500);
+    box-shadow: var(--shadow-sm);
+}
+
+.topbar .senac-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* logo oficial do Senac */
+.topbar .brand-logo {
+    flex: 0 0 auto;
+    width: auto;
+    height: 32px;
+    padding-right: 14px;
+    border-right: 1px solid rgba(255, 255, 255, .28);
+    object-fit: contain;
+}
+
+.topbar .senac-brand strong {
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    color: #fff;
+}
+
+.topbar .topbar-user {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.topbar .topbar-user > span {
+    max-width: 260px;
+    padding: 7px 16px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .12);
+    font-size: .88rem;
+    font-weight: 600;
+    color: #fff;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* sem nome ainda (antes do JS preencher), não mostra a pílula vazia */
+.topbar .topbar-user > span:empty {
+    display: none;
+}
+
+
+/* =========================================================
+   ESTRUTURA COM MENU LATERAL
+========================================================= */
+
+.layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    align-items: start;
+    width: 100%;
+}
+
+/* sem menu injetado, o conteúdo ocupa a largura toda */
+.layout:has(> .sidebar:empty) {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.sidebar:empty {
+    display: none;
+}
+
+
+/* =========================================================
+   MENU LATERAL
+========================================================= */
+
+.sidebar {
+    position: sticky;
+    top: var(--topbar-height);
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--topbar-height));
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: var(--blue-800);
+    border-right: 0;
+    color: #fff;
+}
+
+.sidebar .sidebar-navigation {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 20px 14px;
+}
+
+.sidebar .sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 22px;
+}
+
+.sidebar .sidebar-title {
+    padding: 0 12px 6px;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .55);
+}
+
+.sidebar .nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    font: inherit;
+    font-size: .95rem;
+    color: rgba(255, 255, 255, .86);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+.sidebar .nav-item:hover {
+    background: rgba(255, 255, 255, .09);
+    color: #fff;
+}
+
+.sidebar .nav-item.active {
+    background: rgba(255, 255, 255, .14);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* barra laranja na borda esquerda do item da página atual */
+.sidebar .nav-item.active::before {
+    content: "";
+    position: absolute;
+    left: -14px;
+    top: 8px;
+    bottom: 8px;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: var(--orange-500);
+}
+
+.sidebar .nav-icon {
+    flex: 0 0 22px;
+    text-align: center;
+    color: rgba(255, 255, 255, .7);
+}
+
+.sidebar .nav-item.active .nav-icon {
+    color: var(--orange-500);
+}
+
+.sidebar .sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+}
+
+/* "Sair" avisa que é uma ação diferente das demais */
+.sidebar .nav-logout:hover {
+    background: rgba(192, 57, 43, .28);
+    color: #fff;
+}
+
+.sidebar .nav-logout:hover .nav-icon {
+    color: #fff;
+}
+
+.sidebar .nav-item:focus-visible {
+    outline: 3px solid var(--orange-500);
+    outline-offset: -3px;
+}
+
+
+/* =========================================================
+   AVISOS (toast)
+
+   O js/utils.js cria: <div class="toast toast-sucesso|erro|info">
+========================================================= */
+
+.toast-area {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(360px, calc(100vw - 40px));
+    pointer-events: none;
+}
+
+.toast {
+    padding: 12px 16px;
+    background: var(--blue-900);
+    color: #fff;
+    border-left: 4px solid var(--orange-500);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    font-size: .88rem;
+    line-height: 1.4;
+    pointer-events: auto;
+    animation: shell-toast-in .2s ease-out;
+}
+
+.toast-sucesso,
+.toast.success {
+    border-left-color: var(--success);
+}
+
+.toast-erro,
+.toast.error {
+    border-left-color: var(--danger);
+}
+
+.toast-info {
+    border-left-color: var(--orange-500);
+}
+
+@keyframes shell-toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+
+/* =========================================================
+   ESTADOS: carregando, vazio e erro
+========================================================= */
+
+.loading-state,
+.empty-state,
+.error-state {
+    padding: 32px 16px;
+    text-align: center;
+    font-size: .92rem;
+    color: var(--text-soft);
+}
+
+.loading-state::before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    vertical-align: -3px;
+    border: 2px solid var(--blue-100);
+    border-top-color: var(--blue-700);
+    border-radius: 50%;
+    animation: shell-spin .7s linear infinite;
+}
+
+/* caixa tracejada quando o estado aparece fora de uma tabela */
+div.empty-state {
+    border: 1px dashed #C5D2E0;
+    border-radius: var(--radius-md);
+    background: var(--blue-50);
+}
+
+div.error-state {
+    border: 1px dashed #E3B1AB;
+    border-radius: var(--radius-md);
+    background: #FDF3F1;
+    color: #962D22;
+}
+
+/* dentro de uma grade, o aviso ocupa a linha inteira */
+.grid > .loading-state,
+.grid > .empty-state,
+.grid > .error-state {
+    grid-column: 1 / -1;
+}
+
+@keyframes shell-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   MATRÍCULA DO ALUNO (frequência e notas)
+========================================================= */
+
+.aluno-matricula {
+    display: block;
+    margin-top: 2px;
+    font-size: .78rem;
+    font-weight: 500;
+    letter-spacing: .01em;
+    color: var(--text-soft);
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 860px) {
+    .layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .topbar {
+        padding: 0 16px;
+    }
+
+    .topbar .topbar-user > span {
+        max-width: 150px;
+        padding: 6px 12px;
+    }
+
+    /* menu vira uma faixa horizontal que rola de lado */
+    .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .sidebar .sidebar-navigation {
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        min-height: 0;
+        min-width: max-content;
+        padding: 8px 12px;
+    }
+
+    .sidebar .sidebar-section {
+        flex-direction: row;
+        margin-bottom: 0;
+    }
+
+    .sidebar .sidebar-title {
+        display: none;
+    }
+
+    .sidebar .nav-item {
+        width: auto;
+        padding: 9px 12px;
+        font-size: .9rem;
+        white-space: nowrap;
+    }
+
+    /* o marcador do item atual passa para baixo do item */
+    .sidebar .nav-item.active::before {
+        left: 12px;
+        right: 12px;
+        top: auto;
+        bottom: 2px;
+        width: auto;
+        height: 3px;
+        border-radius: 3px;
+    }
+
+    .sidebar .sidebar-footer {
+        margin: 0 0 0 auto;
+        padding: 0 0 0 8px;
+        border-top: 0;
+        border-left: 1px solid rgba(255, 255, 255, .14);
+    }
+}
+
+@media (max-width: 520px) {
+    .topbar .senac-brand strong {
+        font-size: .95rem;
+    }
+
+    .topbar .topbar-user {
+        display: none;
+    }
+
+    .toast-area {
+        right: 12px;
+        bottom: 12px;
+        width: calc(100vw - 24px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast,
+    .loading-state::before {
+        animation: none !important;
+    }
+}

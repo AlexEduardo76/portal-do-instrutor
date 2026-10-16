@@ -1,1 +1,0 @@
-package br.com.portal.dto; public record AlunoFrequenciaResponse(Long alunoId,String alunoNome,String matricula,long totalAulas,long presencas,double percentual,boolean alerta,boolean faltasConsecutivas,String mensagem) {}

@@ -1,0 +1,23 @@
+/* =========================================================
+   PORTAL DO INSTRUTOR | relatorios-extra.css
+
+   Complemento visual da página de Relatórios.
+   O relatorio.css já controla formulário, tabela e responsividade.
+   Aqui ficam o texto das ocorrências e a estrutura
+   compartilhada (shell.css), que substitui o menu antigo.
+========================================================= */
+
+@import url("shell.css");
+
+
+/* =========================================================
+   TEXTO DA OCORRÊNCIA
+========================================================= */
+
+td.ocorrencia-texto {
+    min-width: 260px;
+    line-height: 1.5;
+    color: var(--text-soft);
+    text-align: left;
+    white-space: normal;
+}

@@ -106,7 +106,6 @@ function abrirModal(turma = null) {
     el("qtdAlunosTurma").value = turma?.qtdAlunos ?? "";
     el("qtdUcsTurma").value = turma?.qtdUcs ?? "";
     el("horasTurma").value = turma?.horas ?? "";
-    el("avisoCamposTurma").hidden = true;
 
     const m = backdrop();
     m.classList.add("open");
@@ -140,7 +139,11 @@ async function salvarTurma(evento) {
             return toast(`Informe um número inteiro válido em ${rotulo} (de 0 a 9999).`, "erro");
         }
     }
-    const dados = { nome, codigo, qtdAlunos, qtdUcs, horas };
+    const atual = editandoId ? turmas.find((t) => String(t.id) === String(editandoId)) : null;
+    const dados = {
+        nome, codigo, qtdAlunos, qtdUcs, horas,
+        curso: atual?.curso ?? null, turno: atual?.turno ?? null, sala: atual?.sala ?? null
+    };
 
     const botao = el("modalSalvar");
     botao.disabled = true;

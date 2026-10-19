@@ -11,6 +11,8 @@ import br.senac.portalinstrutor.util.CpfUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private static final int SEGUNDOS_SESSAO = 8 * 60 * 60; // 8 horas
+    private static final int SEGUNDOS_SESSAO_LEMBRAR = 30 * 24 * 60 * 60; // 30 dias
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -64,15 +67,29 @@ public class AuthService {
             throw new UsuarioInativoException("Usuário inativo.");
         }
 
+        boolean lembrar = Boolean.TRUE.equals(request.lembrar());
+
         HttpSession session = httpRequest.getSession(true);
-        // Sessão única de 8h (cookie de sessão).
-        session.setMaxInactiveInterval(SEGUNDOS_SESSAO);
+        // Sessǜo de 8h por padrǜo; com "lembrar de mim" a sessǜo e o cookie duram 30 dias.
+        session.setMaxInactiveInterval(lembrar ? SEGUNDOS_SESSAO_LEMBRAR : SEGUNDOS_SESSAO);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(UsuarioPrincipal.from(usuario), null, UsuarioPrincipal.from(usuario).getAuthorities());
         SecurityContext context = securityContextHolderStrategy.createEmptyContext();
         context.setAuthentication(auth);
         securityContextHolderStrategy.setContext(context);
         securityContextRepository.saveContext(context, httpRequest, httpResponse);
+
+        if (lembrar) {
+            String caminho = httpRequest.getContextPath();
+            ResponseCookie cookie = ResponseCookie.from("JSESSIONID", session.getId())
+                .httpOnly(true)
+                .secure(httpRequest.isSecure())
+                .path(caminho.isEmpty() ? "/" : caminho)
+                .maxAge(SEGUNDOS_SESSAO_LEMBRAR)
+                .sameSite("Lax")
+                .build();
+            httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        }
 
         return new UsuarioResponse(usuario.getNome(), usuario.getLogin());
     }

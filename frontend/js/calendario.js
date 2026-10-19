@@ -257,7 +257,7 @@ async function salvarEvento(e) {
         tipo: el("evtTipo").value,
         data: el("evtData").value,
         hora: el("evtHora").value || null,
-        turma_nome: el("evtTurma").value.trim() || null,
+        turmaNome: el("evtTurma").value.trim() || null,
         descricao: el("evtDescricao").value.trim() || null,
     };
 

@@ -11,8 +11,6 @@ WORKDIR /app/backend
 RUN chmod +x gradlew
 RUN sed -i 's/\r$//' gradlew
 
-# embute o frontend no jar (servido em /)
-RUN mkdir -p src/main/resources/static && cp -r ../frontend/* src/main/resources/static/
 
 ENV GRADLE_OPTS="-Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
 

@@ -28,4 +28,10 @@ public class OcorrenciaController {
     public ResponseEntity<OcorrenciaResponse> criar(@PathVariable Long id, @Valid @RequestBody OcorrenciaRequest request) {
         return ResponseEntity.status(201).body(ocorrenciaService.criar(id, request));
     }
+
+    @PutMapping("/{id}/ocorrencias/{ocorrenciaId}")
+    public ResponseEntity<OcorrenciaResponse> atualizar(@PathVariable Long id, @PathVariable Long ocorrenciaId,
+                                                        @Valid @RequestBody OcorrenciaRequest request) {
+        return ResponseEntity.ok(ocorrenciaService.atualizar(id, ocorrenciaId, request));
+    }
 }

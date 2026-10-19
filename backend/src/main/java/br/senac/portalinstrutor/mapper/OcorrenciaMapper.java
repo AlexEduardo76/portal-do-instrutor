@@ -16,12 +16,22 @@ public class OcorrenciaMapper {
         return new Ocorrencia(aluno, turma, instrutorLogin, request.data(), TextoUtil.trim(request.descricao()), criadoEm);
     }
 
+    public static void updateEntity(Ocorrencia ocorrencia, OcorrenciaRequest request, Aluno aluno) {
+        ocorrencia.setAluno(aluno);
+        ocorrencia.setData(request.data());
+        ocorrencia.setDescricao(TextoUtil.trim(request.descricao()));
+    }
+
     public static OcorrenciaResponse toResponse(Ocorrencia ocorrencia) {
         return new OcorrenciaResponse(
             ocorrencia.getId(),
             ocorrencia.getData(),
             ocorrencia.getDescricao(),
-            new AlunoResumoResponse(ocorrencia.getAluno().getNome(), ocorrencia.getAluno().getMatricula())
+            new AlunoResumoResponse(
+                ocorrencia.getAluno().getId(),
+                ocorrencia.getAluno().getNome(),
+                ocorrencia.getAluno().getMatricula()
+            )
         );
     }
 }

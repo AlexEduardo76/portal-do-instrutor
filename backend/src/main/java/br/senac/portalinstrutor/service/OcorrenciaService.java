@@ -70,4 +70,35 @@ public class OcorrenciaService {
 
         return OcorrenciaMapper.toResponse(ocorrencia);
     }
+
+    @Transactional
+    public OcorrenciaResponse atualizar(Long turmaId, Long ocorrenciaId, OcorrenciaRequest request) {
+        turmaService.buscarPorId(turmaId);
+        String login = usuarioLogadoService.getLogin();
+
+        Ocorrencia ocorrencia = ocorrenciaRepository.findByIdAndInstrutorLogin(ocorrenciaId, login)
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Ocorrência não encontrada."));
+
+        if (!ocorrencia.getTurma().getId().equals(turmaId)) {
+            throw new RecursoNaoEncontradoException("Ocorrência não encontrada nesta turma.");
+        }
+
+        if (request.data().isAfter(LocalDate.now(clock))) {
+            throw new RegraNegocioException("A data da ocorrência não pode ser no futuro.");
+        }
+
+        Aluno aluno = alunoRepository.findByIdAndTurmaId(request.alunoId(), turmaId)
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Aluno não encontrado nesta turma."));
+        boolean trocouAluno = !aluno.getId().equals(ocorrencia.getAluno().getId());
+        if (trocouAluno && !Boolean.TRUE.equals(aluno.getAtivo())) {
+            throw new RegraNegocioException("Não é possível registrar ocorrência para aluno inativo.");
+        }
+
+        OcorrenciaMapper.updateEntity(ocorrencia, request, aluno);
+        ocorrencia = ocorrenciaRepository.save(ocorrencia);
+
+        atividadeService.registrar("Ocorrência atualizada — " + aluno.getNome());
+
+        return OcorrenciaMapper.toResponse(ocorrencia);
+    }
 }

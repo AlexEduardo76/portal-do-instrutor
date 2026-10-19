@@ -1,5 +1,7 @@
 // ====== ESTADO ======
 let cargaHistorico = 0;
+let ocorrencias = [];
+let ocorrenciaEditandoId = null;
 
 const dataBR = (iso) => iso.split("-").reverse().join("/");
 const LIMITE_HISTORICO = 200;
@@ -28,6 +30,8 @@ async function carregarTurmas() {
 async function aoMudarTurma() {
     const turmaId = el("turma").value;
     const select = el("aluno");
+
+    limparFormulario();
 
     if (!turmaId) {
         select.innerHTML = '<option value="">Selecione uma turma primeiro</option>';
@@ -66,6 +70,7 @@ async function carregarAlunos(turmaId) {
 
 // ====== HISTÓRICO ======
 function limparHistorico(mensagem) {
+    ocorrencias = [];
     setHTML("listaOcorrencias", "");
     el("resumoOcorrencias").textContent = mensagem;
     el("listaOcorrenciasVazia").hidden = true;
@@ -79,6 +84,8 @@ async function carregarHistorico(turmaId) {
     try {
         const data = await api.get(`/turmas/${turmaId}/ocorrencias`);
         if (carga !== cargaHistorico) return;
+
+        ocorrencias = data;
 
         if (!data.length) {
             setHTML("listaOcorrencias", "");
@@ -99,6 +106,9 @@ async function carregarHistorico(turmaId) {
                 <td><strong>${esc(o.aluno.nome)}</strong></td>
                 <td>${esc(o.aluno.matricula || "—")}</td>
                 <td class="ocorrencia-texto">${esc(o.descricao)}</td>
+                <td style="text-align:right">
+                    <button type="button" class="btn btn-secondary btn-small" data-editar-ocorrencia="${esc(o.id)}">Editar</button>
+                </td>
             </tr>`).join(""));
     } catch (err) {
         if (carga !== cargaHistorico) return;
@@ -115,11 +125,47 @@ function atualizarContador() {
     el("contadorDescricao").textContent = `Registre aqui qualquer informação relevante sobre o aluno. (${n}/2000)`;
 }
 
+function resetarEdicao() {
+    ocorrenciaEditandoId = null;
+    el("tituloFormOcorrencia").textContent = "Nova ocorrência";
+    el("btnSalvarOcorrencia").textContent = "Salvar ocorrência";
+    el("btnCancelarEdicao").hidden = true;
+}
+
 function limparFormulario() {
+    resetarEdicao();
     el("aluno").value = "";
     el("descricao").value = "";
     el("dataOcorrencia").value = hojeISO();
     atualizarContador();
+}
+
+function iniciarEdicao(id) {
+    const ocorrencia = ocorrencias.find((o) => String(o.id) === String(id));
+    if (!ocorrencia) return;
+
+    ocorrenciaEditandoId = ocorrencia.id;
+    el("tituloFormOcorrencia").textContent = "Editar ocorrência";
+    el("btnSalvarOcorrencia").textContent = "Salvar alterações";
+    el("btnCancelarEdicao").hidden = false;
+
+    const select = el("aluno");
+    const alunoId = String(ocorrencia.aluno.id);
+    if (![...select.options].some((opcao) => opcao.value === alunoId)) {
+        const opcao = document.createElement("option");
+        opcao.value = alunoId;
+        opcao.textContent = `${ocorrencia.aluno.nome}${ocorrencia.aluno.matricula ? " (" + ocorrencia.aluno.matricula + ")" : ""}`;
+        select.appendChild(opcao);
+    }
+    select.value = alunoId;
+    select.disabled = false;
+
+    el("dataOcorrencia").value = ocorrencia.data;
+    el("descricao").value = ocorrencia.descricao;
+    atualizarContador();
+
+    el("tituloFormOcorrencia").scrollIntoView({ behavior: "smooth", block: "center" });
+    el("descricao").focus();
 }
 
 async function salvarOcorrencia() {
@@ -138,21 +184,26 @@ async function salvarOcorrencia() {
     botao.disabled = true;
     botao.textContent = "Salvando...";
 
-    try {
-        await api.post(`/turmas/${turmaId}/ocorrencias`, { alunoId: Number(alunoId), data, descricao });
-        toast("Ocorrência registrada.", "sucesso");
+    const editando = ocorrenciaEditandoId !== null;
+    const dados = { alunoId: Number(alunoId), data, descricao };
 
-        const nomeAluno = el("aluno").selectedOptions[0].textContent.replace(/\s*\(.*\)$/, "");
-        el("aluno").value = "";
-        el("descricao").value = "";
-        atualizarContador();
+    try {
+        if (editando) {
+            await api.put(`/turmas/${turmaId}/ocorrencias/${ocorrenciaEditandoId}`, dados);
+            toast("Ocorrência atualizada.", "sucesso");
+        } else {
+            await api.post(`/turmas/${turmaId}/ocorrencias`, dados);
+            toast("Ocorrência registrada.", "sucesso");
+        }
+
+        limparFormulario();
         await carregarHistorico(turmaId);
     } catch (err) {
         console.error("Erro ao salvar ocorrência:", err);
         toast(err.message || "Não foi possível salvar a ocorrência.", "erro");
     } finally {
         botao.disabled = false;
-        botao.textContent = "Salvar ocorrência";
+        botao.textContent = ocorrenciaEditandoId !== null ? "Salvar alterações" : "Salvar ocorrência";
     }
 }
 
@@ -164,8 +215,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     el("turma").addEventListener("change", aoMudarTurma);
     el("descricao").addEventListener("input", atualizarContador);
+    el("btnCancelarEdicao").addEventListener("click", limparFormulario);
     el("btnLimpar").addEventListener("click", limparFormulario);
     el("btnSalvarOcorrencia").addEventListener("click", salvarOcorrencia);
+
+    el("listaOcorrencias").addEventListener("click", (e) => {
+        const botao = e.target.closest("[data-editar-ocorrencia]");
+        if (botao) iniciarEdicao(botao.dataset.editarOcorrencia);
+    });
 
     carregarTurmas();
 });

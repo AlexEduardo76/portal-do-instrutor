@@ -38,7 +38,7 @@
 
                 <div class="card-title">
                     <div>
-                        <h2>Nova ocorrência</h2>
+                        <h2 id="tituloFormOcorrencia">Nova ocorrência</h2>
                         <p>Selecione a turma e o aluno para registrar uma ocorrência.</p>
                     </div>
                 </div>
@@ -85,6 +85,7 @@
 
                 <!-- AÇÕES -->
                 <div class="form-actions" style="margin-top:18px">
+                    <button type="button" class="btn btn-secondary" id="btnCancelarEdicao" hidden>Cancelar edição</button>
                     <button type="button" class="btn btn-secondary" id="btnLimpar">Limpar</button>
                     <button type="button" class="btn btn-primary" id="btnSalvarOcorrencia">Salvar ocorrência</button>
                 </div>
@@ -109,6 +110,7 @@
                             <th>Aluno</th>
                             <th>Matrícula</th>
                             <th>Ocorrência</th>
+                            <th style="text-align:right"></th>
                         </tr>
                         </thead>
                         <tbody id="listaOcorrencias"></tbody>

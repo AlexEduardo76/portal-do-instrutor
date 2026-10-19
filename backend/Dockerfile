@@ -1,4 +1,3 @@
-
 # ---------- ETAPA 1: BUILD ----------
 FROM eclipse-temurin:21-jdk AS build
 
@@ -11,6 +10,9 @@ WORKDIR /app/backend
 
 RUN chmod +x gradlew
 RUN sed -i 's/\r$//' gradlew
+
+# embute o frontend no jar (servido em /)
+RUN mkdir -p src/main/resources/static && cp -r ../frontend/* src/main/resources/static/
 
 ENV GRADLE_OPTS="-Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000"
 
@@ -26,4 +28,3 @@ COPY --from=build /app/backend/build/libs/*.jar app.jar
 EXPOSE 8080
 
 ENTRYPOINT ["sh", "-c", "java -jar app.jar --server.port=${PORT:-8080}"]
-

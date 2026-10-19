@@ -3,6 +3,8 @@ let alunos = [];
 let jaRegistrada = false;
 let cargaAtual = 0;
 
+const TOTAL_BOLINHAS = 4;
+
 const dataBR = (iso) => iso.split("-").reverse().join("/");
 
 // ====== TURMAS (select) ======
@@ -72,6 +74,13 @@ async function carregarChamada() {
     }
 }
 
+function bolinhasPresenca(alunoId, marcadas) {
+    return Array.from({ length: TOTAL_BOLINHAS }, (_, i) => {
+        const ativa = i < marcadas;
+        return `<button type="button" class="bolinha${ativa ? " marcada" : ""}" data-aluno-presenca="${esc(alunoId)}" data-indice="${i}" aria-label="Presença ${i + 1} de ${TOTAL_BOLINHAS}" aria-pressed="${ativa}"></button>`;
+    }).join("");
+}
+
 function renderChamada(salvas) {
     if (!alunos.length) {
         el("resumoChamada").textContent = "Esta turma não tem alunos ativos.";
@@ -81,7 +90,8 @@ function renderChamada(salvas) {
     el("listaAlunosVazia").hidden = true;
 
     setHTML("listaAlunos", alunos.map((a) => {
-        const presente = salvas[a.id] === undefined ? true : salvas[a.id];
+        const presente = salvas[a.id] === undefined ? false : salvas[a.id];
+        const marcadas = presente ? TOTAL_BOLINHAS : 0;
         return `
         <tr data-aluno-id="${esc(a.id)}">
             <td>
@@ -89,9 +99,9 @@ function renderChamada(salvas) {
                 ${a.matricula ? `<small class="aluno-matricula">${esc(a.matricula)}</small>` : ""}
             </td>
             <td>
-                <div class="presenca-opcoes">
-                    <label class="opcao-presente"><input type="radio" name="p-${esc(a.id)}" value="1" ${presente ? "checked" : ""}> Presente</label>
-                    <label class="opcao-falta"><input type="radio" name="p-${esc(a.id)}" value="0" ${presente ? "" : "checked"}> Falta</label>
+                <div class="presenca-celula">
+                    <div class="presenca-bolinhas">${bolinhasPresenca(a.id, marcadas)}</div>
+                    <span class="presenca-status ${marcadas ? "presente" : "falta"}">${marcadas ? "Presente" : "Falta"}</span>
                 </div>
             </td>
         </tr>`;
@@ -105,8 +115,20 @@ function renderChamada(salvas) {
 function atualizarResumo() {
     const total = alunos.length;
     if (!total) return;
-    const presentes = document.querySelectorAll('#listaAlunos input[value="1"]:checked').length;
+
+    const linhas = [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")];
+    const presentes = linhas.filter((linha) => linha.querySelector(".bolinha.marcada")).length;
     const faltas = total - presentes;
+
+    linhas.forEach((linha) => {
+        const temPresenca = !!linha.querySelector(".bolinha.marcada");
+        const status = linha.querySelector(".presenca-status");
+        if (status) {
+            status.textContent = temPresenca ? "Presente" : "Falta";
+            status.classList.toggle("presente", temPresenca);
+            status.classList.toggle("falta", !temPresenca);
+        }
+    });
 
     el("resumoChamada").textContent =
         `${total} aluno(s) · ${presentes} presente(s) · ${faltas} falta(s)` +
@@ -114,7 +136,10 @@ function atualizarResumo() {
 }
 
 function marcarTodosPresentes() {
-    document.querySelectorAll('#listaAlunos input[value="1"]').forEach((r) => (r.checked = true));
+    document.querySelectorAll("#listaAlunos .bolinha").forEach((bolinha) => {
+        bolinha.classList.add("marcada");
+        bolinha.setAttribute("aria-pressed", "true");
+    });
     atualizarResumo();
 }
 
@@ -133,7 +158,7 @@ async function salvarFrequencia() {
 
     const registros = [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")].map((linha) => ({
         alunoId: Number(linha.dataset.alunoId),
-        presente: linha.querySelector("input:checked").value === "1",
+        presente: !!linha.querySelector(".bolinha.marcada"),
     }));
 
     const botao = el("btnSalvar");
@@ -167,7 +192,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     el("turma").addEventListener("change", carregarChamada);
     campoData.addEventListener("change", carregarChamada);
-    el("listaAlunos").addEventListener("change", atualizarResumo);
+    el("listaAlunos").addEventListener("click", (e) => {
+        const bolinha = e.target.closest(".bolinha[data-aluno-presenca]");
+        if (!bolinha) return;
+        const marcada = bolinha.classList.toggle("marcada");
+        bolinha.setAttribute("aria-pressed", String(marcada));
+        atualizarResumo();
+    });
     el("btnTodosPresentes").addEventListener("click", marcarTodosPresentes);
     el("btnSalvar").addEventListener("click", salvarFrequencia);
 

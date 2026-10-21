@@ -29,6 +29,14 @@ async function validarSessao() {
     }
 }
 
+// Delegação: um único dono do logout, inclusive para o menu montado por navigation.js.
+document.addEventListener("click", (e) => {
+    const botao = e.target.closest('[data-action="logout"]');
+    if (!botao) return;
+    e.preventDefault();
+    sair();
+});
+
 // Sem login válido -> volta para a tela de login
 document.addEventListener("DOMContentLoaded", async () => {
     const usuario = usuarioLogado();
@@ -46,5 +54,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     const primeiroNome = (usuario.nome || "Instrutor").split(" ")[0];
     document.querySelectorAll("[data-user-first-name]").forEach((el) => (el.textContent = primeiroNome));
     document.querySelectorAll("[data-user-name]").forEach((el) => (el.textContent = usuario.nome));
-    document.querySelectorAll('[data-action="logout"]').forEach((btn) => btn.addEventListener("click", sair));
 });

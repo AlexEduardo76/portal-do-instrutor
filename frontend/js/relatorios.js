@@ -85,9 +85,9 @@ async function carregarHistorico(turmaId) {
         const data = await api.get(`/turmas/${turmaId}/ocorrencias`);
         if (carga !== cargaHistorico) return;
 
-        ocorrencias = data;
+        ocorrencias = data.slice(0, LIMITE_HISTORICO);
 
-        if (!data.length) {
+        if (!ocorrencias.length) {
             setHTML("listaOcorrencias", "");
             el("resumoOcorrencias").textContent = "Nenhuma ocorrência registrada nesta turma.";
             const vazio = el("listaOcorrenciasVazia");
@@ -97,10 +97,10 @@ async function carregarHistorico(turmaId) {
         }
 
         el("resumoOcorrencias").textContent =
-            `${data.length} ocorrência(s) registrada(s) nesta turma` +
+            `${ocorrencias.length} ocorrência(s) registrada(s) nesta turma` +
             (data.length >= LIMITE_HISTORICO ? ` (mostrando as ${LIMITE_HISTORICO} mais recentes)` : "");
 
-        setHTML("listaOcorrencias", data.map((o) => `
+        setHTML("listaOcorrencias", ocorrencias.map((o) => `
             <tr>
                 <td>${esc(dataBR(o.data))}</td>
                 <td><strong>${esc(o.aluno.nome)}</strong></td>

@@ -1,7 +1,6 @@
 // ====== ESTADO ======
 let alunos = [];
 let avaliacoes = [];
-let avaliacaoAtual = null;
 let cargaAtual = 0;
 
 const formatarPercentual = (n) => n.toFixed(1).replace(".", ",") + "%";
@@ -107,7 +106,6 @@ async function carregarNotas() {
         if (carga !== cargaAtual) return;
 
         alunos = resAlunos;
-        avaliacaoAtual = avaliacoes.find(a => String(a.id) === String(avaliacaoId));
         const salvas = Object.fromEntries((resNotas.notas || []).map((n) => [n.alunoId, n.valor]));
         renderNotas(salvas);
     } catch (err) {
@@ -137,7 +135,7 @@ function renderNotas(salvas) {
             </td>
             <td>
                 <div class="campo-nota-wrap">
-                    <input type="number" class="campo-nota" min="0" max="100" step="0.1" inputmode="decimal"
+                    <input type="text" class="campo-nota" inputmode="decimal" autocomplete="off"
                            placeholder="0 a 100" aria-label="Desempenho de ${esc(a.nome)} em %"
                            value="${valor === null || valor === undefined ? "" : esc(valor)}">
                     <span class="sufixo-nota">%</span>

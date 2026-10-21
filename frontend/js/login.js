@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 identificador: entrada,
                 senha: senha,
                 lembrar: lembrar
-            });
+            }, { redirecionar401: false });
 
             salvarSessao(usuario, lembrar);
             window.location.href = PAGINA_PAINEL;

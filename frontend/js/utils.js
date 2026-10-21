@@ -1,4 +1,4 @@
-// Funções comuns às páginas que usam o Supabase.
+// Funções comuns às páginas do portal.
 const el = (id) => document.getElementById(id);
 
 const esc = (texto) =>
@@ -18,13 +18,6 @@ function toast(mensagem, tipo = "info") {
     t.textContent = mensagem;
     area.appendChild(t);
     setTimeout(() => t.remove(), 5000);
-}
-
-// Executa uma consulta do Supabase e lança erro se falhar
-async function consultar(consulta) {
-    const { data, error, count } = await consulta;
-    if (error) throw error;
-    return { data: data ?? [], count };
 }
 
 // Data de hoje no fuso local, no formato yyyy-mm-dd (valor de <input type="date">)

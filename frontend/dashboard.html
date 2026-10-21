@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Dashboard do Portal do Instrutor - Gestão acadêmica">
   <title>Dashboard</title>
-  <link rel="icon" type="image/png" href="https://www.ap.senac.br/img/logo-white.png">
+  <link rel="icon" type="image/png" href="img/logo-senac.png">
   <link rel="stylesheet" href="css/dashboard.css">
   <link rel="stylesheet" href="css/dashboard-extra.css">
 </head>
@@ -17,52 +17,8 @@
 
   <div class="layout">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" aria-label="Menu principal">
-      <nav class="sidebar-navigation">
-
-        <div class="sidebar-section">
-          <span class="sidebar-title">Principal</span>
-          <a class="nav-item active" href="dashboard.html" aria-current="page">
-            <span class="nav-icon" aria-hidden="true">⌂</span><span>Dashboard</span>
-          </a>
-        </div>
-
-        <div class="sidebar-section">
-          <span class="sidebar-title">Acadêmico</span>
-          <a class="nav-item" href="turmas.html">
-            <span class="nav-icon" aria-hidden="true">▣</span><span>Turmas</span>
-          </a>
-          <a class="nav-item" href="frequencia.html">
-            <span class="nav-icon" aria-hidden="true">✓</span><span>Frequência</span>
-          </a>
-          <a class="nav-item" href="notas.html">
-            <span class="nav-icon" aria-hidden="true">✎</span><span>Notas</span>
-          </a>
-        </div>
-
-        <div class="sidebar-section">
-          <span class="sidebar-title">Planejamento</span>
-          <a class="nav-item" href="calendario.html">
-            <span class="nav-icon" aria-hidden="true">▦</span><span>Calendário</span>
-          </a>
-        </div>
-
-        <div class="sidebar-section">
-          <span class="sidebar-title">Gestão</span>
-          <a class="nav-item" href="relatorios.html">
-            <span class="nav-icon" aria-hidden="true">▥</span><span>Relatórios</span>
-          </a>
-        </div>
-
-        <div class="sidebar-footer">
-          <button type="button" class="nav-item nav-logout" data-action="logout">
-            <span class="nav-icon" aria-hidden="true">↪</span><span>Sair</span>
-          </button>
-        </div>
-
-      </nav>
-    </aside>
+    <!-- SIDEBAR (montada pelo js/navigation.js) -->
+    <aside class="sidebar" aria-label="Menu principal"></aside>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="content">
@@ -250,7 +206,7 @@
       <footer class="dashboard-footer">
         <span>Portal do Instrutor</span>
         <span>Ambiente acadêmico</span>
-        <a href="relatorios.html">Relatórios</a>
+        <a href="relatorios.html">Ocorrências</a>
       </footer>
 
     </main>
@@ -262,6 +218,7 @@
 
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/dashboard.js"></script>
 </body>

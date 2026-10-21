@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://www.ap.senac.br/img/logo-white.png" alt="Senac" width="90" style="background:#004587;padding:14px;border-radius:16px"/>
+<img src="frontend/img/logo-senac.png" alt="Senac" width="90" style="background:#004587;padding:14px;border-radius:16px"/>
 
 # Portal do Instrutor
 
@@ -13,6 +13,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Flyway](https://img.shields.io/badge/Flyway-migrations-CC0200?style=for-the-badge&logo=flyway&logoColor=white)
+![CI](https://github.com/AlexEduardo76/portal-do-instrutor/actions/workflows/ci.yml/badge.svg)
 
 <br/>
 
@@ -48,8 +49,7 @@ A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que tam
 | 🏫 **Turmas** | Cadastro, edição e exclusão de turmas, com código, curso, turno, sala e carga horária |
 | 👩‍🎓 **Alunos** | Cadastro por turma com matrícula e CPF validado; remoção lógica (sem perder histórico) |
 | 📚 **Unidades Curriculares** | Gerenciamento das UCs de cada turma |
-| ✅ **Frequência** | Chamada por data, com *upsert*: salvar de novo atualiza em vez de duplicar |
-| 📝 **Avaliações e notas** | Criação de avaliações (gera notas pendentes para todos os alunos ativos) e lançamento de notas |
+| ✅ **Frequência** | Chamada por data, com *upsert*: salvar de novo atualiza em vez de duplicar || 📝 **Avaliações e notas** | Criação de avaliações (gera notas pendentes para todos os alunos ativos) e lançamento de notas |
 | 🗓️ **Calendário** | Eventos por período, com tipos como aula, prova, entrega, feriado, recesso, reunião e anotação |
 | 📋 **Ocorrências** | Registro e histórico de observações por aluno e turma |
 
@@ -106,13 +106,17 @@ portal-do-instrutor/
 │   │   ├── exception/               # Exceções e GlobalExceptionHandler
 │   │   └── util/                    # CpfUtil, TextoUtil
 │   ├── src/main/resources/          # application*.properties e migrações Flyway
+│   ├── src/test/                    # 26 testes (unitários, repositório e integração)
 │   ├── build.gradle
 │   └── Dockerfile
 ├── frontend/                        # Interface web estática
 │   ├── css/  img/  js/
 │   └── *.html                       # login, dashboard, turmas, frequência, notas...
+├── .github/workflows/ci.yml         # CI: build + testes + jar
 ├── docker-compose.yml               # PostgreSQL + aplicação
+├── render.yaml                      # Deploy do backend no Render
 ├── .env.example                     # Modelo de variáveis de ambiente
+├── LICENSE                          # MIT
 └── api.http                         # Requisições de exemplo (REST Client)
 ```
 
@@ -304,19 +308,27 @@ cd backend
 ./gradlew test
 ```
 
+São **26 testes** versionados em `backend/src/test/java`:
+
 | Tipo | Ferramentas | Cobertura |
 |---|---|---|
-| Unitários | JUnit 5 + Mockito | `CpfUtil`, `AlunoService`, `FrequenciaService`, `NotaService` |
-| Repositório | `@DataJpaTest` + H2 | Cálculo de percentual de frequência |
-| Integração | `@SpringBootTest` + MockMvc | Fluxo completo: login → turma → aluno → frequência → avaliação → nota → dashboard → logout, além de *smoke test* dos endpoints |
+| Unitários | JUnit 5 + Mockito | `CpfUtil` (5), `AlunoService` (3), `FrequenciaService` (6) e `NotaService` (5) |
+| Repositório | `@DataJpaTest` + H2 | Cálculo de percentual e busca de frequência (3) |
+| Integração | `@SpringBootTest` + MockMvc | Fluxo completo: login → turma → aluno → frequência → avaliação → nota → dashboard → logout, além de *smoke test* dos endpoints (4) |
+
+O pipeline em `.github/workflows/ci.yml` roda `./gradlew test bootJar` em todo push e pull request para a `main`.
 
 ---
 
 ## ☁️ Deploy
 
+### Render
+
+O deploy do backend é versionado em [`render.yaml`](./render.yaml) (runtime Docker, health check em `/actuator/health`). Configure `DATABASE_URL`, `DATABASE_USER` e `DATABASE_PASSWORD` como secrets no painel do Render.
+
 ### Docker
 
-O `Dockerfile` usa *build* em duas etapas (JDK para compilar, JRE para executar) e já empacota o front-end dentro do JAR.
+O `Dockerfile` usa *build* em duas etapas (JDK para compilar, JRE para executar), roda como usuário não-root e empacota o front-end dentro do JAR.
 
 ```bash
 # Na raiz do repositório
@@ -364,7 +376,7 @@ Contribuições são bem-vindas!
 
 ## 📄 Licença
 
-Projeto educacional desenvolvido no contexto do **Senac**. Defina aqui a licença de sua preferência (por exemplo, MIT) antes de abrir o repositório para uso público.
+Distribuído sob a licença **MIT**. Consulte [`LICENSE`](./LICENSE) para os termos completos.
 
 <div align="center">
 

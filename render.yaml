@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: portal-do-instrutor
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USER
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DDL_AUTO
+        value: validate
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: SEED_SENHA
+        sync: false

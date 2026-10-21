@@ -1,9 +1,13 @@
 target/
 build/
+bin/
+**/bin/
 .gradle/
+.gradle-cache/
 .kilo/
 node_modules/
 .git/
+.github/
 .idea/
 .vscode/
 *.iml
@@ -11,3 +15,4 @@ node_modules/
 .env.*
 !.env.example
 *.log
+*.md

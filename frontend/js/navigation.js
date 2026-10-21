@@ -7,7 +7,7 @@ const MENU = [
         { href: "notas.html",      icone: "✎", texto: "Notas" },
     ] },
     { titulo: "Planejamento", itens: [{ href: "calendario.html", icone: "▦", texto: "Calendário" }] },
-    { titulo: "Gestão",       itens: [{ href: "relatorios.html",  icone: "▥", texto: "Relatórios" }] },
+    { titulo: "Gestão",       itens: [{ href: "relatorios.html",  icone: "▥", texto: "Ocorrências" }] },
 ];
 
 function montarSidebar(sidebar) {
@@ -29,8 +29,6 @@ function montarSidebar(sidebar) {
                 </button>
             </div>
         </nav>`;
-
-    sidebar.querySelector('[data-action="logout"]').addEventListener("click", () => sair());
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -49,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (topbar && !topbar.children.length) {
         topbar.innerHTML = `
             <a class="senac-brand" href="dashboard.html" aria-label="Portal do Instrutor - Dashboard">
-                <img class="brand-logo" src="https://www.ap.senac.br/img/logo-white.png" alt="Senac" height="32">
+                <img class="brand-logo" src="img/logo-senac.png" alt="Senac" height="32">
                 <strong>Portal do Instrutor</strong>
             </a>
             <div class="topbar-user"><span data-user-name></span></div>`;

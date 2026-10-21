@@ -79,10 +79,6 @@ async function carregarMes() {
     renderTudo();
 }
 
-function registrarAtividade(descricao) {
-    // Não usado no front - o backend registra
-}
-
 // ====== MONTAGEM DOS ITENS POR DIA ======
 function montarPorDia() {
     const nomeTurma = Object.fromEntries(turmas.map((t) => [t.id, t.nome]));
@@ -209,7 +205,6 @@ async function irPara(dataISO, focar = false) {
     if (mudouMes) {
         ano = d.getFullYear();
         mes = d.getMonth();
-        renderTudo();
         await carregarMes();
     } else {
         selecionarDia(dataISO);
@@ -262,6 +257,7 @@ async function salvarEvento(e) {
     };
 
     if (!dados.titulo) return toast("Informe o título do evento.", "erro");
+    if (dados.titulo.length < 3) return toast("O título precisa ter pelo menos 3 caracteres.", "erro");
     if (!dados.data) return toast("Informe a data do evento.", "erro");
 
     const botao = el("btnSalvarEvento");
@@ -307,6 +303,7 @@ async function salvarAnotacao(e) {
     const campo = el("anotacaoRapida");
     const titulo = campo.value.trim();
     if (!titulo) return;
+    if (titulo.length < 3) return toast("A anotação precisa ter pelo menos 3 caracteres.", "erro");
 
     try {
         await api.post("/eventos", { titulo, tipo: "ANOTACAO", data: selecionada });

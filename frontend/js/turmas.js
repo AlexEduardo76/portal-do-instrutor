@@ -6,12 +6,6 @@ let editandoId = null;
 const backdrop = () => el("modalBackdrop");
 
 // ====== BUSCA NO BANCO ======
-function contarPorTurma(linhas) {
-    const mapa = {};
-    linhas.forEach((l) => (mapa[l.turma_id] = (mapa[l.turma_id] || 0) + 1));
-    return mapa;
-}
-
 async function carregarTurmas() {
     try {
         const resultado = await api.get("/turmas");
@@ -148,6 +142,7 @@ async function salvarTurma(evento) {
     const botao = el("modalSalvar");
     botao.disabled = true;
 
+    let turmaCriadaId = null;
     try {
         if (editandoId) {
             await api.put(`/turmas/${editandoId}`, dados);
@@ -155,13 +150,11 @@ async function salvarTurma(evento) {
         } else {
             const criada = await api.post("/turmas", dados);
             toast("Turma criada.", "sucesso");
-            editandoId = criada.id;
+            turmaCriadaId = criada.id;
         }
         fecharModal();
         await carregarTurmas();
-        if (editandoId && !turmas.find(t => t.id === editandoId)) {
-            abrirAlunos(editandoId);
-        }
+        if (turmaCriadaId) abrirAlunos(turmaCriadaId);
     } catch (err) {
         console.error("Erro ao salvar turma:", err);
         toast(err.message || "Não foi possível salvar a turma.", "erro");
@@ -214,7 +207,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!botao) return;
         const id = botao.dataset.id;
         if (botao.dataset.acao === "alunos") abrirAlunos(id);
-        if (botao.dataset.acao === "editar") abrirModal(turmas.find((t) => String(t.id) === String(id)));
+        if (botao.dataset.acao === "editar") {
+            const turma = turmas.find((t) => String(t.id) === String(id));
+            if (!turma) return toast("Turma não encontrada. Atualize a página.", "erro");
+            abrirModal(turma);
+        }
         if (botao.dataset.acao === "excluir") excluirTurma(id);
     });
 

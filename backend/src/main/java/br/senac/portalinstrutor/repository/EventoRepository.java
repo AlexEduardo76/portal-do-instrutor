@@ -2,6 +2,7 @@ package br.senac.portalinstrutor.repository;
 
 import br.senac.portalinstrutor.model.Evento;
 import br.senac.portalinstrutor.model.enums.TipoEvento;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface EventoRepository extends JpaRepository<Evento, Long> {
 
-    List<Evento> findByInstrutorLoginAndDataBetweenOrderByData(String instrutorLogin, LocalDate inicio, LocalDate fim);
+    List<Evento> findByInstrutorLoginAndDataBetweenOrderByData(String instrutorLogin, LocalDate inicio, LocalDate fim, Pageable pageable);
 
     Optional<Evento> findByIdAndInstrutorLogin(Long id, String instrutorLogin);
 

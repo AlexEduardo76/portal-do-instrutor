@@ -10,6 +10,7 @@ import br.senac.portalinstrutor.model.Ocorrencia;
 import br.senac.portalinstrutor.model.Turma;
 import br.senac.portalinstrutor.repository.AlunoRepository;
 import br.senac.portalinstrutor.repository.OcorrenciaRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,8 @@ import java.util.List;
 
 @Service
 public class OcorrenciaService {
+
+    private static final int MAX_OCORRENCIAS = 200;
 
     private final OcorrenciaRepository ocorrenciaRepository;
     private final AlunoRepository alunoRepository;
@@ -43,7 +46,8 @@ public class OcorrenciaService {
     public List<OcorrenciaResponse> listarPorTurma(Long turmaId) {
         turmaService.buscarPorId(turmaId);
         String login = usuarioLogadoService.getLogin();
-        return ocorrenciaRepository.findByTurmaIdAndInstrutorLoginOrderByDataDesc(turmaId, login).stream()
+        return ocorrenciaRepository.findByTurmaIdAndInstrutorLoginOrderByDataDesc(
+                turmaId, login, PageRequest.of(0, MAX_OCORRENCIAS)).stream()
             .map(OcorrenciaMapper::toResponse)
             .toList();
     }

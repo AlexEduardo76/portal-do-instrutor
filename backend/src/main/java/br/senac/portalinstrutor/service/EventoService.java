@@ -7,6 +7,7 @@ import br.senac.portalinstrutor.exception.RegraNegocioException;
 import br.senac.portalinstrutor.mapper.EventoMapper;
 import br.senac.portalinstrutor.model.Evento;
 import br.senac.portalinstrutor.repository.EventoRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import java.util.List;
 public class EventoService {
 
     private static final long MAX_DIAS_PERIODO = 100;
+    private static final int MAX_EVENTOS = 500;
 
     private final EventoRepository eventoRepository;
     private final AtividadeService atividadeService;
@@ -37,7 +39,8 @@ public class EventoService {
     public List<EventoResponse> listarPorPeriodo(LocalDate inicio, LocalDate fim) {
         validarPeriodo(inicio, fim);
         String login = usuarioLogadoService.getLogin();
-        return eventoRepository.findByInstrutorLoginAndDataBetweenOrderByData(login, inicio, fim).stream()
+        return eventoRepository.findByInstrutorLoginAndDataBetweenOrderByData(
+                login, inicio, fim, PageRequest.of(0, MAX_EVENTOS)).stream()
             .map(EventoMapper::toResponse)
             .toList();
     }

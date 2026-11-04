@@ -1,0 +1,48 @@
+:root {
+  --brand: #004a8d;
+  --brand-strong: #003a70;
+  --brand-dark: #002f5c;
+  --brand-soft: #e8f0fb;
+  --brand-softer: #f3f7fd;
+
+  --amber: #ee9b00;
+  --amber-soft: #fff4dd;
+  --amber-ink: #8a5a00;
+
+  --green: #0f8a5f;
+  --green-soft: #e6f7f0;
+
+  --red: #c93a3a;
+  --red-soft: #fdecec;
+
+  --ink: #102235;
+  --ink-2: #40566f;
+  --ink-3: #71839a;
+  --ink-4: #9aa9bb;
+
+  --line: #e2e9f3;
+  --line-strong: #cfdae8;
+  --surface: #ffffff;
+  --surface-2: #f7f9fc;
+  --bg: #eef2f8;
+
+  --radius-xs: 9px;
+  --radius-sm: 12px;
+  --radius: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(16, 34, 53, 0.04),
+    0 4px 14px rgba(16, 34, 53, 0.05);
+  --shadow-md: 0 10px 30px rgba(16, 34, 53, 0.1);
+  --shadow-sheet: 0 30px 70px rgba(4, 22, 40, 0.35);
+
+  --tabbar-h: 62px;
+  --topbar-h: 56px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial,
+    sans-serif;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

@@ -5,6 +5,12 @@ let cargaAtual = 0;
 
 const formatarPercentual = (n) => n.toFixed(1).replace(".", ",") + "%";
 
+const formatarData = (iso) => {
+    if (!iso) return "";
+    const [ano, mes, dia] = iso.split("-");
+    return `${dia}/${mes}/${ano}`;
+};
+
 // ====== TURMAS ======
 async function carregarTurmas() {
     try {
@@ -56,7 +62,7 @@ async function carregarAvaliacoes(selecionarId = null) {
         }
 
         select.innerHTML = '<option value="">Selecione uma avaliação</option>' +
-            data.map((a) => `<option value="${esc(a.id)}">${esc(a.titulo)}</option>`).join("");
+            data.map((a) => `<option value="${esc(a.id)}">${esc(a.titulo)}${a.data ? " · " + formatarData(a.data) : ""}</option>`).join("");
         select.disabled = false;
         select.value = String(selecionarId ?? data[0].id);
 
@@ -68,21 +74,54 @@ async function carregarAvaliacoes(selecionarId = null) {
     }
 }
 
-async function criarAvaliacao() {
-    const turmaId = el("turma").value;
-    if (!turmaId) return toast("Selecione uma turma primeiro.", "erro");
+// ====== MODAL DE AVALIAÇÃO ======
+const backdropAvaliacao = () => el("modalAvaliacaoBackdrop");
 
-    const titulo = (prompt("Nome da avaliação (ex.: Prova 1, Projeto Final):") || "").trim();
-    if (!titulo) return;
+function abrirModalAvaliacao() {
+    if (!el("turma").value) return toast("Selecione uma turma primeiro.", "erro");
+
+    el("formAvaliacao").reset();
+    el("dataAvaliacao").value = hojeISO();
+
+    const m = backdropAvaliacao();
+    m.classList.add("open");
+    m.style.display = "flex";
+    el("tituloAvaliacao").focus();
+}
+
+function fecharModalAvaliacao() {
+    const m = backdropAvaliacao();
+    m.classList.remove("open");
+    m.style.display = "none";
+    el("formAvaliacao").reset();
+}
+
+async function criarAvaliacao(evento) {
+    evento.preventDefault();
+
+    const turmaId = el("turma").value;
+    if (!turmaId) {
+        fecharModalAvaliacao();
+        return toast("Selecione uma turma primeiro.", "erro");
+    }
+
+    const titulo = el("tituloAvaliacao").value.trim();
     if (titulo.length < 3) return toast("O nome precisa ter pelo menos 3 caracteres.", "erro");
 
+    const data = el("dataAvaliacao").value || null;
+    const botao = el("modalAvaliacaoSalvar");
+    botao.disabled = true;
+
     try {
-        const nova = await api.post(`/turmas/${turmaId}/avaliacoes`, { titulo });
+        const nova = await api.post(`/turmas/${turmaId}/avaliacoes`, { titulo, data });
         toast("Avaliação criada.", "sucesso");
-        carregarAvaliacoes(nova.id);
+        fecharModalAvaliacao();
+        await carregarAvaliacoes(nova.id);
     } catch (err) {
         console.error("Erro ao criar avaliação:", err);
         toast(err.message || "Não foi possível criar a avaliação.", "erro");
+    } finally {
+        botao.disabled = false;
     }
 }
 
@@ -222,8 +261,18 @@ async function salvarNotas() {
 document.addEventListener("DOMContentLoaded", () => {
     el("turma").addEventListener("change", () => carregarAvaliacoes());
     el("avaliacao").addEventListener("change", carregarNotas);
-    el("btnNovaAvaliacao").addEventListener("click", criarAvaliacao);
+    el("btnNovaAvaliacao").addEventListener("click", abrirModalAvaliacao);
     el("btnSalvar").addEventListener("click", salvarNotas);
+
+    el("modalAvaliacaoFechar").addEventListener("click", fecharModalAvaliacao);
+    el("modalAvaliacaoCancelar").addEventListener("click", fecharModalAvaliacao);
+    el("formAvaliacao").addEventListener("submit", criarAvaliacao);
+    backdropAvaliacao().addEventListener("click", (e) => {
+        if (e.target === backdropAvaliacao()) fecharModalAvaliacao();
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && backdropAvaliacao().classList.contains("open")) fecharModalAvaliacao();
+    });
 
     el("listaAlunos").addEventListener("input", (e) => {
         if (e.target.classList.contains("campo-nota")) {

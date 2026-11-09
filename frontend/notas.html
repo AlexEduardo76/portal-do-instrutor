@@ -85,6 +85,32 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="modalAvaliacaoBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalAvaliacaoTitulo">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalAvaliacaoTitulo">Nova avaliação</h2>
+        <p>Informe o nome e a data da avaliação.</p>
+      </div>
+      <button class="btn btn-secondary icon-btn" id="modalAvaliacaoFechar" type="button">Fechar</button>
+    </div>
+    <form id="formAvaliacao" class="form-grid">
+      <div class="field full">
+        <label for="tituloAvaliacao">Nome da avaliação</label>
+        <input id="tituloAvaliacao" type="text" minlength="3" maxlength="100" required placeholder="Ex.: Prova 1, Projeto Final">
+      </div>
+      <div class="field">
+        <label for="dataAvaliacao">Data</label>
+        <input id="dataAvaliacao" type="date">
+      </div>
+    </form>
+    <div class="form-actions">
+      <button class="btn btn-secondary" id="modalAvaliacaoCancelar" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="modalAvaliacaoSalvar" type="submit" form="formAvaliacao">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-area" aria-live="polite" aria-atomic="true"></div>
 
 <script src="js/api.js"></script>

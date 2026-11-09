@@ -71,3 +71,86 @@
     border-color: var(--danger);
     box-shadow: 0 0 0 3px #F9E0DD;
 }
+
+
+/* =========================================================
+   MODAL DE AVALIAÇÃO
+   Mesma estrutura visual do modal de turmas.
+========================================================= */
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 31, 61, .55);
+    backdrop-filter: blur(2px);
+}
+
+.modal-backdrop.open,
+.modal-backdrop.show,
+.modal-backdrop.active,
+.modal-backdrop.is-open,
+.modal-backdrop.visible {
+    display: flex;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 520px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border-top: 4px solid var(--orange-500);
+    box-shadow: var(--shadow-lg);
+    animation: modal-in .18s ease-out;
+}
+
+@keyframes modal-in {
+    from { opacity: 0; transform: translateY(10px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 26px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header p {
+    margin-top: 4px;
+    font-size: .88rem;
+}
+
+.modal .form-grid {
+    padding: 22px 26px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 26px;
+    background: var(--blue-50);
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+@media (max-width: 520px) {
+    .modal .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions .btn {
+        flex: 1;
+    }
+}

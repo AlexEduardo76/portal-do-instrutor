@@ -7,6 +7,9 @@ plugins {
 group = 'br.senac.portalinstrutor'
 version = '0.0.1-SNAPSHOT'
 
+// O backend serve exclusivamente o bundle mobile (../mobile/dist).
+def staticSource = file('../mobile/dist')
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -32,6 +35,9 @@ dependencies {
 
     runtimeOnly 'org.postgresql:postgresql'
 
+    // Banco embarcado usado no perfil "local" (rodar sem PostgreSQL/Docker).
+    runtimeOnly 'com.h2database:h2'
+
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
@@ -46,15 +52,15 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-// Empacota o front-end (pasta ../frontend) como recursos estáticos da API.
-// Falha o build de forma clara se a pasta não existir (evita gerar jar sem front-end).
+// Empacota o front-end mobile (../mobile/dist) como recursos estáticos da API.
+// Falha o build de forma clara se a pasta não existir (evite jar sem interface).
 processResources {
     doFirst {
-        if (!file('../frontend').exists()) {
-            throw new GradleException("Pasta '../frontend' não encontrada. O build depende do front-end para empacotá-lo em static/. Verifique a estrutura do repositório.")
+        if (!staticSource.exists()) {
+            throw new GradleException("Pasta '../mobile/dist' não encontrada. Rode 'npm ci && npm run build' em mobile/ antes do build do backend.")
         }
     }
-    from('../frontend') {
+    from(staticSource) {
         into 'static'
         exclude '**/package-lock.json'
         exclude '**/node_modules/**'

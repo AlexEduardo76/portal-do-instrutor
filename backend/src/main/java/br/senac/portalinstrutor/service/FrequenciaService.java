@@ -91,12 +91,23 @@ public class FrequenciaService {
 
         List<Frequencia> paraSalvar = new ArrayList<>();
         for (FrequenciaRequest.FrequenciaRegistroRequest reg : request.registros()) {
+            Integer marcadas = reg.marcadas();
+            Boolean presente = reg.presente();
+            if (marcadas == null) {
+                marcadas = Boolean.TRUE.equals(presente) ? 4 : 0;
+            }
+            if (marcadas < 0 || marcadas > 4) {
+                throw new RegraNegocioException("Quantidade de bolinhas inválida.");
+            }
+            presente = marcadas >= 2;
+
             Frequencia existente = existentesPorAluno.get(reg.alunoId());
             if (existente != null) {
-                existente.setPresente(reg.presente());
+                existente.setPresente(presente);
+                existente.setMarcadas(marcadas);
                 paraSalvar.add(existente);
             } else {
-                paraSalvar.add(new Frequencia(alunosMap.get(reg.alunoId()), turma, data, reg.presente()));
+                paraSalvar.add(new Frequencia(alunosMap.get(reg.alunoId()), turma, data, presente, marcadas));
             }
         }
         frequenciaRepository.saveAll(paraSalvar);

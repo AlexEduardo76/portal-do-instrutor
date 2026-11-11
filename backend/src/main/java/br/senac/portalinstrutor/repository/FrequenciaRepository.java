@@ -19,7 +19,7 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
 
     // Aliases entre aspas para preservar o camelCase no PostgreSQL (que, sem aspas, vira minúsculo).
     @Query(value = """
-        SELECT a.id AS "alunoId", a.nome AS "nome", a.matricula AS "matricula", f.presente AS "presente"
+        SELECT a.id AS "alunoId", a.nome AS "nome", a.matricula AS "matricula", f.presente AS "presente", f.marcadas AS "marcadas"
         FROM alunos a
         LEFT JOIN frequencias f ON f.aluno_id = a.id AND f.data = :data
         WHERE a.turma_id = :turmaId AND a.ativo = true
@@ -49,6 +49,7 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
         String getNome();
         String getMatricula();
         Boolean getPresente();
+        Integer getMarcadas();
     }
 
     interface FrequenciaPercentualProjection {

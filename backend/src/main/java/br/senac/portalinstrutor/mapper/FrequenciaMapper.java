@@ -15,7 +15,8 @@ public class FrequenciaMapper {
                 p.getAlunoId(),
                 p.getNome(),
                 p.getMatricula(),
-                p.getPresente()
+                p.getPresente(),
+                p.getMarcadas()
             ))
             .toList();
         return new FrequenciaResponse(jaRegistrada, alunos);

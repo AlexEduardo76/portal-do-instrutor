@@ -62,7 +62,14 @@ async function carregarChamada() {
 
         alunos = resAlunos;
         jaRegistrada = resFreq.jaRegistrada;
-        const salvas = Object.fromEntries((resFreq.alunos || []).filter(f => f.presente !== null).map((f) => [f.id, f.presente]));
+        const salvas = Object.fromEntries(
+            (resFreq.alunos || [])
+                .filter((f) => f.presente !== null || f.marcadas !== null)
+                .map((f) => [
+                    f.id,
+                    f.marcadas != null ? f.marcadas : (f.presente ? TOTAL_BOLINHAS : 0)
+                ])
+        );
 
         renderChamada(salvas);
     } catch (err) {
@@ -101,8 +108,7 @@ function renderChamada(salvas) {
     el("listaAlunosVazia").hidden = true;
 
     setHTML("listaAlunos", alunos.map((a) => {
-        const presente = salvas[a.id] === undefined ? false : salvas[a.id];
-        const marcadas = presente ? TOTAL_BOLINHAS : 0;
+        const marcadas = Number(salvas[a.id]) || 0;
         const status = statusPorMarcadas(marcadas);
         return `
         <tr data-aluno-id="${esc(a.id)}" data-status="${status.chave}">
@@ -175,10 +181,14 @@ async function salvarFrequencia() {
     if (data > hojeISO) return toast("A data da aula não pode ser no futuro.", "erro");
     if (!alunos.length) return toast("Não há alunos para registrar.", "erro");
 
-    const registros = [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")].map((linha) => ({
-        alunoId: Number(linha.dataset.alunoId),
-        presente: marcadasDaLinha(linha) >= 2,
-    }));
+    const registros = [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")].map((linha) => {
+        const marcadas = marcadasDaLinha(linha);
+        return {
+            alunoId: Number(linha.dataset.alunoId),
+            presente: marcadas >= 2,
+            marcadas,
+        };
+    });
 
     const botao = el("btnSalvar");
     botao.disabled = true;

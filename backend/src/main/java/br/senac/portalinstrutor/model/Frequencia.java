@@ -49,14 +49,22 @@ public class Frequencia {
     @Column(name = "presente", nullable = false)
     private Boolean presente;
 
+    @Column(name = "marcadas")
+    private Integer marcadas;
+
     public Frequencia() {
     }
 
     public Frequencia(Aluno aluno, Turma turma, LocalDate data, Boolean presente) {
+        this(aluno, turma, data, presente, Boolean.TRUE.equals(presente) ? 4 : 0);
+    }
+
+    public Frequencia(Aluno aluno, Turma turma, LocalDate data, Boolean presente, Integer marcadas) {
         this.aluno = aluno;
         this.turma = turma;
         this.data = data;
         this.presente = presente;
+        this.marcadas = marcadas;
     }
 
     public Long getId() {
@@ -97,5 +105,13 @@ public class Frequencia {
 
     public void setPresente(Boolean presente) {
         this.presente = presente;
+    }
+
+    public Integer getMarcadas() {
+        return marcadas;
+    }
+
+    public void setMarcadas(Integer marcadas) {
+        this.marcadas = marcadas;
     }
 }

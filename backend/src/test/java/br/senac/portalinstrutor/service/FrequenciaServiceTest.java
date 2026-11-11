@@ -126,4 +126,23 @@ class FrequenciaServiceTest {
         assertThat(existente.getPresente()).isTrue();
         verify(frequenciaRepository).saveAll(any());
     }
+
+    @Test
+    void salvaMarcadasDeAtraso() {
+        LocalDate data = LocalDate.of(2026, 6, 10);
+        Aluno aluno = aluno(10L);
+        when(alunoRepository.findAllById(any())).thenReturn(List.of(aluno));
+
+        Frequencia existente = new Frequencia(aluno, turma, data, false);
+        when(frequenciaRepository.findByTurmaIdAndData(1L, data))
+            .thenReturn(new ArrayList<>(List.of(existente)));
+
+        FrequenciaRequest request = new FrequenciaRequest(data, List.of(
+            new FrequenciaRequest.FrequenciaRegistroRequest(10L, false, 3)));
+
+        service.salvar(1L, request);
+
+        assertThat(existente.getMarcadas()).isEqualTo(3);
+        assertThat(existente.getPresente()).isTrue();
+    }
 }

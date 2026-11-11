@@ -6,7 +6,8 @@ public record FrequenciaAlunoResponse(
     Long alunoId,
     String nome,
     String matricula,
-    Boolean presente
+    Boolean presente,
+    Integer marcadas
 ) {
     // Compatibilidade: o front consome este campo como `id` (ver frequencia.js).
     @JsonProperty("id")

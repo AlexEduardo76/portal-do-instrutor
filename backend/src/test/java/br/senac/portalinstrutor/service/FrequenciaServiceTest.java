@@ -25,6 +25,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -144,5 +145,26 @@ class FrequenciaServiceTest {
 
         assertThat(existente.getMarcadas()).isEqualTo(3);
         assertThat(existente.getPresente()).isTrue();
+    }
+
+    @Test
+    void removeChamadaDaTurmaNaData() {
+        LocalDate data = LocalDate.of(2026, 6, 10);
+        when(frequenciaRepository.deleteByTurmaIdAndData(1L, data)).thenReturn(2);
+
+        service.remover(1L, data);
+
+        verify(frequenciaRepository).deleteByTurmaIdAndData(1L, data);
+        verify(atividadeService).registrar(contains("removida"));
+    }
+
+    @Test
+    void rejeitaRemocaoQuandoNaoHaChamada() {
+        LocalDate data = LocalDate.of(2026, 6, 10);
+        when(frequenciaRepository.deleteByTurmaIdAndData(1L, data)).thenReturn(0);
+
+        assertThatThrownBy(() -> service.remover(1L, data))
+            .isInstanceOf(RegraNegocioException.class)
+            .hasMessageContaining("Nenhum registro");
     }
 }

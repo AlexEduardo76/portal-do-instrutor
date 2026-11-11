@@ -2,6 +2,7 @@ package br.senac.portalinstrutor.repository;
 
 import br.senac.portalinstrutor.model.Frequencia;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,10 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
     List<Frequencia> findByTurmaIdAndData(Long turmaId, LocalDate data);
 
     Optional<Frequencia> findByAlunoIdAndData(Long alunoId, LocalDate data);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("DELETE FROM Frequencia f WHERE f.turma.id = :turmaId AND f.data = :data")
+    int deleteByTurmaIdAndData(@Param("turmaId") Long turmaId, @Param("data") LocalDate data);
 
     // Aliases entre aspas para preservar o camelCase no PostgreSQL (que, sem aspas, vira minúsculo).
     @Query(value = """

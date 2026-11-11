@@ -36,6 +36,7 @@ function mostrarVazio(mensagem) {
     vazio.hidden = false;
     el("btnSalvar").disabled = true;
     el("btnTodosPresentes").disabled = true;
+    el("btnRemoverChamada").disabled = true;
 }
 
 async function carregarChamada() {
@@ -45,12 +46,14 @@ async function carregarChamada() {
 
     if (!turmaId || !data) {
         alunos = [];
+        jaRegistrada = false;
         el("resumoChamada").textContent = "Selecione uma turma para carregar os alunos.";
         return mostrarVazio(turmaId ? "Informe a data da aula." : "Nenhuma turma selecionada.");
     }
 
     el("resumoChamada").textContent = "Carregando alunos...";
     el("listaAlunosVazia").hidden = true;
+    el("btnRemoverChamada").disabled = true;
 
     try {
         const [resAlunos, resFreq] = await Promise.all([
@@ -127,7 +130,12 @@ function renderChamada(salvas) {
 
     el("btnSalvar").disabled = false;
     el("btnTodosPresentes").disabled = false;
+    atualizarBotaoRemover();
     atualizarResumo();
+}
+
+function atualizarBotaoRemover() {
+    el("btnRemoverChamada").disabled = !jaRegistrada || !alunos.length;
 }
 
 function atualizarResumo() {
@@ -198,6 +206,7 @@ async function salvarFrequencia() {
         await api.put(`/turmas/${turmaId}/frequencias`, { data, registros });
 
         jaRegistrada = true;
+        atualizarBotaoRemover();
         atualizarResumo();
         toast("Frequência salva com sucesso.", "sucesso");
     } catch (err) {
@@ -206,6 +215,37 @@ async function salvarFrequencia() {
     } finally {
         botao.disabled = false;
         botao.textContent = "Salvar frequência";
+    }
+}
+
+// ====== REMOVER CHAMADA ======
+async function removerChamada() {
+    const turmaId = el("turma").value;
+    const data = el("dataAula").value;
+
+    if (!turmaId) return toast("Selecione uma turma.", "erro");
+    if (!data) return toast("Informe a data da aula.", "erro");
+    if (!jaRegistrada) return toast("Não há chamada registrada nesta data.", "erro");
+
+    const turmaTexto = el("turma").selectedOptions[0]?.textContent?.trim() || "turma selecionada";
+    if (!confirm(`Remover a chamada de ${dataBR(data)} da ${turmaTexto}?\n\nOs registros de presença, atraso e falta dessa data serão apagados. Esta ação não pode ser desfeita.`)) return;
+
+    const botao = el("btnRemoverChamada");
+    const textoOriginal = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = "Removendo...";
+
+    try {
+        await api.delete(`/turmas/${turmaId}/frequencias?data=${data}`);
+        toast("Chamada removida com sucesso.", "sucesso");
+        jaRegistrada = false;
+        await carregarChamada();
+    } catch (err) {
+        console.error("Erro ao remover chamada:", err);
+        toast(err.message || "Não foi possível remover a chamada.", "erro");
+    } finally {
+        botao.textContent = textoOriginal;
+        atualizarBotaoRemover();
     }
 }
 
@@ -236,6 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
         atualizarResumo();
     });
     el("btnTodosPresentes").addEventListener("click", marcarTodosPresentes);
+    el("btnRemoverChamada").addEventListener("click", removerChamada);
     el("btnSalvar").addEventListener("click", salvarFrequencia);
 
     mostrarVazio("Nenhuma turma selecionada.");

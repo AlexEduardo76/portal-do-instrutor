@@ -99,6 +99,15 @@ class PortalInstrutorFlowIT {
             .andExpect(jsonPath("$.jaRegistrada").value(true))
             .andExpect(jsonPath("$.alunos[0].id").value(alunoId.longValue()));
 
+        mockMvc.perform(delete("/api/turmas/" + turmaId + "/frequencias")
+                .param("data", "2026-06-10").session(session))
+            .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/turmas/" + turmaId + "/frequencias")
+                .param("data", "2026-06-10").session(session))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.jaRegistrada").value(false));
+
         String avaliacaoResp = mockMvc.perform(post("/api/turmas/" + turmaId + "/avaliacoes").session(session)
                 .contentType(MediaType.APPLICATION_JSON).content("{\"titulo\":\"Prova 1\"}"))
             .andExpect(status().isCreated())

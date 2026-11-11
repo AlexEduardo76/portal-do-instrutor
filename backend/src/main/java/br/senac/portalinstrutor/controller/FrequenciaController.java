@@ -31,4 +31,11 @@ public class FrequenciaController {
         frequenciaService.salvar(id, request);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}/frequencias")
+    public ResponseEntity<Void> remover(@PathVariable Long id,
+                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
+        frequenciaService.remover(id, data);
+        return ResponseEntity.noContent().build();
+    }
 }

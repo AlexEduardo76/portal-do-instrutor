@@ -115,6 +115,19 @@ public class FrequenciaService {
         atividadeService.registrar("Frequência lançada — " + turma.getNome() + " (" + data.format(DATA_BR) + ")");
     }
 
+    @Transactional
+    public void remover(Long turmaId, LocalDate data) {
+        Turma turma = turmaService.buscarPorId(turmaId);
+        validarData(data);
+
+        int removidos = frequenciaRepository.deleteByTurmaIdAndData(turmaId, data);
+        if (removidos == 0) {
+            throw new RegraNegocioException("Nenhum registro de chamada encontrado para esta data.");
+        }
+
+        atividadeService.registrar("Frequência removida — " + turma.getNome() + " (" + data.format(DATA_BR) + ")");
+    }
+
     private void validarData(LocalDate data) {
         if (data == null || data.isBefore(DATA_MINIMA)) {
             throw new RegraNegocioException("Data inválida.");

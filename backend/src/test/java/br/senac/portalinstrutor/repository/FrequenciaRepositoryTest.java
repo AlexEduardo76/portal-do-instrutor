@@ -157,4 +157,15 @@ class FrequenciaRepositoryTest {
         assertThat(aulas).extracting(FrequenciaRepository.TurmaAulasProjection::getTurmaId)
             .containsExactly(turma.getId());
     }
+
+    @Test
+    void removeChamadaDaTurmaNaData() {
+        LocalDate data = LocalDate.of(2026, 6, 1);
+
+        int removidos = frequenciaRepository.deleteByTurmaIdAndData(turma.getId(), data);
+
+        assertThat(removidos).isEqualTo(2);
+        assertThat(frequenciaRepository.findByTurmaIdAndData(turma.getId(), data)).isEmpty();
+        assertThat(frequenciaRepository.findByTurmaIdAndData(turma.getId(), data.plusDays(1))).hasSize(2);
+    }
 }

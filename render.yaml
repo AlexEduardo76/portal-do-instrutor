@@ -4,6 +4,8 @@ services:
     runtime: docker
     plan: free
     region: oregon
+    branch: main
+    autoDeploy: true
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
     healthCheckPath: /actuator/health

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import AppShell from "../components/AppShell";
-import Icon from "../components/Icon";
 import PageHeader from "../components/PageHeader";
 import {
   EmptyState,
@@ -11,6 +10,14 @@ import {
 import { api } from "../lib/api";
 import { useToast } from "../lib/toast";
 import { hojeISO } from "../lib/utils";
+
+const TOTAL_BOLINHAS = 4;
+
+function statusPorMarcadas(marcadas) {
+  if (marcadas >= 4) return { chave: "presente", texto: "Presente" };
+  if (marcadas >= 2) return { chave: "atraso", texto: "Atraso" };
+  return { chave: "falta", texto: "Falta" };
+}
 
 export default function Frequencia() {
   const { toast } = useToast();
@@ -88,7 +95,10 @@ export default function Frequencia() {
         );
         setPresencas(
           Object.fromEntries(
-            resAlunos.map((a) => [a.id, Boolean(salvas[a.id])])
+            resAlunos.map((a) => [
+              a.id,
+              salvas[a.id] ? TOTAL_BOLINHAS : 0
+            ])
           )
         );
         setVazio(
@@ -114,8 +124,14 @@ export default function Frequencia() {
   }, [turmaId, data, toast]);
 
   const total = alunos.length;
-  const presentes = alunos.filter((a) => presencas[a.id]).length;
-  const faltas = total - presentes;
+  const presentes = alunos.filter(
+    (a) => (Number(presencas[a.id]) || 0) >= 4
+  ).length;
+  const atrasos = alunos.filter((a) => {
+    const marcadas = Number(presencas[a.id]) || 0;
+    return marcadas >= 2 && marcadas < 4;
+  }).length;
+  const faltas = total - presentes - atrasos;
 
   let resumo = "Selecione uma turma para carregar os alunos.";
   if (carregando) resumo = "Carregando alunos...";
@@ -125,17 +141,20 @@ export default function Frequencia() {
   else
     resumo = jaRegistrada
       ? "Frequência já registrada nesta data. Salve para atualizar."
-      : "Marque os presentes e salve a chamada.";
+      : "Marque as bolinhas: 4 = presente, 2 a 3 = atraso, 0 a 1 = falta.";
 
-  function alternarPresenca(alunoId) {
-    setPresencas((atuais) => ({
-      ...atuais,
-      [alunoId]: !atuais[alunoId]
-    }));
+  function definirPresenca(alunoId, indice) {
+    setPresencas((atuais) => {
+      const atual = Number(atuais[alunoId]) || 0;
+      const marcadas = atual === indice + 1 ? indice : indice + 1;
+      return { ...atuais, [alunoId]: marcadas };
+    });
   }
 
   function marcarTodosPresentes() {
-    setPresencas(Object.fromEntries(alunos.map((a) => [a.id, true])));
+    setPresencas(
+      Object.fromEntries(alunos.map((a) => [a.id, TOTAL_BOLINHAS]))
+    );
   }
 
   async function salvarFrequencia() {
@@ -159,7 +178,7 @@ export default function Frequencia() {
 
     const registros = alunos.map((a) => ({
       alunoId: Number(a.id),
-      presente: Boolean(presencas[a.id])
+      presente: (Number(presencas[a.id]) || 0) >= 2
     }));
 
     setSalvando(true);
@@ -227,6 +246,10 @@ export default function Frequencia() {
             <strong>{presentes}</strong>
             <span>Presentes</span>
           </div>
+          <div className="summary-metric summary-metric--amber">
+            <strong>{atrasos}</strong>
+            <span>Atrasos</span>
+          </div>
           <div className="summary-metric summary-metric--red">
             <strong>{faltas}</strong>
             <span>Faltas</span>
@@ -259,29 +282,40 @@ export default function Frequencia() {
       {!carregando && total > 0 && (
         <div className="chamada-list">
           {alunos.map((aluno) => {
-            const presente = Boolean(presencas[aluno.id]);
+            const marcadas = Number(presencas[aluno.id]) || 0;
+            const status = statusPorMarcadas(marcadas);
             return (
-              <button
-                type="button"
-                className={`chamada-row${presente ? " chamada-row--presente" : " chamada-row--falta"}`}
+              <div
+                className={`chamada-row chamada-row--${status.chave}`}
                 key={aluno.id}
-                aria-pressed={presente}
-                aria-label={`${aluno.nome}: ${
-                  presente ? "presente, tocar para marcar falta" : "falta, tocar para marcar presença"
-                }`}
-                onClick={() => alternarPresenca(aluno.id)}
               >
                 <span className="chamada-copy">
                   <strong>{aluno.nome}</strong>
                   {aluno.matricula && <small>{aluno.matricula}</small>}
                 </span>
-                <span className="presenca-toggle" aria-hidden="true">
-                  <Icon nome={presente ? "check" : "fechar"} tamanho={18} />
+                <span
+                  className="presenca-bolinhas"
+                  role="group"
+                  aria-label={`Presença de ${aluno.nome}`}
+                >
+                  {Array.from({ length: TOTAL_BOLINHAS }, (_, i) => {
+                    const ativa = i < marcadas;
+                    return (
+                      <button
+                        type="button"
+                        className={`bolinha${ativa ? " marcada" : ""}`}
+                        key={i}
+                        aria-label={`${i + 1} de ${TOTAL_BOLINHAS} bolinhas marcadas`}
+                        aria-pressed={ativa}
+                        onClick={() => definirPresenca(aluno.id, i)}
+                      />
+                    );
+                  })}
                 </span>
-                <span className="presenca-label">
-                  {presente ? "Presente" : "Falta"}
+                <span className={`presenca-status ${status.chave}`}>
+                  {status.texto}
                 </span>
-              </button>
+              </div>
             );
           })}
         </div>

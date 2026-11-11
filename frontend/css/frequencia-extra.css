@@ -719,16 +719,36 @@
     color: #146C43;
 }
 
+.presenca-status.atraso {
+    color: var(--orange-700);
+}
+
 .presenca-status.falta {
     color: #962D22;
 }
 
-.table-wrap tbody tr:has(.presenca-bolinhas .bolinha.marcada) {
+.table-wrap tbody tr[data-status="presente"] {
     background: #F8FCFA;
 }
 
-.table-wrap tbody tr:has(.presenca-bolinhas):not(:has(.bolinha.marcada)) {
+.table-wrap tbody tr[data-status="atraso"] {
+    background: #FFF9EF;
+}
+
+.table-wrap tbody tr[data-status="falta"] {
     background: #FFF8F7;
+}
+
+.table-wrap tbody tr[data-status="presente"]:hover {
+    background: #EDF8F2;
+}
+
+.table-wrap tbody tr[data-status="atraso"]:hover {
+    background: #FDF3E3;
+}
+
+.table-wrap tbody tr[data-status="falta"]:hover {
+    background: #FDF0EE;
 }
 
 @media (max-width: 640px) {

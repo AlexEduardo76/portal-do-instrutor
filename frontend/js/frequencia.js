@@ -3,6 +3,8 @@ let alunos = [];
 let jaRegistrada = false;
 let cargaAtual = 0;
 
+const TOTAL_BOLINHAS = 4;
+
 const dataBR = (iso) => iso.split("-").reverse().join("/");
 
 // ====== TURMAS (select) ======
@@ -72,9 +74,22 @@ async function carregarChamada() {
     }
 }
 
-function botaoPresenca(alunoId, presente) {
-    return `<button type="button" class="bolinha${presente ? " marcada" : ""}" data-aluno-presenca="${esc(alunoId)}"
-        aria-label="${presente ? "Marcar falta" : "Marcar presença"}" aria-pressed="${presente}"></button>`;
+function bolinhasPresenca(alunoId, marcadas) {
+    return Array.from({ length: TOTAL_BOLINHAS }, (_, i) => {
+        const ativa = i < marcadas;
+        return `<button type="button" class="bolinha${ativa ? " marcada" : ""}" data-aluno-presenca="${esc(alunoId)}" data-indice="${i}"
+            aria-label="${i + 1} de ${TOTAL_BOLINHAS} bolinhas marcadas" aria-pressed="${ativa}"></button>`;
+    }).join("");
+}
+
+function statusPorMarcadas(marcadas) {
+    if (marcadas >= 4) return { chave: "presente", texto: "Presente" };
+    if (marcadas >= 2) return { chave: "atraso", texto: "Atraso" };
+    return { chave: "falta", texto: "Falta" };
+}
+
+function marcadasDaLinha(linha) {
+    return linha.querySelectorAll(".bolinha.marcada").length;
 }
 
 function renderChamada(salvas) {
@@ -87,16 +102,18 @@ function renderChamada(salvas) {
 
     setHTML("listaAlunos", alunos.map((a) => {
         const presente = salvas[a.id] === undefined ? false : salvas[a.id];
+        const marcadas = presente ? TOTAL_BOLINHAS : 0;
+        const status = statusPorMarcadas(marcadas);
         return `
-        <tr data-aluno-id="${esc(a.id)}">
+        <tr data-aluno-id="${esc(a.id)}" data-status="${status.chave}">
             <td>
                 <strong>${esc(a.nome)}</strong>
                 ${a.matricula ? `<small class="aluno-matricula">${esc(a.matricula)}</small>` : ""}
             </td>
             <td>
                 <div class="presenca-celula">
-                    <div class="presenca-bolinhas">${botaoPresenca(a.id, presente)}</div>
-                    <span class="presenca-status ${presente ? "presente" : "falta"}">${presente ? "Presente" : "Falta"}</span>
+                    <div class="presenca-bolinhas">${bolinhasPresenca(a.id, marcadas)}</div>
+                    <span class="presenca-status ${status.chave}">${status.texto}</span>
                 </div>
             </td>
         </tr>`;
@@ -112,21 +129,28 @@ function atualizarResumo() {
     if (!total) return;
 
     const linhas = [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")];
-    const presentes = linhas.filter((linha) => linha.querySelector(".bolinha.marcada")).length;
-    const faltas = total - presentes;
+    let presentes = 0;
+    let atrasos = 0;
+    let faltas = 0;
 
     linhas.forEach((linha) => {
-        const temPresenca = !!linha.querySelector(".bolinha.marcada");
-        const status = linha.querySelector(".presenca-status");
-        if (status) {
-            status.textContent = temPresenca ? "Presente" : "Falta";
-            status.classList.toggle("presente", temPresenca);
-            status.classList.toggle("falta", !temPresenca);
+        const status = statusPorMarcadas(marcadasDaLinha(linha));
+        if (status.chave === "presente") presentes += 1;
+        else if (status.chave === "atraso") atrasos += 1;
+        else faltas += 1;
+
+        linha.dataset.status = status.chave;
+
+        const statusEl = linha.querySelector(".presenca-status");
+        if (statusEl) {
+            statusEl.textContent = status.texto;
+            statusEl.classList.remove("presente", "atraso", "falta");
+            statusEl.classList.add(status.chave);
         }
     });
 
     el("resumoChamada").textContent =
-        `${total} aluno(s) · ${presentes} presente(s) · ${faltas} falta(s)` +
+        `${total} aluno(s) · ${presentes} presente(s) · ${atrasos} atraso(s) · ${faltas} falta(s)` +
         (jaRegistrada ? " · Frequência já registrada nesta data (será atualizada ao salvar)" : "");
 }
 
@@ -153,7 +177,7 @@ async function salvarFrequencia() {
 
     const registros = [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")].map((linha) => ({
         alunoId: Number(linha.dataset.alunoId),
-        presente: !!linha.querySelector(".bolinha.marcada"),
+        presente: marcadasDaLinha(linha) >= 2,
     }));
 
     const botao = el("btnSalvar");
@@ -188,8 +212,17 @@ document.addEventListener("DOMContentLoaded", () => {
     el("listaAlunos").addEventListener("click", (e) => {
         const bolinha = e.target.closest(".bolinha[data-aluno-presenca]");
         if (!bolinha) return;
-        const marcada = bolinha.classList.toggle("marcada");
-        bolinha.setAttribute("aria-pressed", String(marcada));
+
+        const container = bolinha.closest(".presenca-bolinhas");
+        const indice = Number(bolinha.dataset.indice);
+        const atual = container.querySelectorAll(".bolinha.marcada").length;
+        const marcadas = atual === indice + 1 ? indice : indice + 1;
+
+        container.querySelectorAll(".bolinha").forEach((item, i) => {
+            const ativa = i < marcadas;
+            item.classList.toggle("marcada", ativa);
+            item.setAttribute("aria-pressed", String(ativa));
+        });
         atualizarResumo();
     });
     el("btnTodosPresentes").addEventListener("click", marcarTodosPresentes);

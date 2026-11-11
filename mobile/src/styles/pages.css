@@ -521,7 +521,7 @@
 /* ---------- Frequência ---------- */
 .summary-strip {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   padding: 10px;
   border: 1px solid var(--line);
@@ -595,6 +595,11 @@
   background: linear-gradient(180deg, #fff, #fdf5f5);
 }
 
+.chamada-row--atraso {
+  border-color: #f3ddb8;
+  background: linear-gradient(180deg, #fff, #fdf8ee);
+}
+
 .chamada-copy {
   flex: 1;
   min-width: 0;
@@ -615,24 +620,41 @@
   color: var(--ink-3);
 }
 
-.presenca-toggle {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--red-soft);
-  color: var(--red);
+.presenca-bolinhas {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   flex: none;
-  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.chamada-row--presente .presenca-toggle {
+.bolinha {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.bolinha:active {
+  transform: scale(0.94);
+}
+
+.bolinha.marcada {
   background: var(--green);
-  color: #fff;
+  border-color: var(--green);
+  box-shadow: inset 0 0 0 2px #fff;
 }
 
-.presenca-label {
+.bolinha:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.presenca-status {
   width: 58px;
   flex: none;
   font-size: 0.66rem;
@@ -640,11 +662,18 @@
   letter-spacing: 0.03em;
   text-transform: uppercase;
   text-align: right;
-  color: var(--red);
 }
 
-.chamada-row--presente .presenca-label {
+.presenca-status.presente {
   color: var(--green);
+}
+
+.presenca-status.atraso {
+  color: var(--amber-ink);
+}
+
+.presenca-status.falta {
+  color: var(--red);
 }
 
 /* ---------- Notas ---------- */

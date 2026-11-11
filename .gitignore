@@ -20,11 +20,6 @@ bin/
 node_modules/
 dist/
 
-# Banco local (perfil local com H2)
-.local/
-*.mv.db
-*.trace.db
-
 # Logs
 *.log
 app_*.log

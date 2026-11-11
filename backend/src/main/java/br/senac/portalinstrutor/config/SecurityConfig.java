@@ -44,10 +44,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // O front mobile estático não envia token CSRF (sessão same-origin com cookie SameSite=Lax).
+            // O front estático não envia token CSRF (sessão same-origin com cookie SameSite=Lax).
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/*.html", "/assets/**", "/img/**", "/icons/**", "/favicon.ico", "/manifest.webmanifest", "/sw.js", "/registerSW.js", "/workbox-*.js", "/robots.txt", "/error").permitAll()
+                .requestMatchers("/", "/*.html", "/css/**", "/js/**", "/img/**", "/webjars/**", "/favicon.ico", "/error").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                 .anyRequest().authenticated()

@@ -1,13 +1,11 @@
 target/
-**/build/
+build/
 bin/
 **/bin/
 .gradle/
-**/.gradle/
 .gradle-cache/
 .kilo/
-**/node_modules/
-**/dist/
+node_modules/
 .git/
 .github/
 .idea/

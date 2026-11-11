@@ -1,21 +1,10 @@
-﻿# ---------- ETAPA 1: BUILD DO FRONTEND MOBILE (React + Vite) ----------
-FROM node:24-alpine AS mobile
-
-WORKDIR /app/mobile
-
-COPY mobile/package.json mobile/package-lock.json ./
-RUN npm ci
-
-COPY mobile/ ./
-RUN npm run build
-
-# ---------- ETAPA 2: BUILD DO BACKEND ----------
+# ---------- ETAPA 1: BUILD ----------
 FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /app
 
 COPY backend/ ./backend/
-COPY --from=mobile /app/mobile/dist ./mobile/dist
+COPY frontend/ ./frontend/
 
 WORKDIR /app/backend
 
@@ -26,7 +15,7 @@ ENV GRADLE_OPTS="-Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradl
 
 RUN ./gradlew bootJar -x test --no-daemon
 
-# ---------- ETAPA 3: RUNTIME ----------
+# ---------- ETAPA 2: RUNTIME ----------
 FROM eclipse-temurin:21-jre
 
 RUN useradd --system --uid 1001 --create-home app

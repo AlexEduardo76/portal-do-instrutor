@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="mobile/public/img/logo-senac.png" alt="Senac" width="90" style="background:#004587;padding:14px;border-radius:16px"/>
+<img src="frontend/img/logo-senac.png" alt="Senac" width="90" style="background:#004587;padding:14px;border-radius:16px"/>
 
 # Portal do Instrutor
 
@@ -71,11 +71,11 @@ A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que tam
   </tr>
   <tr>
     <td><b>Banco de dados</b></td>
-    <td>PostgreSQL 16 (produção) · H2 (testes e modo local) · Flyway para versionamento de schema</td>
+    <td>PostgreSQL 16 (produção e desenvolvimento) · H2 (testes) · Flyway para versionamento de schema</td>
   </tr>
   <tr>
     <td><b>Frontend</b></td>
-    <td>React 19 · Vite · React Router (HashRouter) · PWA instalável (vite-plugin-pwa), com interface 100% mobile-first</td>
+    <td>HTML5 · CSS3 · JavaScript puro (sem frameworks), servido como recurso estático pelo Spring</td>
   </tr>
   <tr>
     <td><b>Infra</b></td>
@@ -109,14 +109,10 @@ portal-do-instrutor/
 │   ├── src/test/                    # 26 testes (unitários, repositório e integração)
 │   ├── build.gradle
 │   └── Dockerfile
-├── mobile/                          # Interface mobile (PWA React + Vite)
-│   ├── src/                         # App, páginas, componentes, estilos mobile
-│   ├── public/                      # Ícones e assets do PWA
-│   ├── vite.config.js               # Build + manifest/service worker
-│   └── dist/                        # Bundle gerado (consumido pelo backend)
-├── rodar.ps1                        # Script de um clique (modo local com H2)
-├── rodar.bat                        # Atalho para executar o script no Windows
-├── .github/workflows/ci.yml         # CI: build mobile + testes + jar
+├── frontend/                        # Interface web estática
+│   ├── css/  img/  js/
+│   └── *.html                       # login, dashboard, turmas, frequência, notas...
+├── .github/workflows/ci.yml         # CI: build + testes + jar
 ├── docker-compose.yml               # PostgreSQL + aplicação
 ├── render.yaml                      # Deploy do backend no Render
 ├── .env.example                     # Modelo de variáveis de ambiente
@@ -128,21 +124,12 @@ portal-do-instrutor/
 
 ## 🚀 Como rodar
 
-### Opção 1 · Um clique (recomendada) — sem Docker e sem PostgreSQL
+### Pré-requisitos
 
-**Pré-requisitos:** Node.js 20+ e JDK 21.
+- **Docker** e **Docker Compose** (opção recomendada), ou
+- **Java 21** e um **PostgreSQL 16** local (opção manual)
 
-No Windows, dê **duplo clique em `rodar.bat`** ou rode no terminal:
-
-```powershell
-.\rodar.ps1
-```
-
-O script instala as dependências do mobile, gera o bundle, sobe o backend com um banco **H2 local** e abre **http://localhost:8080** no navegador. Na primeira execução pode levar alguns minutos.
-
-> O banco local fica em `backend/.local/` (ignorado pelo Git). Para recomeçar do zero, apague essa pasta.
-
-### Opção 2 · Docker Compose (PostgreSQL)
+### Opção 1 · Docker Compose (recomendada)
 
 ```bash
 # 1. Clone o repositório
@@ -158,7 +145,7 @@ docker compose up --build
 
 Acesse **http://localhost:8080** 🎉
 
-### Opção 3 · Manual (Gradle + PostgreSQL local)
+### Opção 2 · Gradle + PostgreSQL local
 
 ```bash
 export DATABASE_URL=jdbc:postgresql://localhost:5432/portal
@@ -166,21 +153,9 @@ export DATABASE_USER=postgres
 export DATABASE_PASSWORD=postgres
 export SEED_SENHA=senac123
 
-# 1. Build do frontend mobile (o backend empacota mobile/dist em static/)
-cd mobile
-npm ci
-npm run build
-
-# 2. Backend
-cd ../backend
+cd backend
 ./gradlew bootRun --args='--spring.profiles.active=dev'
 ```
-
-> Prefere um banco embarcado? Use `--spring.profiles.active=local` (cria o H2 em `backend/.local/` e dispensa o PostgreSQL).
-
-### Desenvolvimento com hot reload
-
-Rode `npm run dev` dentro de `mobile/` (porta `5173`, com proxy de `/api` para `localhost:8080`) e mantenha o backend rodando em paralelo.
 
 ### 🔑 Acesso de demonstração
 
@@ -204,7 +179,7 @@ Quando `SEED_SENHA` está definida (mínimo de 8 caracteres), a aplicação cria
 | `DATABASE_URL` | URL JDBC do PostgreSQL | definida em `application.properties` |
 | `DATABASE_USER` | Usuário do banco | `postgres` |
 | `DATABASE_PASSWORD` | Senha do banco | vazio |
-| `SPRING_PROFILES_ACTIVE` | Perfil ativo (`local`, `dev` ou `prod`) | vazio |
+| `SPRING_PROFILES_ACTIVE` | Perfil ativo (`dev` ou `prod`) | vazio |
 | `DDL_AUTO` | Estratégia `ddl-auto` do Hibernate | `validate` (`update` no perfil `dev`) |
 | `SEED_SENHA` | Senha do usuário demo | vazio (`senac123` no perfil `dev`) |
 | `COOKIE_SECURE` | Exige HTTPS no cookie de sessão | `false` |
@@ -215,15 +190,12 @@ Quando `SEED_SENHA` está definida (mínimo de 8 caracteres), a aplicação cria
 
 | Perfil | Comportamento |
 |---|---|
-| `local` | H2 em arquivo (`backend/.local/`), sem PostgreSQL e sem Flyway; ideal para o `rodar.ps1` |
-| `dev` | PostgreSQL, `ddl-auto=update`, SQL no log e usuário demo habilitado |
-| `prod` | PostgreSQL, `ddl-auto=validate`, cookie `Secure`, sem SQL no log e sem usuário demo |
+| `dev` | `ddl-auto=update`, SQL no log e usuário demo habilitado |
+| `prod` | `ddl-auto=validate`, cookie `Secure`, sem SQL no log e sem usuário demo |
 
 ### Banco de dados e migrações
 
-O schema é versionado com **Flyway** (`backend/src/main/resources/db/migration`). O `V1__baseline.sql` reproduz o schema das entidades e é aplicado como *baseline* (`baseline-on-migrate=true`), o que permite adotar o Flyway em bancos que já existem. Fora do perfil `local`, nenhuma alteração de schema acontece silenciosamente em produção: mudanças entram apenas por migração.
-
-> No perfil `local`, o schema é criado pelo Hibernate no H2 e o Flyway fica desligado. Para um banco limpo, apague `backend/.local/`.
+O schema é versionado com **Flyway** (`backend/src/main/resources/db/migration`). O `V1__baseline.sql` reproduz o schema das entidades e é aplicado como *baseline* (`baseline-on-migrate=true`), o que permite adotar o Flyway em bancos que já existem. Fora do perfil `dev`, nenhuma alteração de schema acontece silenciosamente: mudanças entram apenas por migração.
 
 ---
 

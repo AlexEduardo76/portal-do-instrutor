@@ -44,6 +44,36 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
         """, nativeQuery = true)
     List<FrequenciaPercentualProjection> findPercentualFrequenciaByTurmaIds(@Param("turmaIds") List<Long> turmaIds);
 
+    @Query(value = """
+        SELECT
+            t.id AS "turmaId",
+            t.nome AS "turmaNome",
+            t.codigo AS "turmaCodigo",
+            a.id AS "alunoId",
+            a.nome AS "alunoNome",
+            a.matricula AS "matricula",
+            COUNT(f.id) AS "totalRegistros",
+            COALESCE(SUM(CASE WHEN COALESCE(f.marcadas, CASE WHEN f.presente THEN 4 ELSE 0 END) = 4 THEN 1 ELSE 0 END), 0) AS "presencas",
+            COALESCE(SUM(CASE WHEN COALESCE(f.marcadas, CASE WHEN f.presente THEN 4 ELSE 0 END) IN (2, 3) THEN 1 ELSE 0 END), 0) AS "atrasos",
+            COALESCE(SUM(CASE WHEN COALESCE(f.marcadas, CASE WHEN f.presente THEN 4 ELSE 0 END) IN (0, 1) THEN 1 ELSE 0 END), 0) AS "faltas"
+        FROM alunos a
+        JOIN turmas t ON t.id = a.turma_id
+        LEFT JOIN frequencias f ON f.aluno_id = a.id
+        WHERE t.instrutor_login = :login AND a.ativo = true
+        GROUP BY t.id, t.nome, t.codigo, a.id, a.nome, a.matricula
+        ORDER BY t.nome, a.nome
+        """, nativeQuery = true)
+    List<FrequenciaGestaoProjection> findResumoFrequenciaPorInstrutor(@Param("login") String login);
+
+    @Query(value = """
+        SELECT t.id AS "turmaId", COUNT(DISTINCT f.data) AS "totalAulas"
+        FROM turmas t
+        LEFT JOIN frequencias f ON f.turma_id = t.id
+        WHERE t.instrutor_login = :login
+        GROUP BY t.id
+        """, nativeQuery = true)
+    List<TurmaAulasProjection> contarAulasPorInstrutor(@Param("login") String login);
+
     interface FrequenciaAlunoProjection {
         Long getAlunoId();
         String getNome();
@@ -57,5 +87,23 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
         String getNome();
         Long getTurmaId();
         Double getPercentual();
+    }
+
+    interface FrequenciaGestaoProjection {
+        Long getTurmaId();
+        String getTurmaNome();
+        String getTurmaCodigo();
+        Long getAlunoId();
+        String getAlunoNome();
+        String getMatricula();
+        Long getTotalRegistros();
+        Long getPresencas();
+        Long getAtrasos();
+        Long getFaltas();
+    }
+
+    interface TurmaAulasProjection {
+        Long getTurmaId();
+        Long getTotalAulas();
     }
 }

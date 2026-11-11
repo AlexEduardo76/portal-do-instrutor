@@ -1,0 +1,277 @@
+@import url("shell.css");
+
+/* =========================================================
+   PORTAL DO INSTRUTOR | frequencias.css
+   Tela de frequência geral (Gestão)
+   Reaproveita tokens, cards, tabela e botões de frequencia.css.
+========================================================= */
+
+.filtros-frequencia {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.content .card-title {
+    flex-wrap: wrap;
+}
+
+.filtros-frequencia .field {
+    min-width: 165px;
+}
+
+.filtros-frequencia label {
+    font-size: .78rem;
+}
+
+.filtros-frequencia select,
+.filtros-frequencia input {
+    min-height: 40px;
+    font-size: .88rem;
+}
+
+.filtros-frequencia input[type="search"] {
+    padding: 8px 12px;
+    border: 1px solid #C5D2E0;
+    border-radius: var(--radius-md);
+    font: inherit;
+    color: var(--text);
+}
+
+.filtros-frequencia input[type="search"]:focus {
+    outline: none;
+    border-color: var(--blue-700);
+    box-shadow: 0 0 0 3px var(--blue-100);
+}
+
+/* =========================================================
+   RESUMO
+========================================================= */
+
+.resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+}
+
+.resumo-card {
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--blue-50);
+}
+
+.resumo-card strong {
+    display: block;
+    font-size: 1.55rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--blue-700);
+}
+
+.resumo-card span {
+    display: block;
+    margin-top: 4px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+}
+
+.resumo-card--verde strong { color: var(--success); }
+.resumo-card--laranja strong { color: var(--orange-700); }
+.resumo-card--vermelho strong { color: var(--danger); }
+
+/* =========================================================
+   BLOCOS POR TURMA
+========================================================= */
+
+.frequencia-turmas {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.turma-bloco {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.turma-bloco-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    background: var(--blue-50);
+    border-bottom: 1px solid var(--border);
+}
+
+.turma-bloco-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--blue-700);
+}
+
+.turma-bloco-header p {
+    margin-top: 3px;
+    font-size: .8rem;
+}
+
+.turma-codigo {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--blue-100);
+    color: var(--blue-700);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+
+.turma-bloco-metricas {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.metrica-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--text-soft);
+    font-size: .74rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.metrica-pill--verde {
+    background: #DDF3E8;
+    border-color: #9ED8BA;
+    color: #146C43;
+}
+
+.metrica-pill--laranja {
+    background: var(--orange-100);
+    border-color: #F3D5AE;
+    color: var(--orange-700);
+}
+
+.metrica-pill--vermelho {
+    background: #F9E0DD;
+    border-color: #E8B4AE;
+    color: #962D22;
+}
+
+.turma-bloco .table-wrap {
+    border: 0;
+    border-radius: 0;
+}
+
+.frequencia-turmas th.num,
+.frequencia-turmas td.num {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.frequencia-turmas th:last-child,
+.frequencia-turmas td:last-child {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.num--verde { color: #146C43; font-weight: 700; }
+.num--laranja { color: var(--orange-700); font-weight: 700; }
+.num--vermelho { color: #962D22; font-weight: 700; }
+
+.percentual {
+    font-weight: 800;
+}
+
+.percentual--regular { color: #146C43; }
+.percentual--atencao { color: var(--orange-700); }
+.percentual--sem-registros { color: var(--text-soft); }
+
+.linha-total td {
+    background: var(--blue-50);
+    border-top: 2px solid var(--blue-100);
+    font-weight: 700;
+    color: var(--blue-700);
+}
+
+.badge-situacao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge-situacao.regular {
+    background: #DDF3E8;
+    color: #146C43;
+}
+
+.badge-situacao.atencao {
+    background: var(--orange-100);
+    color: var(--orange-700);
+}
+
+.badge-situacao.sem-registros {
+    background: var(--blue-100);
+    color: var(--blue-700);
+}
+
+.frequencia-turmas td.empty {
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--text-soft);
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 860px) {
+    .filtros-frequencia {
+        width: 100%;
+    }
+
+    .filtros-frequencia .field {
+        flex: 1 1 180px;
+    }
+}
+
+@media (max-width: 600px) {
+    .turma-bloco-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .turma-bloco-metricas {
+        width: 100%;
+    }
+
+    .turma-bloco-metricas .btn {
+        width: 100%;
+    }
+
+    .frequencia-turmas table {
+        min-width: 680px;
+    }
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frequência geral</title>
+    <link rel="icon" type="image/png" href="img/logo-senac.png">
+    <link rel="stylesheet" href="css/frequencia.css">
+    <link rel="stylesheet" href="css/frequencias.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- TOPBAR (montada pelo js/navigation.js) -->
+    <header class="topbar"></header>
+
+    <div class="layout">
+
+        <!-- MENU LATERAL (montado pelo js/navigation.js) -->
+        <aside class="sidebar" aria-label="Menu principal"></aside>
+
+        <main class="content">
+
+            <div class="page-header">
+                <div>
+                    <h1>Frequência geral</h1>
+                    <p>Veja onde as presenças estão salvas e acompanhe faltas, atrasos e a frequência de cada aluno.</p>
+                </div>
+                <a class="btn btn-secondary" href="frequencia.html">Registrar chamada</a>
+            </div>
+
+            <!-- RESUMO GERAL -->
+            <section class="card" aria-label="Resumo geral de frequência">
+                <div class="card-title">
+                    <div>
+                        <h2>Resumo geral</h2>
+                        <p id="resumoGeral">Carregando resumo...</p>
+                    </div>
+                </div>
+
+                <div class="resumo-grid" id="cardsResumo" aria-live="polite"></div>
+            </section>
+
+            <!-- LISTA POR TURMA -->
+            <section class="card" aria-label="Frequência dos alunos por turma" style="margin-top:18px">
+                <div class="card-title">
+                    <div>
+                        <h2>Alunos por turma</h2>
+                        <p id="resumoLista">Carregando alunos...</p>
+                    </div>
+
+                    <div class="filtros-frequencia">
+                        <div class="field">
+                            <label for="filtroTurma">Turma</label>
+                            <select id="filtroTurma">
+                                <option value="">Todas as turmas</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="filtroSituacao">Situação</label>
+                            <select id="filtroSituacao">
+                                <option value="">Todas</option>
+                                <option value="REGULAR">Regular</option>
+                                <option value="ATENCAO">Em atenção</option>
+                                <option value="SEM_REGISTROS">Sem registros</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="buscaAluno">Buscar aluno</label>
+                            <input id="buscaAluno" type="search" placeholder="Nome ou matrícula">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="listaTurmas" class="frequencia-turmas"></div>
+
+                <div id="listaVazia" class="empty" hidden></div>
+            </section>
+
+        </main>
+
+    </div>
+
+</div>
+
+<div class="toast-area" aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/frequencias.js"></script>
+
+</body>
+
+</html>

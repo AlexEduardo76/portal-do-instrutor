@@ -7,7 +7,10 @@ const MENU = [
         { href: "notas.html",      icone: "✎", texto: "Notas" },
     ] },
     { titulo: "Planejamento", itens: [{ href: "calendario.html", icone: "▦", texto: "Calendário" }] },
-    { titulo: "Gestão",       itens: [{ href: "relatorios.html",  icone: "▥", texto: "Ocorrências" }] },
+    { titulo: "Gestão",       itens: [
+        { href: "frequencias.html", icone: "▤", texto: "Frequência geral" },
+        { href: "relatorios.html",  icone: "▥", texto: "Ocorrências" },
+    ] },
 ];
 
 function montarSidebar(sidebar) {

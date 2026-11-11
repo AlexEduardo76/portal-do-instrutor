@@ -148,6 +148,7 @@ class PortalInstrutorFlowIT {
 
         mockMvc.perform(get("/api/auth/me").session(session)).andExpect(status().isOk());
         mockMvc.perform(get("/api/turmas").session(session)).andExpect(status().isOk());
+        mockMvc.perform(get("/api/frequencias/resumo").session(session)).andExpect(status().isOk());
         mockMvc.perform(get("/api/turmas/resumo").session(session)).andExpect(status().isOk());
         mockMvc.perform(get("/api/turmas/alunos/contagem").param("ids", String.valueOf(turmaId)).session(session))
             .andExpect(status().isOk());

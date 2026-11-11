@@ -89,4 +89,72 @@ class FrequenciaRepositoryTest {
         assertThat(resultado).hasSize(2);
         assertThat(resultado).allSatisfy(p -> assertThat(p.getPresente()).isNull());
     }
+
+    @Test
+    void montaResumoDeFrequenciaComMarcadasPorInstrutor() {
+        Frequencia atraso = new Frequencia(alunoUm, turma, LocalDate.of(2026, 6, 3), true);
+        atraso.setMarcadas(3);
+        frequenciaRepository.save(atraso);
+
+        Frequencia falta = new Frequencia(alunoUm, turma, LocalDate.of(2026, 6, 4), false);
+        falta.setMarcadas(1);
+        frequenciaRepository.save(falta);
+
+        List<FrequenciaRepository.FrequenciaGestaoProjection> resultado =
+            frequenciaRepository.findResumoFrequenciaPorInstrutor("instrutor");
+
+        Map<Long, FrequenciaRepository.FrequenciaGestaoProjection> porAluno = resultado.stream()
+            .collect(Collectors.toMap(
+                FrequenciaRepository.FrequenciaGestaoProjection::getAlunoId,
+                p -> p));
+
+        assertThat(porAluno).hasSize(2);
+
+        FrequenciaRepository.FrequenciaGestaoProjection um = porAluno.get(alunoUm.getId());
+        assertThat(um.getTurmaId()).isEqualTo(turma.getId());
+        assertThat(um.getTurmaNome()).isEqualTo("Turma A");
+        assertThat(um.getTurmaCodigo()).isEqualTo("COD1");
+        assertThat(um.getTotalRegistros()).isEqualTo(4);
+        assertThat(um.getPresencas()).isEqualTo(2);
+        assertThat(um.getAtrasos()).isEqualTo(1);
+        assertThat(um.getFaltas()).isEqualTo(1);
+
+        FrequenciaRepository.FrequenciaGestaoProjection dois = porAluno.get(alunoDois.getId());
+        assertThat(dois.getTotalRegistros()).isEqualTo(2);
+        assertThat(dois.getPresencas()).isEqualTo(1);
+        assertThat(dois.getAtrasos()).isZero();
+        assertThat(dois.getFaltas()).isEqualTo(1);
+    }
+
+    @Test
+    void contaAulasDistintasDoInstrutor() {
+        List<FrequenciaRepository.TurmaAulasProjection> resultado =
+            frequenciaRepository.contarAulasPorInstrutor("instrutor");
+
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.get(0).getTurmaId()).isEqualTo(turma.getId());
+        assertThat(resultado.get(0).getTotalAulas()).isEqualTo(2);
+    }
+
+    @Test
+    void naoIncluiTurmasDeOutroInstrutor() {
+        Usuario outroInstrutor = usuarioRepository.save(
+            new Usuario("Outro Instrutor", "outro", "outro@teste.com", "11144477735", "hash"));
+        Turma outraTurma = turmaRepository.save(
+            new Turma("Turma Externa", "COD9", "Curso", "Tarde", "Sala 9", 30, 5, 80, outroInstrutor));
+        Aluno outroAluno = alunoRepository.save(new Aluno("Aluno Externo", "M9", null, outraTurma));
+        frequenciaRepository.save(new Frequencia(outroAluno, outraTurma, LocalDate.of(2026, 6, 1), true));
+
+        List<FrequenciaRepository.FrequenciaGestaoProjection> resultado =
+            frequenciaRepository.findResumoFrequenciaPorInstrutor("instrutor");
+
+        assertThat(resultado)
+            .isNotEmpty()
+            .allSatisfy(linha -> assertThat(linha.getTurmaId()).isEqualTo(turma.getId()));
+
+        List<FrequenciaRepository.TurmaAulasProjection> aulas =
+            frequenciaRepository.contarAulasPorInstrutor("instrutor");
+        assertThat(aulas).extracting(FrequenciaRepository.TurmaAulasProjection::getTurmaId)
+            .containsExactly(turma.getId());
+    }
 }

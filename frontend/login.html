@@ -5,7 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Senac</title>
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-    <link rel="stylesheet" href="css/login.css">
+
+    <!-- Redireciona antes do primeiro paint quando já existe sessão local. -->
+    <script>
+        try {
+            if (localStorage.getItem("portal_sessao") || sessionStorage.getItem("portal_sessao")) {
+                window.location.replace("dashboard.html");
+            }
+        } catch (e) { /* armazenamento indisponível */ }
+    </script>
+
+    <!-- CSS crítico: garante o login estilizado sem esperar a folha externa. -->
+    <style>
+        :root{--bg-page:#F4F6F9;--bg-card:#FFF;--text-main:#2C3E50;--text-muted:#666;--brand-blue:#004A87;--border-color:#E2E8F0;--accent-orange:#FF6600;--font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;--border-radius:10px;--box-shadow:0 8px 24px rgba(0,74,135,.08)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:var(--font-family);background-color:var(--bg-page);color:var(--text-main);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between}
+        .login-main{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
+        .login-card{background-color:var(--bg-card);width:100%;max-width:440px;padding:2.5rem;border-radius:var(--border-radius);box-shadow:var(--box-shadow);overflow:hidden}
+        .login-brand{display:flex;align-items:center;justify-content:center;margin:-2.5rem -2.5rem 1.75rem;padding:1.4rem 1rem;background:var(--brand-blue);border-bottom:3px solid var(--accent-orange)}
+        .login-brand img{height:40px;width:auto;object-fit:contain}
+        .login-header-text{margin-bottom:1.75rem;text-align:center}
+        .login-header-text h2{color:var(--brand-blue);font-size:1.5rem;font-weight:700}
+        .login-header-text p{color:var(--text-muted);font-size:.9rem;margin-top:.25rem}
+        .input-group{margin-bottom:1.25rem}
+        .input-group label{display:block;font-size:.85rem;font-weight:600;color:var(--text-main);margin-bottom:.5rem}
+        .input-group input{width:100%;padding:.75rem 1rem;border:1px solid var(--border-color);border-radius:6px;font-size:.95rem;background-color:var(--bg-page);color:var(--text-main)}
+        .login-options{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;margin-bottom:1.5rem}
+        .login-options label{display:flex;align-items:center;gap:.4rem;color:var(--text-muted);cursor:pointer}
+        .btn-login{width:100%;background-color:var(--accent-orange);color:#FFF;border:none;padding:.85rem;font-size:1rem;font-weight:600;border-radius:6px;cursor:pointer;box-shadow:0 4px 12px rgba(255,102,0,.25)}
+        .btn-login:disabled{opacity:.75;cursor:wait}
+        .login-erro{background:#fdecea;color:#b3261e;border:1px solid #f5c2be;border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:.9rem}
+    </style>
+
+    <!-- A folha completa complementa foco/hover sem bloquear a renderização. -->
+    <link rel="preload" href="css/login.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/login.css"></noscript>
+
+    <link rel="preload" href="img/logo-senac.png" as="image" fetchpriority="high">
+    <link rel="prefetch" href="dashboard.html" as="document">
+    <link rel="prefetch" href="css/dashboard.css" as="style">
 </head>
 <body>
 
@@ -15,7 +53,7 @@
 
             <!-- Cabeçalho do Card -->
             <div class="login-brand">
-                <img src="img/logo-senac.png" alt="Senac" height="40">
+                <img src="img/logo-senac.png" alt="Senac" width="49" height="40" fetchpriority="high">
             </div>
             <div class="login-header-text">
                 <h2>Bem-vindo(a)</h2>
@@ -49,7 +87,7 @@
         </div>
     </main>
 
-    <script src="js/api.js"></script>
-    <script src="js/login.js"></script>
+    <script src="js/api.js" defer></script>
+    <script src="js/login.js" defer></script>
 </body>
 </html>

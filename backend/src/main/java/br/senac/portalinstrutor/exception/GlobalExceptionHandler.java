@@ -160,6 +160,12 @@ public class GlobalExceptionHandler {
         if (msg.contains("uk_frequencia_aluno_data")) {
             return buildResponse(HttpStatus.CONFLICT, "CONFLITO", "Já existe frequência para este aluno nesta data.", Map.of());
         }
+        if (msg.contains("uk_usuario_email")) {
+            return buildResponse(HttpStatus.CONFLICT, "CONFLITO", "Este e-mail já está cadastrado.", Map.of());
+        }
+        if (msg.contains("uk_usuario_cpf")) {
+            return buildResponse(HttpStatus.CONFLICT, "CONFLITO", "Este CPF já está cadastrado.", Map.of());
+        }
         if (msg.contains("not-null") || msg.contains("null value in column") || msg.contains("violates not-null")) {
             return buildResponse(HttpStatus.BAD_REQUEST, "VALIDACAO", "Campo obrigatório ausente.", Map.of());
         }

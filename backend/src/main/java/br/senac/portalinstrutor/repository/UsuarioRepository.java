@@ -13,7 +13,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Optional<Usuario> findByLogin(String login);
 
-    @Query("SELECT u FROM Usuario u WHERE LOWER(u.login) = LOWER(:identificador) OR LOWER(u.email) = LOWER(:identificador)")
+    Optional<Usuario> findByEmail(String email);
+
+    Optional<Usuario> findByCpf(String cpf);
+
+    // Login/e-mail são persistidos em minúsculas; a igualdade direta usa os
+    // índices únicos de usuarios em vez de varrer a tabela com LOWER().
+    @Query("SELECT u FROM Usuario u WHERE u.login = :identificador OR u.email = :identificador")
     Optional<Usuario> findByLoginOuEmail(@Param("identificador") String identificador);
 
     @Query("SELECT u FROM Usuario u WHERE u.cpf = :cpf")

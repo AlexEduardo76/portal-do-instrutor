@@ -230,3 +230,27 @@ body {
     margin-bottom: 12px;
     font-size: 0.9rem;
 }
+/* Tema escuro (preferencia persistida em localStorage). */
+:root[data-theme="dark"] {
+  --bg-page: #0B1220;
+  --bg-card: #111C2E;
+  --text-main: #E9F0F8;
+  --text-muted: #A3B3C7;
+  --brand-blue: #0D2A47;
+  --brand-blue-hover: #14456F;
+  --border-color: #263A52;
+  --accent-orange: #FF7A1A;
+  --accent-orange-hover: #E86A0B;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+}
+
+:root[data-theme="dark"] .input-group input:focus {
+  background-color: #111C2E;
+  border-color: #4D93D1;
+}
+
+:root[data-theme="dark"] .login-erro {
+  background: #2A1717;
+  border-color: #5A2A26;
+  color: #FFB4AE;
+}

@@ -9,12 +9,12 @@ async function api(caminho, { metodo = "GET", corpo = null, redirecionar401 = tr
         method: metodo,
         credentials: "same-origin",
         headers: {
-            "Content-Type": "application/json",
             "Accept": "application/json"
         }
     };
 
     if (corpo !== null) {
+        opcoes.headers["Content-Type"] = "application/json";
         opcoes.body = JSON.stringify(corpo);
     }
 

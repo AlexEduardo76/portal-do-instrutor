@@ -106,6 +106,11 @@ public class AuthService {
         if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof UsuarioPrincipal principal)) {
             throw new CredenciaisInvalidasException("Não autenticado");
         }
-        return new UsuarioResponse(principal.nome(), principal.login());
+
+        // Relê o cadastro para refletir alterações feitas na tela de perfil.
+        Usuario usuario = usuarioRepository.findByLogin(principal.login())
+            .orElseThrow(() -> new CredenciaisInvalidasException("Não autenticado"));
+
+        return new UsuarioResponse(usuario.getNome(), usuario.getLogin());
     }
 }

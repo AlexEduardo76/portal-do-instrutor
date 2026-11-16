@@ -9,6 +9,26 @@ function usuarioLogado() {
     }
 }
 
+function iniciaisNome(nome) {
+    const partes = String(nome || "Instrutor").trim().split(/\s+/).filter(Boolean);
+    if (!partes.length) return "PI";
+    const primeira = partes[0][0] || "";
+    const ultima = partes.length > 1 ? partes[partes.length - 1][0] : "";
+    return (primeira + ultima).toUpperCase() || "PI";
+}
+
+function atualizarIdentidadeLocal(usuario) {
+    if (!usuario) return;
+    const nome = usuario.nome || "Instrutor";
+    const primeiroNome = nome.split(" ")[0];
+    const iniciais = iniciaisNome(nome);
+
+    document.querySelectorAll("[data-user-first-name]").forEach((el) => (el.textContent = primeiroNome));
+    document.querySelectorAll("[data-user-name]").forEach((el) => (el.textContent = nome));
+    document.querySelectorAll("[data-user-avatar]").forEach((el) => (el.textContent = iniciais));
+    document.querySelectorAll("[data-perfil-avatar]").forEach((el) => (el.textContent = iniciais));
+}
+
 async function sair() {
     try {
         await api.post("/auth/logout");
@@ -20,15 +40,6 @@ async function sair() {
     window.location.href = "login.html";
 }
 
-async function validarSessao() {
-    try {
-        await api.get("/auth/me");
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
-
 // Delegação: um único dono do logout, inclusive para o menu montado por navigation.js.
 document.addEventListener("click", (e) => {
     const botao = e.target.closest('[data-action="logout"]');
@@ -37,21 +48,15 @@ document.addEventListener("click", (e) => {
     sair();
 });
 
-// Sem login válido -> volta para a tela de login
-document.addEventListener("DOMContentLoaded", async () => {
+// Sem login local -> volta para a tela de login.
+// A validade real da sessão é conferida pelo servidor em cada chamada de API:
+// api.js já redireciona em 401, então não gastamos um GET /auth/me por página.
+document.addEventListener("DOMContentLoaded", () => {
     const usuario = usuarioLogado();
     if (!usuario) {
         window.location.replace("login.html");
         return;
     }
 
-    const valido = await validarSessao();
-    if (!valido) {
-        window.location.replace("login.html");
-        return;
-    }
-
-    const primeiroNome = (usuario.nome || "Instrutor").split(" ")[0];
-    document.querySelectorAll("[data-user-first-name]").forEach((el) => (el.textContent = primeiroNome));
-    document.querySelectorAll("[data-user-name]").forEach((el) => (el.textContent = usuario.nome));
+    atualizarIdentidadeLocal(usuario);
 });

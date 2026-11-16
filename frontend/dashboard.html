@@ -4,10 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Dashboard do Portal do Instrutor - Gestão acadêmica">
+  <meta name="theme-color" content="#004A8D">
+  <script>
+    try {
+      var temaSalvo = localStorage.getItem("portal_tema") || "system";
+      var temaEscuro = temaSalvo === "dark" ||
+        (temaSalvo === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.dataset.theme = temaEscuro ? "dark" : "light";
+      document.documentElement.dataset.temaPreferido = temaSalvo;
+    } catch (e) { /* armazenamento indisponível */ }
+  </script>
   <title>Dashboard</title>
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   <link rel="stylesheet" href="css/dashboard.css">
   <link rel="stylesheet" href="css/dashboard-extra.css">
+  <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
 <div class="app-shell">
@@ -181,10 +192,10 @@
 <!-- TOASTS -->
 <div class="toast-area" aria-live="polite" aria-atomic="true"></div>
 
-<script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/navigation.js"></script>
-<script src="js/dashboard.js"></script>
+<script src="js/api.js" defer></script>
+<script src="js/auth.js" defer></script>
+<script src="js/utils.js" defer></script>
+<script src="js/navigation.js" defer></script>
+<script src="js/dashboard.js" defer></script>
 </body>
 </html>

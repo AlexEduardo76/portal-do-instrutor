@@ -1,6 +1,12 @@
 // ====== CONFIGURAÇÃO ======
 const PAGINA_PAINEL = "dashboard.html";
 const CHAVE_SESSAO = "portal_sessao";
+const TEXTO_BOTAO = "Entrar no Portal";
+
+// Aquece o backend enquanto o usuário digita. Em instâncias que hibernam
+// (Render free), isso evita pagar o cold start só no clique de "Entrar".
+fetch("/api/auth/me", { cache: "no-store", credentials: "same-origin", priority: "low" })
+    .catch(() => { /* o backend pode estar acordando; ignoramos o 401/erro */ });
 
 // ====== FUNÇÕES AUXILIARES ======
 function salvarSessao(usuario, lembrar) {
@@ -25,9 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const form = document.getElementById("form-login");
+    const botao = form.querySelector('button[type="submit"]');
+    const caixaErro = document.getElementById("login-erro");
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        if (botao.disabled) return;
 
         const entrada = document.getElementById("usuario").value;
         const senha = document.getElementById("senha").value;
@@ -38,6 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        caixaErro.hidden = true;
+        botao.disabled = true;
+        botao.setAttribute("aria-busy", "true");
+        botao.textContent = "Entrando...";
+
         try {
             const usuario = await api.post("/auth/login", {
                 identificador: entrada,
@@ -46,9 +60,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }, { redirecionar401: false });
 
             salvarSessao(usuario, lembrar);
-            window.location.href = PAGINA_PAINEL;
+            window.location.replace(PAGINA_PAINEL);
         } catch (err) {
             mostrarErro(err.message || "Usuário ou senha incorretos.");
+            botao.disabled = false;
+            botao.removeAttribute("aria-busy");
+            botao.textContent = TEXTO_BOTAO;
         }
     });
 });

@@ -7,9 +7,10 @@ const MENU = [
     ] },
     { titulo: "Planejamento", itens: [{ href: "calendario.html", icone: "▦", texto: "Calendário" }] },
     { titulo: "Gestão",       itens: [
-        { href: "frequencias.html", icone: "▤", texto: "Frequência geral" },
-        { href: "relatorios.html",  icone: "▥", texto: "Ocorrências" },
+        { href: "frequencias.html", icone: "📊", texto: "Frequência geral" },
+        { href: "relatorios.html",  icone: "📝", texto: "Ocorrências" },
     ] },
+    { titulo: "Conta",        itens: [{ href: "perfil.html", icone: "◎", texto: "Meu perfil" }] },
 ];
 
 function montarSidebar(sidebar) {
@@ -52,9 +53,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <img class="brand-logo" src="img/logo-senac.png" alt="Senac" height="32">
                 <strong>Portal do Instrutor</strong>
             </a>
-            <div class="topbar-user"><span data-user-name></span></div>`;
+            <a class="topbar-user topbar-profile" href="perfil.html" aria-label="Abrir meu perfil e configurações">
+                <span class="avatar" data-user-avatar aria-hidden="true">PI</span>
+                <span class="topbar-profile-texto">
+                    <strong data-user-name>Instrutor</strong>
+                    <span>Instrutor</span>
+                </span>
+            </a>`;
         const usuario = typeof usuarioLogado === "function" ? usuarioLogado() : null;
-        const alvo = topbar.querySelector("[data-user-name]");
-        if (alvo && usuario) alvo.textContent = usuario.nome;
+        if (usuario) atualizarIdentidadeLocal(usuario);
     }
 });

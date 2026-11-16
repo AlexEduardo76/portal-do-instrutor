@@ -1,0 +1,226 @@
+/* Tema claro/escuro persistido em localStorage (portal_tema). */
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --blue-900: #06111E;
+    --blue-800: #0A1D31;
+    --blue-700: #8FC5F4;
+    --blue-600: #4D93D1;
+    --blue-100: #17324D;
+    --blue-50:  #102033;
+
+    --orange-500: #FF8A2B;
+    --orange-600: #E87616;
+    --orange-700: #FFB774;
+    --orange-100: #3A2A18;
+
+    --bg:        #0B1220;
+    --surface:   #111C2E;
+    --border:    #263A52;
+    --text:      #E9F0F8;
+    --text-soft: #A3B3C7;
+
+    --success: #4ADE80;
+    --danger:  #FF7B72;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, .38);
+    --shadow-lg: 0 24px 48px rgba(0, 0, 0, .55);
+}
+
+:root[data-theme="dark"] body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+:root[data-theme="dark"] .topbar {
+    background: #0D2A47;
+}
+
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3 {
+    color: var(--text);
+}
+
+:root[data-theme="dark"] .btn-secondary:hover:not(:disabled),
+:root[data-theme="dark"] .cal-add:hover,
+:root[data-theme="dark"] .cal-dia.hoje .cal-num,
+:root[data-theme="dark"] .calendar-day.is-today .calendar-day-number,
+:root[data-theme="dark"] .calendar-day.today .calendar-day-number,
+:root[data-theme="dark"] #btnTodosPresentes:not(:disabled):hover {
+    background: #1E5A8F;
+    border-color: #1E5A8F;
+    color: #FFFFFF;
+}
+
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .stat-card,
+:root[data-theme="dark"] .class-card,
+:root[data-theme="dark"] .resumo-card,
+:root[data-theme="dark"] .turma-card,
+:root[data-theme="dark"] .modal,
+:root[data-theme="dark"] .evento,
+:root[data-theme="dark"] .evento-item,
+:root[data-theme="dark"] .calendar-day,
+:root[data-theme="dark"] .cal-dia,
+:root[data-theme="dark"] .occurrence,
+:root[data-theme="dark"] .metrica-pill,
+:root[data-theme="dark"] .table-wrap,
+:root[data-theme="dark"] .perfil-card {
+    background-color: var(--surface);
+}
+
+:root[data-theme="dark"] .table-wrap tbody tr {
+    background-color: var(--surface);
+}
+
+:root[data-theme="dark"] .table-wrap tbody tr:hover {
+    background-color: var(--blue-50);
+}
+
+:root[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+    background-color: var(--surface) !important;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+    color: var(--text-soft);
+}
+
+:root[data-theme="dark"] select option {
+    background: var(--surface);
+    color: var(--text);
+}
+
+:root[data-theme="dark"] .table-wrap thead th {
+    background: var(--blue-50);
+    color: var(--text);
+}
+
+:root[data-theme="dark"] .table-wrap tbody tr.presente,
+:root[data-theme="dark"] .table-wrap tbody tr[data-status="presente"],
+:root[data-theme="dark"] .table-wrap tbody tr:has(.opcao-presente input:checked) {
+    background-color: #123326;
+}
+
+:root[data-theme="dark"] .table-wrap tbody tr.presente:hover,
+:root[data-theme="dark"] .table-wrap tbody tr[data-status="presente"]:hover,
+:root[data-theme="dark"] .table-wrap tbody tr:has(.opcao-presente input:checked):hover {
+    background-color: #17422F;
+}
+
+:root[data-theme="dark"] .table-wrap tbody tr.ausente,
+:root[data-theme="dark"] .table-wrap tbody tr[data-status="falta"],
+:root[data-theme="dark"] .table-wrap tbody tr:has(.opcao-falta input:checked) {
+    background-color: #331A1B;
+}
+
+:root[data-theme="dark"] .table-wrap tbody tr.ausente:hover,
+:root[data-theme="dark"] .table-wrap tbody tr[data-status="falta"]:hover,
+:root[data-theme="dark"] .table-wrap tbody tr:has(.opcao-falta input:checked):hover {
+    background-color: #422022;
+}
+
+:root[data-theme="dark"] .table-wrap tbody tr[data-status="atraso"] {
+    background-color: #332515;
+}
+
+:root[data-theme="dark"] .table-wrap tbody tr[data-status="atraso"]:hover {
+    background-color: #422F1A;
+}
+
+:root[data-theme="dark"] .badge-success,
+:root[data-theme="dark"] .badge-presente,
+:root[data-theme="dark"] .badge-situacao.regular {
+    background: #153A2B;
+    color: #7EE7AE;
+}
+
+:root[data-theme="dark"] .badge-danger,
+:root[data-theme="dark"] .badge-ausente,
+:root[data-theme="dark"] .badge-situacao.atencao {
+    background: #3A1E1E;
+    color: #FFAAA4;
+}
+
+:root[data-theme="dark"] .badge-warning,
+:root[data-theme="dark"] .badge-situacao.sem-registros {
+    background: var(--orange-100);
+    color: var(--orange-700);
+}
+
+:root[data-theme="dark"] div.error-state,
+:root[data-theme="dark"] .login-erro,
+:root[data-theme="dark"] .aviso-remocao {
+    background: #2A1717;
+    border-color: #5A2A26;
+    color: #FFB4AE;
+}
+
+:root[data-theme="dark"] .empty-state,
+:root[data-theme="dark"] div.empty-state {
+    border-color: var(--border);
+    background: var(--blue-50);
+}
+
+:root[data-theme="dark"] .site-header,
+:root[data-theme="dark"] .site-footer {
+    background-color: #0D2A47;
+    border-color: var(--border);
+}
+
+:root[data-theme="dark"] .site-footer {
+    color: var(--text-soft);
+}
+
+:root[data-theme="dark"] .login-card {
+    background-color: #111C2E;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+}
+
+:root[data-theme="dark"] .login-header-text h2,
+:root[data-theme="dark"] .login-options a {
+    color: #8FC5F4;
+}
+
+:root[data-theme="dark"] .login-options input[type="checkbox"] {
+    accent-color: #FF8A2B;
+}
+
+:root[data-theme="dark"] {
+    --bg-page: #0B1220;
+    --bg-card: #111C2E;
+    --text-main: #E9F0F8;
+    --text-muted: #A3B3C7;
+    --brand-blue: #0D2A47;
+    --brand-blue-hover: #14456F;
+    --border-color: #263A52;
+    --accent-orange: #FF7A1A;
+    --accent-orange-hover: #E86A0B;
+    --box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+
+    --branco: #111C2E;
+    --cinza-50: #0B1220;
+    --cinza-100: #16243A;
+    --cinza-300: #263A52;
+    --texto: #E9F0F8;
+    --texto-suave: #A3B3C7;
+    --azul: #2F6FA8;
+    --azul-escuro: #0D2A47;
+    --azul-profundo: #06111E;
+    --azul-claro: #17324D;
+    --laranja: #FF8A2B;
+    --laranja-hover: #E87616;
+    --sombra-1: 0 1px 2px rgba(0, 0, 0, .35), 0 2px 8px rgba(0, 0, 0, .3);
+}
+
+:root[data-theme="dark"] .input-group input:focus {
+    background-color: #111C2E;
+    border-color: #4D93D1;
+}

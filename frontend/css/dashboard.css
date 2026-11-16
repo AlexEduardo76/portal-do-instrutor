@@ -274,8 +274,7 @@ a {
 }
 
 /* indicadores que pedem ação do instrutor ganham o laranja */
-.stat-card[href="frequencia.html"] .stat-icon,
-.stat-card[href="notas.html"] .stat-icon {
+.stat-card[href="frequencia.html"] .stat-icon {
     background: var(--orange-100);
     color: var(--orange-700);
 }
@@ -570,18 +569,16 @@ a {
 
 
 /* =========================================================
-   RESUMOS DE FREQUÊNCIA E NOTAS
+   RESUMO DE FREQUÊNCIA
 ========================================================= */
 
-.attendance-summary,
-.grades-summary {
+.attendance-summary {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
 }
 
-.attendance-item,
-.grade-summary-item {
+.attendance-item {
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -591,16 +588,14 @@ a {
     background: var(--blue-50);
 }
 
-.attendance-item span,
-.grade-summary-item span {
+.attendance-item span {
     font-size: .84rem;
     font-weight: 600;
     line-height: 1.3;
     color: var(--text-soft);
 }
 
-.attendance-item strong,
-.grade-summary-item strong {
+.attendance-item strong {
     font-size: 1.7rem;
     font-weight: 700;
     line-height: 1.15;
@@ -666,8 +661,7 @@ a {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .attendance-summary,
-    .grades-summary {
+    .attendance-summary {
         grid-template-columns: minmax(0, 1fr);
     }
 }

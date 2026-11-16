@@ -34,4 +34,10 @@ public class OcorrenciaController {
                                                         @Valid @RequestBody OcorrenciaRequest request) {
         return ResponseEntity.ok(ocorrenciaService.atualizar(id, ocorrenciaId, request));
     }
+
+    @DeleteMapping("/{id}/ocorrencias/{ocorrenciaId}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id, @PathVariable Long ocorrenciaId) {
+        ocorrenciaService.excluir(id, ocorrenciaId);
+        return ResponseEntity.noContent().build();
+    }
 }

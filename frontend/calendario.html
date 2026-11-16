@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calendário</title>
-  <link rel="icon" type="image/png" href="img/logo-senac.png">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   <link rel="stylesheet" href="css/calendario.css">
   <link rel="stylesheet" href="css/calendario-extra.css">
 </head>
@@ -124,8 +124,9 @@
 
       <div class="field">
         <label for="evtTurma">Turma</label>
-        <input id="evtTurma" type="text" list="listaTurmas" maxlength="60" placeholder="Todas as turmas">
-        <datalist id="listaTurmas"></datalist>
+        <select id="evtTurma">
+          <option value="">Todas as turmas</option>
+        </select>
       </div>
 
       <div class="field full">

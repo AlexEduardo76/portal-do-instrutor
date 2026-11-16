@@ -31,14 +31,16 @@ public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final SecurityContextRepository securityContextRepository;
+    private final LoginRateLimiter loginRateLimiter;
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
     private final String hashFicticio;
 
     public AuthService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
-                       SecurityContextRepository securityContextRepository) {
+                       SecurityContextRepository securityContextRepository, LoginRateLimiter loginRateLimiter) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.securityContextRepository = securityContextRepository;
+        this.loginRateLimiter = loginRateLimiter;
         // Hash usado apenas para igualar o tempo de resposta quando o usuário não existe.
         this.hashFicticio = passwordEncoder.encode("hash-ficticio-apenas-para-timing");
     }
@@ -46,6 +48,8 @@ public class AuthService {
     public UsuarioResponse login(LoginRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String identificador = request.identificador().trim();
         String senha = request.senha();
+
+        loginRateLimiter.verificar(httpRequest, identificador);
 
         String cpfDigits = null;
         if (identificador.matches("^\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}$") || identificador.matches("^\\d{11}$")) {
@@ -60,6 +64,7 @@ public class AuthService {
         // Verifica a senha ANTES do status, para não revelar existência/estado da conta.
         boolean senhaConfere = passwordEncoder.matches(senha, usuario != null ? usuario.getSenhaHash() : hashFicticio);
         if (usuario == null || !senhaConfere) {
+            loginRateLimiter.registrarFalha(httpRequest, identificador);
             throw new CredenciaisInvalidasException("Usuário ou senha incorretos.");
         }
 
@@ -67,10 +72,12 @@ public class AuthService {
             throw new UsuarioInativoException("Usuário inativo.");
         }
 
+        loginRateLimiter.limpar(httpRequest, identificador);
         boolean lembrar = Boolean.TRUE.equals(request.lembrar());
 
         HttpSession session = httpRequest.getSession(true);
-        // Sessǜo de 8h por padrǜo; com "lembrar de mim" a sessǜo e o cookie duram 30 dias.
+        httpRequest.changeSessionId();
+        // Sessão de 8h por padrão; com "lembrar de mim" a sessão e o cookie duram 30 dias.
         session.setMaxInactiveInterval(lembrar ? SEGUNDOS_SESSAO_LEMBRAR : SEGUNDOS_SESSAO);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(UsuarioPrincipal.from(usuario), null, UsuarioPrincipal.from(usuario).getAuthorities());

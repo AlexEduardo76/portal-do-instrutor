@@ -2,11 +2,8 @@ package br.senac.portalinstrutor.service;
 
 import br.senac.portalinstrutor.config.AppProperties;
 import br.senac.portalinstrutor.dto.response.*;
-import br.senac.portalinstrutor.model.Avaliacao;
 import br.senac.portalinstrutor.model.Turma;
-import br.senac.portalinstrutor.repository.AvaliacaoRepository;
 import br.senac.portalinstrutor.repository.FrequenciaRepository;
-import br.senac.portalinstrutor.repository.NotaRepository;
 import br.senac.portalinstrutor.repository.TurmaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,25 +22,20 @@ public class DashboardService {
     private final AtividadeService atividadeService;
     private final EventoService eventoService;
     private final TurmaRepository turmaRepository;
-    private final AvaliacaoRepository avaliacaoRepository;
     private final FrequenciaRepository frequenciaRepository;
-    private final NotaRepository notaRepository;
     private final UsuarioLogadoService usuarioLogadoService;
     private final AppProperties appProperties;
 
     public DashboardService(TurmaService turmaService, AulaService aulaService, AtividadeService atividadeService,
                             EventoService eventoService, TurmaRepository turmaRepository,
-                            AvaliacaoRepository avaliacaoRepository, FrequenciaRepository frequenciaRepository,
-                            NotaRepository notaRepository, UsuarioLogadoService usuarioLogadoService,
+                            FrequenciaRepository frequenciaRepository, UsuarioLogadoService usuarioLogadoService,
                             AppProperties appProperties) {
         this.turmaService = turmaService;
         this.aulaService = aulaService;
         this.atividadeService = atividadeService;
         this.eventoService = eventoService;
         this.turmaRepository = turmaRepository;
-        this.avaliacaoRepository = avaliacaoRepository;
         this.frequenciaRepository = frequenciaRepository;
-        this.notaRepository = notaRepository;
         this.usuarioLogadoService = usuarioLogadoService;
         this.appProperties = appProperties;
     }
@@ -94,39 +86,6 @@ public class DashboardService {
             emAtencao
         );
 
-        // Notas: médias e pendências (uma query agrupada para as notas lançadas)
-        Double mediaGeralDouble = notaRepository.mediaNotasByInstrutorLogin(login);
-        BigDecimal mediaGeral = mediaGeralDouble == null ? null
-            : BigDecimal.valueOf(mediaGeralDouble).setScale(1, RoundingMode.HALF_UP);
-
-        Map<Long, Integer> lancadasPorAvaliacao = paraMapa(notaRepository.contarNotasLancadasPorAvaliacao(login));
-
-        List<Avaliacao> avaliacoes = avaliacaoRepository.findByTurmaInstrutorLoginOrderByIdDesc(login);
-        List<PendenciaPorAvaliacaoResponse> pendencias = new java.util.ArrayList<>();
-        int lancamentosPendentes = 0;
-        for (Avaliacao avaliacao : avaliacoes) {
-            Long turmaId = avaliacao.getTurma().getId();
-            int ativos = alunosPorTurma.getOrDefault(turmaId, 0);
-            int lancadas = lancadasPorAvaliacao.getOrDefault(avaliacao.getId(), 0);
-            int pendentes = ativos - lancadas;
-            if (pendentes > 0) {
-                lancamentosPendentes += pendentes;
-                pendencias.add(new PendenciaPorAvaliacaoResponse(
-                    avaliacao.getTitulo(),
-                    turmaNomes.getOrDefault(turmaId, ""),
-                    pendentes,
-                    turmaId
-                ));
-            }
-        }
-
-        NotasDashboardResponse notasDash = new NotasDashboardResponse(
-            avaliacoes.size(),
-            lancamentosPendentes,
-            mediaGeral,
-            pendencias
-        );
-
         int totalAlunos = (int) turmaRepository.contarAlunosAtivosPorInstrutor(login);
         TotaisResponse totais = new TotaisResponse(
             turmas.size(),
@@ -139,7 +98,7 @@ public class DashboardService {
                 alunosPorTurma.getOrDefault(t.getId(), 0)))
             .toList();
 
-        return new DashboardResponse(totais, turmasResumo, proximasAulas, atividades, freqDash, notasDash);
+        return new DashboardResponse(totais, turmasResumo, proximasAulas, atividades, freqDash);
     }
 
     private Map<Long, Integer> paraMapa(List<Object[]> linhas) {

@@ -72,7 +72,6 @@ function renderizar() {
             <div class="turma-links">
                 <button type="button" class="btn btn-primary btn-small" data-acao="alunos" data-id="${esc(t.id)}">Alunos</button>
                 <a class="btn btn-secondary btn-small" href="frequencia.html?turma=${encodeURIComponent(t.id)}">Frequência</a>
-                <a class="btn btn-secondary btn-small" href="notas.html?turma=${encodeURIComponent(t.id)}">Notas</a>
             </div>
         </article>`).join(""));
 
@@ -169,8 +168,8 @@ async function excluirTurma(id) {
 
     const alunos = contagens.alunos ? contagens.alunos[turma.id] || 0 : null;
     const aviso = alunos
-        ? `\n\nOs ${alunos} aluno(s), frequências, avaliações e notas desta turma também serão apagados.`
-        : "\n\nAlunos, frequências, avaliações e notas desta turma também serão apagados.";
+        ? `\n\nOs ${alunos} aluno(s), frequências e ocorrências desta turma também serão apagados.`
+        : "\n\nAlunos, frequências e ocorrências desta turma também serão apagados.";
 
     if (!confirm(`Excluir a turma "${turma.nome}"?${aviso}\n\nEsta ação não pode ser desfeita.`)) return;
 

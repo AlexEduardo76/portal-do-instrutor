@@ -66,22 +66,11 @@ function renderFrequencia(freq) {
     return emAtencao;
 }
 
-function renderNotas(notas) {
-    setTexto("statNotas", notas.lancamentosPendentes);
-    setTexto("avaliacoesCadastradas", notas.avaliacoesCadastradas);
-    setTexto("lancamentosPendentes", notas.lancamentosPendentes);
-    setTexto("mediaGeral", notas.mediaGeral === null ? "Sem dados" : formatarNumero(notas.mediaGeral) + "%");
-
-    return notas.pendenciasPorAvaliacao || [];
-}
-
-function renderPendencias(emAtencao, notasPendentes, turmas) {
+function renderPendencias(emAtencao, turmas) {
     const nomeTurma = Object.fromEntries(turmas.map((t) => [t.id, t.nome]));
     const itens = [
         ...emAtencao.map((f) =>
             `${esc(f.nome)} está com ${formatarNumero(Number(f.percentual))}% de frequência (${esc(nomeTurma[f.turmaId] || "")})`),
-        ...notasPendentes.map((n) =>
-            `${n.quantidade} nota(s) pendente(s) em "${esc(n.titulo)}" (${esc(nomeTurma[n.turmaId] || "")})`),
     ];
 
     if (!itens.length) return setHTML("listaPendencias", estadoVazio("Nenhuma pendência no momento. 🎉"));
@@ -124,11 +113,8 @@ async function carregarDashboard() {
         // Frequência
         const emAtencao = renderFrequencia(dados.frequencia);
 
-        // Notas
-        const notasPendentes = renderNotas(dados.notas);
-
         // Pendências
-        renderPendencias(emAtencao, notasPendentes, dados.turmas);
+        renderPendencias(emAtencao, dados.turmas);
 
     } catch (err) {
         console.error("Erro ao carregar dashboard:", err);

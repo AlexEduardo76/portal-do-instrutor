@@ -770,3 +770,151 @@
         flex-shrink: 0;
     }
 }
+
+
+/* =========================================================
+   MODAL DE REMOÇÃO DA CHAMADA
+========================================================= */
+
+body.modal-aberto {
+    overflow: hidden;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 31, 61, .55);
+    backdrop-filter: blur(2px);
+}
+
+.modal-backdrop.open {
+    display: flex;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 480px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border-top: 4px solid var(--danger);
+    box-shadow: var(--shadow-lg);
+    animation: modal-in .18s ease-out;
+}
+
+@keyframes modal-in {
+    from { opacity: 0; transform: translateY(10px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 26px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header p {
+    margin-top: 4px;
+    font-size: .88rem;
+}
+
+.modal-corpo {
+    padding: 20px 26px;
+}
+
+.resumo-remocao {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+}
+
+.resumo-remocao > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border);
+}
+
+.resumo-remocao > div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.resumo-remocao dt {
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+}
+
+.resumo-remocao dd {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text);
+    text-align: right;
+}
+
+.aviso-remocao {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border: 1px solid #E8B4AE;
+    border-radius: var(--radius-md);
+    background: #FFF6F5;
+    color: #962D22;
+    font-size: .86rem;
+    font-weight: 600;
+}
+
+.modal-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 0 26px 22px;
+}
+
+.btn-danger-solid {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
+
+.btn-danger-solid:hover:not(:disabled) {
+    background: #9E2F24;
+    border-color: #9E2F24;
+    color: #fff;
+}
+
+@media (max-width: 520px) {
+    .modal-header,
+    .modal-corpo {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .modal-acoes {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 18px 18px;
+    }
+
+    .modal-acoes .btn {
+        width: 100%;
+    }
+}

@@ -10,6 +10,7 @@ public record EventoResponse(
     TipoEvento tipo,
     LocalDate data,
     LocalTime hora,
+    Long turmaId,
     String turmaNome,
     String descricao
 ) {}

@@ -10,7 +10,7 @@ import java.util.List;
 
 public record FrequenciaRequest(
     @NotNull LocalDate data,
-    @NotNull @NotEmpty @Valid List<FrequenciaRegistroRequest> registros
+    @NotNull @NotEmpty List<@Valid FrequenciaRegistroRequest> registros
 ) {
     public record FrequenciaRegistroRequest(
         @NotNull Long alunoId,

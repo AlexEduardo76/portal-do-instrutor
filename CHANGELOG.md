@@ -21,7 +21,7 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 - Tratamento de respostas 401 sem redirecionamento indevido.
 - Logout duplicado (dois POSTs) no menu lateral.
 - Edição de turma inexistente e abertura da turma recém-criada.
-- Notas com entrada não numérica e validação de título no calendário.
+- Validação de título no calendário.
 - Ordem de renderização ao trocar de mês no calendário.
 - Frequência com 4 bolinhas passou a usar um único estado Presente/Falta.
 - Médias do dashboard passaram a considerar apenas alunos ativos.
@@ -31,3 +31,4 @@ e o versionamento segue [SemVer](https://semver.org/lang/pt-BR/).
 
 - `frontend/vercel.json` (deploy apontava para produção em qualquer preview).
 - Código morto no front e link “Esqueceu a senha?” sem destino.
+- Módulo de notas e avaliações (telas, API, entidades e tabelas), com migração `V3__remove_notas.sql`.

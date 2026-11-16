@@ -64,7 +64,7 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
         FROM alunos a
         JOIN turmas t ON t.id = a.turma_id
         LEFT JOIN frequencias f ON f.aluno_id = a.id
-        WHERE t.instrutor_login = :login AND a.ativo = true
+        WHERE t.instrutor_login = :login AND t.ativa = true AND a.ativo = true
         GROUP BY t.id, t.nome, t.codigo, a.id, a.nome, a.matricula
         ORDER BY t.nome, a.nome
         """, nativeQuery = true)
@@ -74,7 +74,7 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
         SELECT t.id AS "turmaId", COUNT(DISTINCT f.data) AS "totalAulas"
         FROM turmas t
         LEFT JOIN frequencias f ON f.turma_id = t.id
-        WHERE t.instrutor_login = :login
+        WHERE t.instrutor_login = :login AND t.ativa = true
         GROUP BY t.id
         """, nativeQuery = true)
     List<TurmaAulasProjection> contarAulasPorInstrutor(@Param("login") String login);

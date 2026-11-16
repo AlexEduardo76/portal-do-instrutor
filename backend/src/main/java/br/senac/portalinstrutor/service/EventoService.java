@@ -6,6 +6,7 @@ import br.senac.portalinstrutor.exception.RecursoNaoEncontradoException;
 import br.senac.portalinstrutor.exception.RegraNegocioException;
 import br.senac.portalinstrutor.mapper.EventoMapper;
 import br.senac.portalinstrutor.model.Evento;
+import br.senac.portalinstrutor.model.Turma;
 import br.senac.portalinstrutor.repository.EventoRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,13 +24,16 @@ public class EventoService {
     private static final int MAX_EVENTOS = 500;
 
     private final EventoRepository eventoRepository;
+    private final TurmaService turmaService;
     private final AtividadeService atividadeService;
     private final UsuarioLogadoService usuarioLogadoService;
     private final Clock clock;
 
-    public EventoService(EventoRepository eventoRepository, AtividadeService atividadeService,
-                         UsuarioLogadoService usuarioLogadoService, Clock clock) {
+    public EventoService(EventoRepository eventoRepository, TurmaService turmaService,
+                         AtividadeService atividadeService, UsuarioLogadoService usuarioLogadoService,
+                         Clock clock) {
         this.eventoRepository = eventoRepository;
+        this.turmaService = turmaService;
         this.atividadeService = atividadeService;
         this.usuarioLogadoService = usuarioLogadoService;
         this.clock = clock;
@@ -48,7 +52,8 @@ public class EventoService {
     @Transactional
     public EventoResponse criar(EventoRequest request) {
         String login = usuarioLogadoService.getLogin();
-        Evento evento = eventoRepository.save(EventoMapper.toEntity(request, login));
+        Turma turma = request.turmaId() != null ? turmaService.buscarPorId(request.turmaId()) : null;
+        Evento evento = eventoRepository.save(EventoMapper.toEntity(request, login, turma));
 
         atividadeService.registrar("Evento \"" + evento.getTitulo() + "\" criado");
 
@@ -61,7 +66,8 @@ public class EventoService {
         Evento evento = eventoRepository.findByIdAndInstrutorLogin(id, login)
             .orElseThrow(() -> new RecursoNaoEncontradoException("Evento não encontrado."));
 
-        EventoMapper.updateEntity(evento, request);
+        Turma turma = request.turmaId() != null ? turmaService.buscarPorId(request.turmaId()) : null;
+        EventoMapper.updateEntity(evento, request, turma);
         evento = eventoRepository.save(evento);
 
         atividadeService.registrar("Evento \"" + evento.getTitulo() + "\" atualizado");

@@ -16,6 +16,8 @@ public interface TurmaRepository extends JpaRepository<Turma, Long> {
 
     Optional<Turma> findByIdAndInstrutorLogin(Long id, String instrutorLogin);
 
+    Optional<Turma> findByIdAndInstrutorLoginAndAtivaTrue(Long id, String instrutorLogin);
+
     boolean existsByCodigoAndInstrutorLogin(String codigo, String instrutorLogin);
 
     // Contagem agrupada (evita N+1): uma única query para todas as turmas do instrutor.

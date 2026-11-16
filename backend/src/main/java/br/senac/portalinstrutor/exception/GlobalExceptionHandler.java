@@ -133,6 +133,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.FORBIDDEN, "USUARIO_INATIVO", ex.getMessage(), Map.of());
     }
 
+    @ExceptionHandler(MuitasTentativasException.class)
+    public ResponseEntity<ErrorResponse> handleMuitasTentativas(MuitasTentativasException ex) {
+        return buildResponse(HttpStatus.TOO_MANY_REQUESTS, "MUITAS_TENTATIVAS", ex.getMessage(), Map.of());
+    }
+
     @ExceptionHandler({OptimisticLockingFailureException.class, PessimisticLockingFailureException.class})
     public ResponseEntity<ErrorResponse> handleLocking(RuntimeException ex) {
         return buildResponse(HttpStatus.CONFLICT, "CONFLITO", "A operação entrou em conflito com outra alteração simultânea. Tente novamente.", Map.of());
@@ -154,9 +159,6 @@ public class GlobalExceptionHandler {
         }
         if (msg.contains("uk_frequencia_aluno_data")) {
             return buildResponse(HttpStatus.CONFLICT, "CONFLITO", "Já existe frequência para este aluno nesta data.", Map.of());
-        }
-        if (msg.contains("uk_nota_avaliacao_aluno")) {
-            return buildResponse(HttpStatus.CONFLICT, "CONFLITO", "Já existe nota para este aluno nesta avaliação.", Map.of());
         }
         if (msg.contains("not-null") || msg.contains("null value in column") || msg.contains("violates not-null")) {
             return buildResponse(HttpStatus.BAD_REQUEST, "VALIDACAO", "Campo obrigatório ausente.", Map.of());

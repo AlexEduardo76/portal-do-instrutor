@@ -105,4 +105,22 @@ public class OcorrenciaService {
 
         return OcorrenciaMapper.toResponse(ocorrencia);
     }
+
+    @Transactional
+    public void excluir(Long turmaId, Long ocorrenciaId) {
+        turmaService.buscarPorId(turmaId);
+        String login = usuarioLogadoService.getLogin();
+
+        Ocorrencia ocorrencia = ocorrenciaRepository.findByIdAndInstrutorLogin(ocorrenciaId, login)
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Ocorrência não encontrada."));
+
+        if (!ocorrencia.getTurma().getId().equals(turmaId)) {
+            throw new RecursoNaoEncontradoException("Ocorrência não encontrada nesta turma.");
+        }
+
+        String nomeAluno = ocorrencia.getAluno().getNome();
+        ocorrenciaRepository.delete(ocorrencia);
+
+        atividadeService.registrar("Ocorrência excluída — " + nomeAluno);
+    }
 }

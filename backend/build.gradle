@@ -27,6 +27,7 @@ dependencies {
 
 
     // Versionamento de schema (ver D1). O baseline reproduz o schema atual das entidades.
+    implementation 'org.springframework.boot:spring-boot-flyway'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
 

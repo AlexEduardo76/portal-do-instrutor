@@ -103,7 +103,7 @@ public class TurmaService {
     @Transactional
     public TurmaResponse atualizar(Long id, TurmaRequest request) {
         String login = usuarioLogadoService.getLogin();
-        Turma turma = turmaRepository.findByIdAndInstrutorLogin(id, login)
+        Turma turma = turmaRepository.findByIdAndInstrutorLoginAndAtivaTrue(id, login)
             .orElseThrow(() -> new RecursoNaoEncontradoException("Turma não encontrada."));
 
         String codigo = TextoUtil.trimParaNulo(request.codigo());
@@ -130,11 +130,12 @@ public class TurmaService {
     @Transactional
     public void excluir(Long id) {
         String login = usuarioLogadoService.getLogin();
-        Turma turma = turmaRepository.findByIdAndInstrutorLogin(id, login)
+        Turma turma = turmaRepository.findByIdAndInstrutorLoginAndAtivaTrue(id, login)
             .orElseThrow(() -> new RecursoNaoEncontradoException("Turma não encontrada."));
 
         String nome = turma.getNome();
-        turmaRepository.delete(turma);
+        turma.setAtiva(false);
+        turmaRepository.save(turma);
 
         atividadeService.registrar("Turma " + nome + " excluída");
     }
@@ -142,7 +143,7 @@ public class TurmaService {
     @Transactional(readOnly = true)
     public Turma buscarPorId(Long id) {
         String login = usuarioLogadoService.getLogin();
-        return turmaRepository.findByIdAndInstrutorLogin(id, login)
+        return turmaRepository.findByIdAndInstrutorLoginAndAtivaTrue(id, login)
             .orElseThrow(() -> new RecursoNaoEncontradoException("Turma não encontrada."));
     }
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Frequência</title>
-  <link rel="icon" type="image/png" href="img/logo-senac.png">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
   <link rel="stylesheet" href="css/frequencia.css">
   <link rel="stylesheet" href="css/frequencia-extra.css">
 </head>
@@ -87,6 +87,45 @@
 </div>
 
 <div class="toast-area" aria-live="polite" aria-atomic="true"></div>
+
+<!-- MODAL: REMOVER CHAMADA -->
+<div class="modal-backdrop" id="modalRemoverBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalRemoverTitulo" aria-describedby="modalRemoverDescricao">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalRemoverTitulo">Remover chamada?</h2>
+        <p id="modalRemoverDescricao">Confira os dados antes de apagar.</p>
+      </div>
+      <button class="btn btn-secondary icon-btn" id="modalRemoverFechar" type="button">Fechar</button>
+    </div>
+
+    <div class="modal-corpo">
+      <dl class="resumo-remocao">
+        <div>
+          <dt>Turma</dt>
+          <dd id="removerTurma">—</dd>
+        </div>
+        <div>
+          <dt>Data da aula</dt>
+          <dd id="removerData">—</dd>
+        </div>
+        <div>
+          <dt>Registros salvos</dt>
+          <dd id="removerRegistros">—</dd>
+        </div>
+      </dl>
+
+      <p class="aviso-remocao" id="removerAviso">
+        Os registros de presença, atraso e falta desta data serão apagados permanentemente.
+      </p>
+    </div>
+
+    <div class="modal-acoes">
+      <button class="btn btn-secondary" id="modalRemoverCancelar" type="button">Cancelar</button>
+      <button class="btn btn-danger-solid" id="modalRemoverConfirmar" type="button">Remover chamada</button>
+    </div>
+  </div>
+</div>
 
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>

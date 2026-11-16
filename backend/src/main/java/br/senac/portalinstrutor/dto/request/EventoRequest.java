@@ -12,6 +12,7 @@ public record EventoRequest(
     @NotNull TipoEvento tipo,
     @NotNull LocalDate data,
     LocalTime hora,
+    Long turmaId,
     @Size(max = 60) String turmaNome,
     @Size(max = 500) String descricao
 ) {}

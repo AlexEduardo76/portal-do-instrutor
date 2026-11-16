@@ -9,6 +9,5 @@ public record DashboardResponse(
     List<TurmaResumoResponse> turmas,
     List<ProximaAulaResponse> proximasAulas,
     List<AtividadeResponse> atividades,
-    FrequenciaDashboardResponse frequencia,
-    NotasDashboardResponse notas
+    FrequenciaDashboardResponse frequencia
 ) {}

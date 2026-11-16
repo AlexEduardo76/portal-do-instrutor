@@ -45,7 +45,8 @@ async function carregarTurmas() {
     try {
         const data = await api.get("/turmas/resumo");
         turmas = data;
-        setHTML("listaTurmas", turmas.map((t) => `<option value="${esc(t.nome)}"></option>`).join(""));
+        setHTML("evtTurma", '<option value="">Todas as turmas</option>'
+            + turmas.map((t) => `<option value="${esc(t.id)}">${esc(t.nome)}</option>`).join(""));
     } catch (err) {
         console.warn("Não foi possível carregar as turmas:", err);
     }
@@ -128,8 +129,8 @@ function renderGrade() {
         const chips = itens.slice(0, MAX_CHIPS_POR_DIA).map((it) => {
             const conteudo = `${it.hora ? `<span class="cal-hora">${esc(it.hora)}</span> ` : ""}${esc(it.titulo)}`;
             return it.origem === "evento"
-                ? `<button type="button" class="cal-chip tipo-${it.tipo}" data-evento-id="${esc(it.id)}" title="${esc(it.titulo)}">${conteudo}</button>`
-                : `<span class="cal-chip cal-chip-aula tipo-${it.tipo}" title="Aula da agenda: ${esc(it.titulo)}">${conteudo}</span>`;
+                ? `<button type="button" class="cal-chip tipo-${tipoSeguro(it.tipo)}" data-evento-id="${esc(it.id)}" title="${esc(it.titulo)}">${conteudo}</button>`
+                : `<span class="cal-chip cal-chip-aula tipo-${tipoSeguro(it.tipo)}" title="Aula da agenda: ${esc(it.titulo)}">${conteudo}</span>`;
         }).join("");
 
         const mais = itens.length > MAX_CHIPS_POR_DIA
@@ -171,7 +172,7 @@ function renderDia() {
     }
 
     setHTML("eventosDiaSelecionado", itens.map((it) => `
-        <article class="evento-item tipo-${it.tipo}">
+        <article class="evento-item tipo-${tipoSeguro(it.tipo)}">
             <div class="evento-hora">${it.hora ? esc(it.hora) : "Dia todo"}</div>
             <div class="evento-corpo">
                 <strong>${esc(it.titulo)}</strong>
@@ -227,7 +228,10 @@ function abrirModal({ evento = null, data = selecionada } = {}) {
     el("evtTipo").value = evento ? tipoSeguro(evento.tipo) : "AULA";
     el("evtData").value = evento?.data || data;
     el("evtHora").value = evento?.hora ? evento.hora.slice(0, 5) : "";
-    el("evtTurma").value = evento?.turmaNome || "";
+    const turmaDoEvento = evento?.turmaId
+        ? String(evento.turmaId)
+        : (turmas.find((t) => t.nome === evento?.turmaNome)?.id ?? "");
+    el("evtTurma").value = turmaDoEvento;
     el("evtDescricao").value = evento?.descricao || "";
     el("btnExcluirEvento").hidden = !evento;
 
@@ -247,12 +251,15 @@ function fecharModal() {
 async function salvarEvento(e) {
     e.preventDefault();
 
+    const turmaId = el("evtTurma").value;
+    const turmaSelecionada = turmas.find((t) => String(t.id) === turmaId);
     const dados = {
         titulo: el("evtTitulo").value.trim(),
         tipo: el("evtTipo").value,
         data: el("evtData").value,
         hora: el("evtHora").value || null,
-        turmaNome: el("evtTurma").value.trim() || null,
+        turmaId: turmaSelecionada ? turmaSelecionada.id : null,
+        turmaNome: turmaSelecionada ? turmaSelecionada.nome : null,
         descricao: el("evtDescricao").value.trim() || null,
     };
 

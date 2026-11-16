@@ -18,6 +18,15 @@ async function api(caminho, { metodo = "GET", corpo = null, redirecionar401 = tr
         opcoes.body = JSON.stringify(corpo);
     }
 
+    // Requisições que alteram estado exigem o token CSRF enviado pelo backend
+    // no cookie XSRF-TOKEN (headers são lidos pelo CookieCsrfTokenRepository).
+    if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(metodo.toUpperCase())) {
+        const token = lerCookie("XSRF-TOKEN");
+        if (token) {
+            opcoes.headers["X-XSRF-TOKEN"] = token;
+        }
+    }
+
     const resposta = await fetch(url, opcoes);
 
     // Alguns PUT/DELETE respondem sem corpo; não chame json() às cegas.
@@ -51,6 +60,12 @@ async function api(caminho, { metodo = "GET", corpo = null, redirecionar401 = tr
     }
 
     return dados;
+}
+
+function lerCookie(nome) {
+    const prefixo = `${nome}=`;
+    const item = document.cookie.split("; ").find((parte) => parte.startsWith(prefixo));
+    return item ? decodeURIComponent(item.slice(prefixo.length)) : null;
 }
 
 function limparSessaoLocal() {

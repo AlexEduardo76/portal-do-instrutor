@@ -4,7 +4,7 @@
 
 # Portal do Instrutor
 
-**Gestão acadêmica simples e centralizada para instrutores: turmas, alunos, frequência, notas, calendário e ocorrências em um só lugar.**
+**Gestão acadêmica simples e centralizada para instrutores: turmas, alunos, frequência, calendário e ocorrências em um só lugar.**
 
 <br/>
 
@@ -32,7 +32,7 @@
 
 ## 📖 Sobre o projeto
 
-O **Portal do Instrutor** é uma aplicação web desenvolvida para o dia a dia de instrutores do **Senac**. Ele reúne em uma única interface as tarefas que normalmente ficam espalhadas entre planilhas e anotações: acompanhar turmas, lançar frequência, registrar notas, consultar o calendário e documentar ocorrências dos alunos.
+O **Portal do Instrutor** é uma aplicação web desenvolvida para o dia a dia de instrutores do **Senac**. Ele reúne em uma única interface as tarefas que normalmente ficam espalhadas entre planilhas e anotações: acompanhar turmas, lançar frequência, consultar o calendário e documentar ocorrências dos alunos.
 
 A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que também serve o **front-end estático** na mesma origem. Isso significa um único deploy, nenhuma configuração de CORS e uma sessão simples baseada em cookie.
 
@@ -45,11 +45,11 @@ A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que tam
 | Módulo | O que faz |
 |---|---|
 | 🔐 **Autenticação** | Login por **usuário, e-mail ou CPF** (com ou sem pontuação), com opção "lembrar de mim" |
-| 📊 **Dashboard** | Visão geral em uma única chamada: totais, próximas aulas, alunos com frequência em atenção, pendências de notas e atividades recentes |
+| 📊 **Dashboard** | Visão geral em uma única chamada: totais, próximas aulas, alunos com frequência em atenção e atividades recentes |
 | 🏫 **Turmas** | Cadastro, edição e exclusão de turmas, com código, curso, turno, sala e carga horária |
 | 👩‍🎓 **Alunos** | Cadastro por turma com matrícula e CPF validado; remoção lógica (sem perder histórico) |
 | 📚 **Unidades Curriculares** | Gerenciamento das UCs de cada turma |
-| ✅ **Frequência** | Chamada por data, com *upsert*: salvar de novo atualiza em vez de duplicar || 📝 **Avaliações e notas** | Criação de avaliações (gera notas pendentes para todos os alunos ativos) e lançamento de notas |
+| ✅ **Frequência** | Chamada por data, com *upsert*: salvar de novo atualiza em vez de duplicar |
 | 🗓️ **Calendário** | Eventos por período, com tipos como aula, prova, entrega, feriado, recesso, reunião e anotação |
 | 📋 **Ocorrências** | Registro e histórico de observações por aluno e turma |
 
@@ -57,7 +57,7 @@ A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que tam
 
 - **Frequência mínima configurável** (`app.frequencia-minima`, padrão **75%**): alunos abaixo do limite aparecem em alerta no dashboard.
 - **Isolamento por instrutor**: cada instrutor enxerga apenas os próprios dados.
-- **Exclusão lógica de alunos**, preservando frequência, notas e ocorrências já registradas.
+- **Exclusão lógica de alunos**, preservando frequência e ocorrências já registradas.
 - **Validação de CPF** no backend.
 
 ---
@@ -106,12 +106,12 @@ portal-do-instrutor/
 │   │   ├── exception/               # Exceções e GlobalExceptionHandler
 │   │   └── util/                    # CpfUtil, TextoUtil
 │   ├── src/main/resources/          # application*.properties e migrações Flyway
-│   ├── src/test/                    # 26 testes (unitários, repositório e integração)
+│   ├── src/test/                    # 59 testes (unitários, repositório e integração)
 │   ├── build.gradle
 │   └── Dockerfile
 ├── frontend/                        # Interface web estática
 │   ├── css/  img/  js/
-│   └── *.html                       # login, dashboard, turmas, frequência, notas...
+│   └── *.html                       # login, dashboard, turmas, frequência...
 ├── .github/workflows/ci.yml         # CI: build + testes + jar
 ├── docker-compose.yml               # PostgreSQL + aplicação
 ├── render.yaml                      # Deploy do backend no Render
@@ -159,13 +159,16 @@ cd backend
 
 ### 🔑 Acesso de demonstração
 
-Quando `SEED_SENHA` está definida (mínimo de 8 caracteres), a aplicação cria um usuário de demonstração na primeira execução:
+Quando `SEED_SENHA` está definida (mínimo de 8 caracteres), a aplicação cria um usuário de demonstração na primeira execução, já com dados fictícios de uma instrutora do curso Técnico em Desenvolvimento de Sistemas:
 
 | Campo | Valor |
 |---|---|
+| Nome | Marina Duarte Campos |
 | Usuário | `instrutor` |
-| E-mail | `instrutor@senac.br` |
+| E-mail | `marina.campos@senac.br` |
 | Senha | o valor de `SEED_SENHA` (ex.: `senac123`) |
+
+> Os dados de exemplo incluem turmas de TDS (noturno e vespertino), uma turma livre de Programação Web, alunos, unidades curriculares, aulas, frequências, eventos e ocorrências. Tudo fictício, apenas para demonstração.
 
 > ⚠️ **Nunca** use o usuário demo em produção. Deixe `SEED_SENHA` vazia para que ele não seja criado.
 
@@ -246,18 +249,6 @@ Todas as rotas ficam sob o prefixo `/api` e exigem sessão autenticada, exceto `
 </details>
 
 <details>
-<summary><b>📝 Avaliações e notas</b></summary>
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `GET` | `/api/turmas/{id}/avaliacoes` | Lista avaliações |
-| `POST` | `/api/turmas/{id}/avaliacoes` | Cria avaliação (notas iniciam nulas) |
-| `GET` | `/api/avaliacoes/{id}/notas` | Busca as notas |
-| `PUT` | `/api/avaliacoes/{id}/notas` | Salva as notas (*upsert*) |
-
-</details>
-
-<details>
 <summary><b>📋 Ocorrências, calendário e dashboard</b></summary>
 
 | Método | Rota | Descrição |
@@ -308,13 +299,13 @@ cd backend
 ./gradlew test
 ```
 
-São **26 testes** versionados em `backend/src/test/java`:
+Os testes ficam em `backend/src/test/java`:
 
 | Tipo | Ferramentas | Cobertura |
 |---|---|---|
-| Unitários | JUnit 5 + Mockito | `CpfUtil` (5), `AlunoService` (3), `FrequenciaService` (6) e `NotaService` (5) |
-| Repositório | `@DataJpaTest` + H2 | Cálculo de percentual e busca de frequência (3) |
-| Integração | `@SpringBootTest` + MockMvc | Fluxo completo: login → turma → aluno → frequência → avaliação → nota → dashboard → logout, além de *smoke test* dos endpoints (4) |
+| Unitários | JUnit 5 + Mockito | `CpfUtil`, `AlunoService`, `FrequenciaService` e `FrequenciaGestaoService` |
+| Repositório | `@DataJpaTest` + H2 | Cálculo de percentual e busca de frequência (7) |
+| Integração | `@SpringBootTest` + MockMvc | Fluxo completo, regras de negócio, isolamento entre instrutores e casos de aceitação do documento (28) |
 
 O pipeline em `.github/workflows/ci.yml` roda `./gradlew test bootJar` em todo push e pull request para a `main`.
 

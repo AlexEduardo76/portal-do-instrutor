@@ -4,7 +4,6 @@ const MENU = [
     { titulo: "Acadêmico",    itens: [
         { href: "turmas.html",     icone: "▣", texto: "Turmas" },
         { href: "frequencia.html", icone: "✓", texto: "Frequência" },
-        { href: "notas.html",      icone: "✎", texto: "Notas" },
     ] },
     { titulo: "Planejamento", itens: [{ href: "calendario.html", icone: "▦", texto: "Calendário" }] },
     { titulo: "Gestão",       itens: [

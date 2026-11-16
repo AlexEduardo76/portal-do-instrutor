@@ -157,7 +157,7 @@ function editarAluno(id) {
 async function removerAluno(id) {
     const aluno = alunosTurma.find((a) => String(a.id) === String(id));
     if (!aluno) return;
-    if (!confirm(`Remover "${aluno.nome}" desta turma?\n\nEle deixa de aparecer em Frequência, Notas e Relatórios. Os registros antigos são mantidos.`)) return;
+    if (!confirm(`Remover "${aluno.nome}" desta turma?\n\nEle deixa de aparecer em Frequência e Relatórios. Os registros antigos são mantidos.`)) return;
 
     try {
         await api.delete(`/alunos/${aluno.id}`);

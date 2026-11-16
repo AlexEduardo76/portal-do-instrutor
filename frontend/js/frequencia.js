@@ -2,6 +2,8 @@
 let alunos = [];
 let jaRegistrada = false;
 let cargaAtual = 0;
+let marcadasSalvas = {};
+let removendoChamada = false;
 
 const TOTAL_BOLINHAS = 4;
 
@@ -34,6 +36,8 @@ function mostrarVazio(mensagem) {
     const vazio = el("listaAlunosVazia");
     vazio.textContent = mensagem;
     vazio.hidden = false;
+    jaRegistrada = false;
+    marcadasSalvas = {};
     el("btnSalvar").disabled = true;
     el("btnTodosPresentes").disabled = true;
     el("btnRemoverChamada").disabled = true;
@@ -47,6 +51,7 @@ async function carregarChamada() {
     if (!turmaId || !data) {
         alunos = [];
         jaRegistrada = false;
+        marcadasSalvas = {};
         el("resumoChamada").textContent = "Selecione uma turma para carregar os alunos.";
         return mostrarVazio(turmaId ? "Informe a data da aula." : "Nenhuma turma selecionada.");
     }
@@ -74,6 +79,7 @@ async function carregarChamada() {
                 ])
         );
 
+        marcadasSalvas = { ...salvas };
         renderChamada(salvas);
     } catch (err) {
         if (carga !== cargaAtual) return;
@@ -135,7 +141,11 @@ function renderChamada(salvas) {
 }
 
 function atualizarBotaoRemover() {
-    el("btnRemoverChamada").disabled = !jaRegistrada || !alunos.length;
+    const botao = el("btnRemoverChamada");
+    botao.disabled = !jaRegistrada || !alunos.length;
+    botao.title = botao.disabled
+        ? "Nenhuma chamada registrada para esta turma e data."
+        : `Remover os registros salvos de ${dataBR(el("dataAula").value)}.`;
 }
 
 function atualizarResumo() {
@@ -201,11 +211,18 @@ async function salvarFrequencia() {
     const botao = el("btnSalvar");
     botao.disabled = true;
     botao.textContent = "Salvando...";
+    el("btnRemoverChamada").disabled = true;
 
     try {
         await api.put(`/turmas/${turmaId}/frequencias`, { data, registros });
 
         jaRegistrada = true;
+        marcadasSalvas = Object.fromEntries(
+            [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")].map((linha) => [
+                Number(linha.dataset.alunoId),
+                marcadasDaLinha(linha)
+            ])
+        );
         atualizarBotaoRemover();
         atualizarResumo();
         toast("Frequência salva com sucesso.", "sucesso");
@@ -215,11 +232,24 @@ async function salvarFrequencia() {
     } finally {
         botao.disabled = false;
         botao.textContent = "Salvar frequência";
+        atualizarBotaoRemover();
     }
 }
 
 // ====== REMOVER CHAMADA ======
-async function removerChamada() {
+function turmaSelecionadaTexto() {
+    return el("turma").selectedOptions[0]?.textContent?.trim() || "Turma selecionada";
+}
+
+function temAlteracoesNaoSalvas() {
+    if (!jaRegistrada) return false;
+    return [...document.querySelectorAll("#listaAlunos tr[data-aluno-id]")].some((linha) => {
+        const alunoId = Number(linha.dataset.alunoId);
+        return marcadasDaLinha(linha) !== Number(marcadasSalvas[alunoId] ?? 0);
+    });
+}
+
+function abrirModalRemover() {
     const turmaId = el("turma").value;
     const data = el("dataAula").value;
 
@@ -227,24 +257,65 @@ async function removerChamada() {
     if (!data) return toast("Informe a data da aula.", "erro");
     if (!jaRegistrada) return toast("Não há chamada registrada nesta data.", "erro");
 
-    const turmaTexto = el("turma").selectedOptions[0]?.textContent?.trim() || "turma selecionada";
-    if (!confirm(`Remover a chamada de ${dataBR(data)} da ${turmaTexto}?\n\nOs registros de presença, atraso e falta dessa data serão apagados. Esta ação não pode ser desfeita.`)) return;
+    el("removerTurma").textContent = turmaSelecionadaTexto();
+    el("removerData").textContent = dataBR(data);
+    el("removerRegistros").textContent = `${Object.keys(marcadasSalvas).length} aluno(s) com chamada salva`;
 
-    const botao = el("btnRemoverChamada");
+    el("removerAviso").textContent = temAlteracoesNaoSalvas()
+        ? "Os registros salvos serão apagados permanentemente. As alterações que você fez e ainda não salvou também serão descartadas."
+        : "Os registros de presença, atraso e falta desta data serão apagados permanentemente. Esta ação não pode ser desfeita.";
+
+    el("modalRemoverBackdrop").classList.add("open");
+    document.body.classList.add("modal-aberto");
+    el("modalRemoverCancelar").focus();
+}
+
+function fecharModalRemover(forcar = false) {
+    if (removendoChamada && !forcar) return;
+    el("modalRemoverBackdrop").classList.remove("open");
+    document.body.classList.remove("modal-aberto");
+    const alvo = el("btnRemoverChamada").disabled ? el("turma") : el("btnRemoverChamada");
+    alvo.focus();
+}
+
+async function confirmarRemocao() {
+    if (removendoChamada) return;
+
+    const turmaId = el("turma").value;
+    const data = el("dataAula").value;
+    if (!turmaId || !data) return;
+
+    removendoChamada = true;
+    const botao = el("modalRemoverConfirmar");
     const textoOriginal = botao.textContent;
     botao.disabled = true;
     botao.textContent = "Removendo...";
+    el("modalRemoverCancelar").disabled = true;
+    el("modalRemoverFechar").disabled = true;
 
     try {
         await api.delete(`/turmas/${turmaId}/frequencias?data=${data}`);
         toast("Chamada removida com sucesso.", "sucesso");
         jaRegistrada = false;
+        marcadasSalvas = {};
+        fecharModalRemover(true);
         await carregarChamada();
     } catch (err) {
         console.error("Erro ao remover chamada:", err);
         toast(err.message || "Não foi possível remover a chamada.", "erro");
+
+        if (err.status === 400 || err.status === 404) {
+            jaRegistrada = false;
+            marcadasSalvas = {};
+            fecharModalRemover(true);
+            await carregarChamada();
+        }
     } finally {
+        removendoChamada = false;
+        botao.disabled = false;
         botao.textContent = textoOriginal;
+        el("modalRemoverCancelar").disabled = false;
+        el("modalRemoverFechar").disabled = false;
         atualizarBotaoRemover();
     }
 }
@@ -276,8 +347,21 @@ document.addEventListener("DOMContentLoaded", () => {
         atualizarResumo();
     });
     el("btnTodosPresentes").addEventListener("click", marcarTodosPresentes);
-    el("btnRemoverChamada").addEventListener("click", removerChamada);
+    el("btnRemoverChamada").addEventListener("click", abrirModalRemover);
     el("btnSalvar").addEventListener("click", salvarFrequencia);
+
+    el("modalRemoverFechar").addEventListener("click", () => fecharModalRemover());
+    el("modalRemoverCancelar").addEventListener("click", () => fecharModalRemover());
+    el("modalRemoverConfirmar").addEventListener("click", confirmarRemocao);
+    el("modalRemoverBackdrop").addEventListener("click", (e) => {
+        if (e.target === el("modalRemoverBackdrop")) fecharModalRemover();
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && el("modalRemoverBackdrop").classList.contains("open")) {
+            e.preventDefault();
+            fecharModalRemover();
+        }
+    });
 
     mostrarVazio("Nenhuma turma selecionada.");
     carregarTurmas();

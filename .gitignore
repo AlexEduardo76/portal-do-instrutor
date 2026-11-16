@@ -33,3 +33,9 @@ build_*.txt
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Artefatos locais
+.postman/
+postman/
+tests/load/results/
+frontend/swagger-ui.html

@@ -102,6 +102,50 @@
         </div>
       </section>
 
+      <!-- FREQUÊNCIA EM GRÁFICOS -->
+      <section class="card dashboard-section" aria-labelledby="graficos-frequencia">
+        <div class="card-header">
+          <div>
+            <span class="eyebrow">FREQUÊNCIA</span>
+            <h2 id="graficos-frequencia">Como estão as suas turmas</h2>
+            <p>Presenças, atrasos e faltas das chamadas já registradas.</p>
+          </div>
+          <a href="frequencias.html" class="btn btn-secondary btn-small">Ver frequência geral</a>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <h3>Frequência geral</h3>
+              <span class="chart-hint" id="freqRegistrosHint">—</span>
+            </div>
+            <div id="graficoFrequencia" class="donut-wrap">
+              <div class="loading-state"><span>Carregando gráfico...</span></div>
+            </div>
+          </div>
+
+          <div class="chart-panel">
+            <div class="chart-panel-header">
+              <h3>Frequência por turma</h3>
+              <span class="chart-hint">Meta: 75%</span>
+            </div>
+            <div id="barrasFrequenciaTurmas" class="bars-turmas">
+              <div class="loading-state"><span>Carregando turmas...</span></div>
+            </div>
+          </div>
+
+          <div class="chart-panel chart-panel--full">
+            <div class="chart-panel-header">
+              <h3>Faltas por aluno</h3>
+              <span class="chart-hint" id="faltasAlunosHint">—</span>
+            </div>
+            <div id="graficoFaltasAlunos" class="faltas-alunos">
+              <div class="loading-state"><span>Carregando faltas...</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- PRÓXIMAS AULAS E PENDÊNCIAS -->
       <div class="dashboard-columns">
 
@@ -158,32 +202,6 @@
         </div>
         <div id="listaAtividades" class="activity-list">
           <div class="loading-state"><span>Carregando atividades...</span></div>
-        </div>
-      </section>
-
-      <!-- RESUMO DE FREQUÊNCIA -->
-      <section class="card dashboard-section" aria-labelledby="resumo-frequencia">
-        <div class="card-header">
-          <div>
-            <span class="eyebrow">FREQUÊNCIA</span>
-            <h2 id="resumo-frequencia">Acompanhamento de frequência</h2>
-            <p>Visão geral da presença dos alunos nas suas turmas.</p>
-          </div>
-          <a href="frequencia.html" class="btn btn-secondary btn-small">Ver frequência</a>
-        </div>
-        <div class="attendance-summary">
-          <div class="attendance-item">
-            <span>Presença média</span>
-            <strong id="attendanceMedia">—</strong>
-          </div>
-          <div class="attendance-item">
-            <span>Alunos em atenção</span>
-            <strong id="attendanceAtencao">—</strong>
-          </div>
-          <div class="attendance-item">
-            <span>Alunos com frequência regular</span>
-            <strong id="attendanceRegular">—</strong>
-          </div>
         </div>
       </section>
 

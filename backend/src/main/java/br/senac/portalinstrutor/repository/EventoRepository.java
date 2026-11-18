@@ -17,6 +17,9 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
 
     List<Evento> findByInstrutorLoginAndDataBetweenOrderByData(String instrutorLogin, LocalDate inicio, LocalDate fim, Pageable pageable);
 
+    List<Evento> findByInstrutorLoginAndTipoAndDataGreaterThanEqualOrderByDataAscHoraAsc(
+        String instrutorLogin, TipoEvento tipo, LocalDate data, Pageable pageable);
+
     Optional<Evento> findByIdAndInstrutorLogin(Long id, String instrutorLogin);
 
     long countByInstrutorLoginAndDataGreaterThanEqual(String instrutorLogin, LocalDate data);

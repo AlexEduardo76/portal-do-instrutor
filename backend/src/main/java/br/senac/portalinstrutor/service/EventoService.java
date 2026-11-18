@@ -7,6 +7,7 @@ import br.senac.portalinstrutor.exception.RegraNegocioException;
 import br.senac.portalinstrutor.mapper.EventoMapper;
 import br.senac.portalinstrutor.model.Evento;
 import br.senac.portalinstrutor.model.Turma;
+import br.senac.portalinstrutor.model.enums.TipoEvento;
 import br.senac.portalinstrutor.repository.EventoRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -91,6 +93,24 @@ public class EventoService {
     public long contarFuturos() {
         String login = usuarioLogadoService.getLogin();
         return eventoRepository.countByInstrutorLoginAndDataGreaterThanEqual(login, LocalDate.now(clock));
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventoResponse> listarProximasAulas(int limite) {
+        String login = usuarioLogadoService.getLogin();
+        LocalDate hoje = LocalDate.now(clock);
+        LocalTime agora = LocalTime.now(clock);
+
+        return eventoRepository
+            .findByInstrutorLoginAndTipoAndDataGreaterThanEqualOrderByDataAscHoraAsc(
+                login, TipoEvento.AULA, hoje, PageRequest.of(0, 50))
+            .stream()
+            .filter(evento -> evento.getData().isAfter(hoje)
+                || evento.getHora() == null
+                || !evento.getHora().isBefore(agora))
+            .limit(limite)
+            .map(EventoMapper::toResponse)
+            .toList();
     }
 
     private void validarPeriodo(LocalDate inicio, LocalDate fim) {

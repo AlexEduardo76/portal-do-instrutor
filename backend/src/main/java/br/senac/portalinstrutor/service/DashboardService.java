@@ -10,6 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Clock;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +31,12 @@ public class DashboardService {
     private final FrequenciaRepository frequenciaRepository;
     private final UsuarioLogadoService usuarioLogadoService;
     private final AppProperties appProperties;
+    private final Clock clock;
 
     public DashboardService(TurmaService turmaService, AulaService aulaService, AtividadeService atividadeService,
                             EventoService eventoService, TurmaRepository turmaRepository,
                             FrequenciaRepository frequenciaRepository, UsuarioLogadoService usuarioLogadoService,
-                            AppProperties appProperties) {
+                            AppProperties appProperties, Clock clock) {
         this.turmaService = turmaService;
         this.aulaService = aulaService;
         this.atividadeService = atividadeService;
@@ -38,6 +45,7 @@ public class DashboardService {
         this.frequenciaRepository = frequenciaRepository;
         this.usuarioLogadoService = usuarioLogadoService;
         this.appProperties = appProperties;
+        this.clock = clock;
     }
 
     @Transactional(readOnly = true)
@@ -53,10 +61,16 @@ public class DashboardService {
         Map<Long, Integer> alunosPorTurma = paraMapa(
             turmaIds.isEmpty() ? List.of() : turmaRepository.contarAlunosAtivosPorTurmas(login, turmaIds));
 
-        // Próximas aulas (5)
-        List<ProximaAulaResponse> proximasAulas = aulaService.listarProximas().stream()
-            .map(a -> new ProximaAulaResponse(a.id(), a.titulo(), a.dataHora(), a.sala(), a.turmaId(), a.turmaNome()))
-            .toList();
+        // Próximas aulas: aulas cadastradas + eventos do tipo AULA criados no calendário.
+        ZoneId zona = ZonedDateTime.now(clock).getZone();
+        List<ProximaAulaResponse> proximas = new ArrayList<>(aulaService.listarProximas().stream()
+            .map(a -> new ProximaAulaResponse(a.id(), a.titulo(), a.dataHora(), a.sala(), a.turmaId(), a.turmaNome(), false))
+            .toList());
+        proximas.addAll(eventoService.listarProximasAulas(5).stream()
+            .map(evento -> paraProximaAula(evento, zona))
+            .toList());
+        proximas.sort(Comparator.comparing(ProximaAulaResponse::dataHora));
+        List<ProximaAulaResponse> proximasAulas = proximas.stream().limit(5).toList();
 
         List<AtividadeResponse> atividades = atividadeService.listarUltimas(5);
 
@@ -99,6 +113,19 @@ public class DashboardService {
             .toList();
 
         return new DashboardResponse(totais, turmasResumo, proximasAulas, atividades, freqDash);
+    }
+
+    private ProximaAulaResponse paraProximaAula(EventoResponse evento, ZoneId zona) {
+        LocalTime hora = evento.hora() != null ? evento.hora() : LocalTime.MIDNIGHT;
+        return new ProximaAulaResponse(
+            evento.id(),
+            evento.titulo(),
+            ZonedDateTime.of(evento.data(), hora, zona),
+            null,
+            evento.turmaId(),
+            evento.turmaNome(),
+            evento.hora() == null
+        );
     }
 
     private Map<Long, Integer> paraMapa(List<Object[]> linhas) {

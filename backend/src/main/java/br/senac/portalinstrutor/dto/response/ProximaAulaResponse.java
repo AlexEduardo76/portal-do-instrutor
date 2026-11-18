@@ -8,5 +8,6 @@ public record ProximaAulaResponse(
     ZonedDateTime dataHora,
     String sala,
     Long turmaId,
-    String turmaNome
+    String turmaNome,
+    boolean diaTodo
 ) {}

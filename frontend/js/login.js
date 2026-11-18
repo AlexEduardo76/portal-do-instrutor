@@ -9,12 +9,11 @@ fetch("/api/auth/me", { cache: "no-store", credentials: "same-origin", priority:
     .catch(() => { /* o backend pode estar acordando; ignoramos o 401/erro */ });
 
 // ====== FUNÇÕES AUXILIARES ======
-function salvarSessao(usuario, lembrar) {
+function salvarSessao(usuario) {
     const sessao = JSON.stringify({ nome: usuario.nome, login: usuario.login });
-    const armazenamento = lembrar ? localStorage : sessionStorage;
     localStorage.removeItem(CHAVE_SESSAO);
     sessionStorage.removeItem(CHAVE_SESSAO);
-    armazenamento.setItem(CHAVE_SESSAO, sessao);
+    sessionStorage.setItem(CHAVE_SESSAO, sessao);
 }
 
 function mostrarErro(mensagem) {
@@ -40,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const entrada = document.getElementById("usuario").value;
         const senha = document.getElementById("senha").value;
-        const lembrar = document.getElementById("lembrar").checked;
 
         if (!entrada.trim() || !senha) {
             mostrarErro("Preencha usuário e senha.");
@@ -56,10 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const usuario = await api.post("/auth/login", {
                 identificador: entrada,
                 senha: senha,
-                lembrar: lembrar
+                lembrar: false
             }, { redirecionar401: false });
 
-            salvarSessao(usuario, lembrar);
+            salvarSessao(usuario);
             window.location.replace(PAGINA_PAINEL);
         } catch (err) {
             mostrarErro(err.message || "Usuário ou senha incorretos.");

@@ -154,37 +154,6 @@ body {
   background-color: #FFFFFF;
 }
 
-/* Opções de Login (Lembrar-me / Esqueceu a senha) */
-.login-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
-  margin-bottom: 1.5rem;
-}
-
-.login-options label {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.login-options input[type="checkbox"] {
-  accent-color: var(--brand-blue);
-}
-
-.login-options a {
-  color: var(--brand-blue); /* 30% */
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.login-options a:hover {
-  text-decoration: underline;
-}
-
 /* ==========================================
    BOTÃO DE AÇÃO (10% - Laranja Senac)
    ================================---------- */

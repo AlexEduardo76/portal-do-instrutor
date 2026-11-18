@@ -34,7 +34,7 @@
 
 O **Portal do Instrutor** é uma aplicação web desenvolvida para o dia a dia de instrutores do **Senac**. Ele reúne em uma única interface as tarefas que normalmente ficam espalhadas entre planilhas e anotações: acompanhar turmas, lançar frequência, consultar o calendário e documentar ocorrências dos alunos.
 
-A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que também serve o **front-end estático** na mesma origem. Isso significa um único deploy, nenhuma configuração de CORS e uma sessão simples baseada em cookie.
+A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** no Render e o **front-end estático** no Vercel. O projeto também consegue servir o front-end pelo próprio Spring (mesma origem), mas o deploy recomendado usa o rewrite `/api/*` do Vercel para o Render, mantendo a sessão por cookie sem CORS.
 
 > 🎓 Projeto educacional desenvolvido no contexto do Senac.
 
@@ -44,7 +44,7 @@ A arquitetura é propositalmente enxuta: uma **API REST em Spring Boot** que tam
 
 | Módulo | O que faz |
 |---|---|
-| 🔐 **Autenticação** | Login por **usuário, e-mail ou CPF** (com ou sem pontuação), com opção "lembrar de mim" |
+| 🔐 **Autenticação** | Login por **usuário, e-mail ou CPF** (com ou sem pontuação) |
 | 📊 **Dashboard** | Visão geral em uma única chamada: totais, próximas aulas, alunos com frequência em atenção e atividades recentes |
 | 🏫 **Turmas** | Cadastro, edição e exclusão de turmas, com código, curso, turno, sala e carga horária |
 | 👩‍🎓 **Alunos** | Cadastro por turma com matrícula e CPF validado; remoção lógica (sem perder histórico) |
@@ -313,9 +313,34 @@ O pipeline em `.github/workflows/ci.yml` roda `./gradlew test bootJar` em todo p
 
 ## ☁️ Deploy
 
+O deploy recomendado separa as duas camadas:
+
+- **Front-end:** Vercel, servindo a pasta `frontend/`
+- **Back-end + banco:** Render, usando o `render.yaml` da raiz
+
+### Vercel
+
+1. Importe o repositório na Vercel.
+2. Mantenha o **Root Directory** na raiz do projeto. O [`vercel.json`](./vercel.json) já define `outputDirectory: "frontend"` e o rewrite de `/api/*` para o Render.
+3. Se preferir usar a pasta `frontend/` como Root Directory, o [`frontend/vercel.json`](./frontend/vercel.json) tem a mesma configuração.
+4. Se o serviço do Render tiver outro endereço, atualize o `destination` do rewrite nos dois `vercel.json`.
+
 ### Render
 
-O deploy do backend é versionado em [`render.yaml`](./render.yaml) (runtime Docker, health check em `/actuator/health`). Configure `DATABASE_URL`, `DATABASE_USER` e `DATABASE_PASSWORD` como secrets no painel do Render.
+O deploy do backend é versionado em [`render.yaml`](./render.yaml) (runtime Docker, health check em `/actuator/health`).
+
+1. Crie um **New Blueprint** no Render apontando para este repositório.
+2. Informe `DATABASE_URL`, `DATABASE_USER` e `DATABASE_PASSWORD` do PostgreSQL/Supabase como secrets no painel.
+3. O blueprint já ativa `prod`, `DDL_AUTO=validate` e `COOKIE_SECURE=true`.
+4. O usuário demo é criado na primeira subida com `SEED_SENHA` (`senac123` no blueprint). **Troque essa senha ou remova o seed em produção.**
+
+### Dados de exemplo
+
+Com `SEED_SENHA` definida, o backend cria:
+
+- usuário `instrutor` (Marina Duarte Campos)
+- 4 turmas de TI do Senac (TDS, Redes, Segurança da Informação e Programação Web)
+- alunos, unidades curriculares, aulas, frequências, eventos e ocorrências fictícias com datas próximas do semestre atual
 
 ### Docker
 
@@ -339,7 +364,7 @@ docker run -p 8080:8080 \
 - [ ] `SPRING_PROFILES_ACTIVE=prod`
 - [ ] `DDL_AUTO=validate`
 - [ ] `COOKIE_SECURE=true`
-- [ ] `SEED_SENHA` vazia (sem usuário demo)
+- [ ] `SEED_SENHA` alterada/removida após a criação dos dados demo
 - [ ] Credenciais do banco em um gerenciador de segredos
 - [ ] Health check em `/actuator/health`
 

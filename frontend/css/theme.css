@@ -224,3 +224,128 @@
     background-color: #111C2E;
     border-color: #4D93D1;
 }
+
+/* =========================================================
+   LANDING (index.html) NO TEMA ESCURO
+========================================================= */
+
+:root[data-theme="dark"] body {
+    background:
+        radial-gradient(900px 420px at 85% -10%, rgba(47, 111, 168, .22), transparent 60%),
+        var(--bg);
+}
+
+:root[data-theme="dark"] .site-header {
+    background-color: #071A2D;
+    border-bottom-color: var(--orange-500);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+:root[data-theme="dark"] .hero {
+    background:
+        radial-gradient(700px 360px at 78% 12%, rgba(255, 122, 26, .16), transparent 62%),
+        linear-gradient(135deg, #0A1D31 0%, #06111E 100%);
+}
+
+:root[data-theme="dark"] .hero::before {
+    opacity: .12;
+    filter: saturate(.55) brightness(.6);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 78%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 78%);
+}
+
+:root[data-theme="dark"] .hero h1 {
+    color: #F2F7FD;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, .35);
+}
+
+:root[data-theme="dark"] .hero-copy p {
+    color: #B9CADD;
+}
+
+:root[data-theme="dark"] .eyebrow {
+    color: #FFB774;
+}
+
+:root[data-theme="dark"] .access-info {
+    background-color: #0E1A2B;
+    border-bottom-color: var(--border);
+}
+
+:root[data-theme="dark"] .section-intro h2,
+:root[data-theme="dark"] .section-intro .eyebrow {
+    color: #E4EEF9;
+}
+
+:root[data-theme="dark"] .section-intro p,
+:root[data-theme="dark"] .cta p {
+    color: #A3B3C7;
+}
+
+:root[data-theme="dark"] .cta {
+    background:
+        radial-gradient(600px 260px at 90% 0%, rgba(47, 111, 168, .35), transparent 70%),
+        linear-gradient(135deg, #0A1D31, #06111E);
+}
+
+:root[data-theme="dark"] .site-footer {
+    background-color: #06111E;
+    color: #8FA3BA;
+    border-top: 1px solid var(--border);
+}
+
+:root[data-theme="dark"] .btn-light {
+    background-color: #E9F0F8;
+    color: #071A2D;
+}
+
+:root[data-theme="dark"] .btn-light:hover {
+    background-color: #C9D8E8;
+}
+
+:root[data-theme="dark"] .btn-primary {
+    background-color: var(--orange-500);
+    color: #071A2D;
+    box-shadow: 0 8px 22px rgba(255, 138, 43, .22);
+}
+
+:root[data-theme="dark"] .btn-primary:hover {
+    background-color: var(--orange-700);
+}
+
+/* Cursos em destaque (index) */
+:root[data-theme="dark"] .course-card {
+    background: #0E1A2B;
+    border-color: var(--border);
+}
+
+:root[data-theme="dark"] .course-card:hover {
+    background: #122238;
+    border-color: var(--blue-600);
+}
+
+:root[data-theme="dark"] .course-card h3 {
+    color: #E9F0F8;
+}
+
+:root[data-theme="dark"] .course-card p,
+:root[data-theme="dark"] .course-card li {
+    color: #A3B3C7;
+}
+
+:root[data-theme="dark"] .course-tag {
+    background: var(--orange-100);
+    color: var(--orange-700);
+}
+
+:root[data-theme="dark"] .perfil-panel {
+    background: var(--surface);
+}
+
+:root[data-theme="dark"] .perfil-nome-linha input {
+    background: #0E1A2B;
+}
+
+:root[data-theme="dark"] .perfil-panel .tema-opcao.is-active {
+    background: var(--orange-100);
+}

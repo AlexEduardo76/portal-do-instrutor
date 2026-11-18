@@ -1,5 +1,6 @@
-// Protege a página, preenche o nome do usuário e cuida do botão "Sair".
+// Protege a página, preenche o nome/foto do usuário e cuida do botão "Sair".
 const CHAVE_SESSAO = "portal_sessao";
+const CHAVE_FOTO_PERFIL = "portal_foto";
 
 function usuarioLogado() {
     try {
@@ -17,16 +18,71 @@ function iniciaisNome(nome) {
     return (primeira + ultima).toUpperCase() || "PI";
 }
 
+function fotoPerfilSalva() {
+    try {
+        return localStorage.getItem(CHAVE_FOTO_PERFIL) || "";
+    } catch {
+        return "";
+    }
+}
+
+function aplicarFotoPerfil(dataUrl) {
+    try {
+        if (dataUrl) localStorage.setItem(CHAVE_FOTO_PERFIL, dataUrl);
+        else localStorage.removeItem(CHAVE_FOTO_PERFIL);
+    } catch {
+        // Sem armazenamento: a foto vale apenas para a sessão atual.
+    }
+    atualizarAvatares();
+}
+
+function montarAvatar(elemento, nome) {
+    if (!elemento) return;
+    const foto = fotoPerfilSalva();
+    elemento.innerHTML = "";
+
+    if (foto) {
+        const img = document.createElement("img");
+        img.src = foto;
+        img.alt = "";
+        img.decoding = "async";
+        elemento.appendChild(img);
+        elemento.classList.add("avatar--foto");
+        return;
+    }
+
+    elemento.textContent = iniciaisNome(nome);
+    elemento.classList.remove("avatar--foto");
+}
+
+function atualizarAvatares() {
+    const usuario = usuarioLogado();
+    const nome = usuario?.nome || "Instrutor";
+    document.querySelectorAll("[data-user-avatar], [data-perfil-avatar]").forEach((el) => montarAvatar(el, nome));
+}
+
+function atualizarSessaoNome(nome) {
+    ["localStorage", "sessionStorage"].forEach((tipo) => {
+        try {
+            const bruto = window[tipo].getItem(CHAVE_SESSAO);
+            if (!bruto) return;
+            const dados = JSON.parse(bruto);
+            dados.nome = nome;
+            window[tipo].setItem(CHAVE_SESSAO, JSON.stringify(dados));
+        } catch {
+            // Sem armazenamento: o nome atualiza apenas na tela atual.
+        }
+    });
+}
+
 function atualizarIdentidadeLocal(usuario) {
     if (!usuario) return;
     const nome = usuario.nome || "Instrutor";
     const primeiroNome = nome.split(" ")[0];
-    const iniciais = iniciaisNome(nome);
 
     document.querySelectorAll("[data-user-first-name]").forEach((el) => (el.textContent = primeiroNome));
     document.querySelectorAll("[data-user-name]").forEach((el) => (el.textContent = nome));
-    document.querySelectorAll("[data-user-avatar]").forEach((el) => (el.textContent = iniciais));
-    document.querySelectorAll("[data-perfil-avatar]").forEach((el) => (el.textContent = iniciais));
+    document.querySelectorAll("[data-user-avatar], [data-perfil-avatar]").forEach((el) => montarAvatar(el, nome));
 }
 
 async function sair() {

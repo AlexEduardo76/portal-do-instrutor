@@ -73,7 +73,7 @@ function renderPendencias(emAtencao, turmas) {
             `${esc(f.nome)} está com ${formatarNumero(Number(f.percentual))}% de frequência (${esc(nomeTurma[f.turmaId] || "")})`),
     ];
 
-    if (!itens.length) return setHTML("listaPendencias", estadoVazio("Nenhuma pendência no momento. 🎉"));
+    if (!itens.length) return setHTML("listaPendencias", estadoVazio("Nenhuma pendência no momento."));
 
     const visiveis = itens.slice(0, MAX_PENDENCIAS);
     const restante = itens.length - visiveis.length;

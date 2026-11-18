@@ -270,6 +270,98 @@ a {
     color: var(--texto-suave);
 }
 
+/* ---------- Cursos em destaque ---------- */
+.courses {
+    padding: var(--espaco-secao) var(--margem-lateral);
+    background-color: var(--cinza-50);
+}
+
+.courses .section-intro {
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    max-width: var(--largura-max);
+    margin: 0 auto;
+}
+
+.course-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--cinza-100);
+    border-radius: var(--raio);
+    background: var(--branco);
+    box-shadow: var(--sombra-1);
+    transition: transform var(--transicao), border-color var(--transicao),
+                box-shadow var(--transicao);
+}
+
+.course-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--azul-claro);
+    box-shadow: 0 12px 28px rgba(0, 48, 95, 0.12);
+}
+
+.course-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0.35rem;
+    border-radius: 12px;
+    background: var(--azul-claro);
+    color: var(--azul);
+}
+
+.course-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.course-tag {
+    align-self: flex-start;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: #fde4d3;
+    color: var(--laranja-hover);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.course-card h3 {
+    margin: 0.2rem 0 0;
+    font-size: 1.08rem;
+    line-height: 1.3;
+    color: var(--azul);
+}
+
+.course-card p {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 0.92rem;
+}
+
+.course-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin: 0.5rem 0 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--cinza-100);
+    list-style: none;
+    color: var(--texto-suave);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
 /* ---------- CTA final ---------- */
 .cta {
     display: flex;

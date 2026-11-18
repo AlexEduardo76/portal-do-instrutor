@@ -1,0 +1,11 @@
+backend
+tests
+postman
+.postman
+.github
+.idea
+.vscode
+.gradle
+build
+bin
+*.log

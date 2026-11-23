@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -99,15 +98,11 @@ public class EventoService {
     public List<EventoResponse> listarProximasAulas(int limite) {
         String login = usuarioLogadoService.getLogin();
         LocalDate hoje = LocalDate.now(clock);
-        LocalTime agora = LocalTime.now(clock);
 
         return eventoRepository
             .findByInstrutorLoginAndTipoAndDataGreaterThanEqualOrderByDataAscHoraAsc(
                 login, TipoEvento.AULA, hoje, PageRequest.of(0, 50))
             .stream()
-            .filter(evento -> evento.getData().isAfter(hoje)
-                || evento.getHora() == null
-                || !evento.getHora().isBefore(agora))
             .limit(limite)
             .map(EventoMapper::toResponse)
             .toList();

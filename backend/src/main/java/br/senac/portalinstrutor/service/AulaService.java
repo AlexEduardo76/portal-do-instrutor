@@ -49,7 +49,9 @@ public class AulaService {
     @Transactional(readOnly = true)
     public List<AulaResponse> listarProximas() {
         String login = usuarioLogadoService.getLogin();
-        return aulaRepository.findProximasAulasByInstrutorLogin(login, ZonedDateTime.now(clock), PageRequest.of(0, 5)).stream()
+        ZonedDateTime agora = ZonedDateTime.now(clock);
+        ZonedDateTime inicioDoDia = agora.toLocalDate().atStartOfDay(agora.getZone());
+        return aulaRepository.findProximasAulasByInstrutorLogin(login, inicioDoDia, PageRequest.of(0, 5)).stream()
             .map(AulaMapper::toResponse)
             .toList();
     }

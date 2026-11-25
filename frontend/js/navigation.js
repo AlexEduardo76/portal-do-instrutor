@@ -25,6 +25,10 @@ const ICONES = {
         <path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path>`),
     camera: svgIcone(`<path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"></path>
         <circle cx="12" cy="13" r="4"></circle>`),
+    lixeira: svgIcone(`<path d="M4 7h16"></path>
+        <path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+        <path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"></path>
+        <path d="M10 11v6M14 11v6"></path>`),
     fechar: svgIcone(`<path d="m6 6 12 12M18 6 6 18"></path>`),
     sol: svgIcone(`<circle cx="12" cy="12" r="4"></circle>
         <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path>`),
@@ -111,6 +115,10 @@ function montarPainelPerfil() {
                                 aria-label="Alterar foto de perfil" title="Alterar foto">
                             ${ICONES.camera}
                         </button>
+                        <button type="button" class="perfil-foto-btn perfil-foto-remover" data-action="remover-foto"
+                                aria-label="Remover foto de perfil" title="Remover foto" hidden>
+                            ${ICONES.lixeira}
+                        </button>
                         <input type="file" accept="image/png,image/jpeg,image/webp" data-perfil-foto-input hidden>
                     </div>
                     <div class="perfil-panel-texto">
@@ -188,6 +196,8 @@ function preencherPainelPerfil(perfil) {
 
     const nomeInput = document.getElementById("perfilNomeModal");
     if (nomeInput) nomeInput.value = perfil.nome || "";
+
+    atualizarBotaoRemoverFoto();
 }
 
 async function carregarPerfilPainel() {
@@ -203,6 +213,11 @@ async function carregarPerfilPainel() {
     }
 }
 
+function atualizarBotaoRemoverFoto() {
+    const botao = document.querySelector('[data-action="remover-foto"]');
+    if (botao) botao.hidden = !fotoPerfilSalva();
+}
+
 function abrirPainelPerfil() {
     montarPainelPerfil();
     const overlay = document.querySelector("[data-perfil-overlay]");
@@ -211,6 +226,7 @@ function abrirPainelPerfil() {
     overlay.hidden = false;
     document.body.classList.add("perfil-aberto");
     atualizarAvatares();
+    atualizarBotaoRemoverFoto();
     if (typeof Tema !== "undefined") Tema.aplicar(Tema.preferido());
     overlay.querySelector(".perfil-panel")?.focus();
     carregarPerfilPainel();
@@ -253,6 +269,7 @@ function redimensionarFoto(arquivo) {
                 tamanho
             );
             aplicarFotoPerfil(canvas.toDataURL("image/jpeg", 0.86));
+            atualizarBotaoRemoverFoto();
             if (typeof toast === "function") toast("Foto de perfil atualizada.", "sucesso");
         };
         imagem.src = leitor.result;
@@ -311,6 +328,15 @@ document.addEventListener("click", (evento) => {
     if (evento.target.closest('[data-action="trocar-foto"]')) {
         const input = document.querySelector("[data-perfil-foto-input]");
         if (input) input.click();
+        return;
+    }
+
+    if (evento.target.closest('[data-action="remover-foto"]')) {
+        if (!fotoPerfilSalva()) return;
+        if (!window.confirm("Remover a foto de perfil?")) return;
+        aplicarFotoPerfil(null);
+        atualizarBotaoRemoverFoto();
+        if (typeof toast === "function") toast("Foto de perfil removida.", "sucesso");
         return;
     }
 

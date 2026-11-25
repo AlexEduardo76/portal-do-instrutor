@@ -155,12 +155,70 @@
     color: var(--orange-700);
 }
 
+/* Resumos e alertas de frequência (frequencias.html) */
+:root[data-theme="dark"] .metrica-pill--verde {
+    background: #153A2B;
+    border-color: #2A6B4E;
+    color: #7EE7AE;
+}
+
+:root[data-theme="dark"] .metrica-pill--laranja {
+    background: var(--orange-100);
+    border-color: #6B4A15;
+    color: var(--orange-700);
+}
+
+:root[data-theme="dark"] .metrica-pill--vermelho {
+    background: #3A1E1E;
+    border-color: #6B3532;
+    color: #FFAAA4;
+}
+
+:root[data-theme="dark"] .num--verde,
+:root[data-theme="dark"] .percentual--regular {
+    color: #7EE7AE;
+}
+
+:root[data-theme="dark"] .num--vermelho {
+    color: #FFAAA4;
+}
+
 :root[data-theme="dark"] div.error-state,
 :root[data-theme="dark"] .login-erro,
 :root[data-theme="dark"] .aviso-remocao {
     background: #2A1717;
     border-color: #5A2A26;
     color: #FFB4AE;
+}
+
+/* Pendências/alertas do dashboard */
+:root[data-theme="dark"] .pending-item {
+    background: #2A2114;
+    border-left-color: var(--orange-500);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px rgba(255, 138, 43, .14);
+}
+
+:root[data-theme="dark"] .pending-badge {
+    background: var(--orange-500);
+    color: #1A1206;
+}
+
+:root[data-theme="dark"] .pending-more {
+    color: var(--text-soft);
+}
+
+/* Aviso de chamada salva/reaberta (frequência) */
+:root[data-theme="dark"] .chamada-aviso[data-estado="trancada"] {
+    background: #122A3D;
+    border-color: #2B5C82;
+    color: #A9D3F2;
+}
+
+:root[data-theme="dark"] .chamada-aviso[data-estado="aberta"] {
+    background: #33260F;
+    border-color: #6B4A15;
+    color: #FFCF8A;
 }
 
 :root[data-theme="dark"] .empty-state,

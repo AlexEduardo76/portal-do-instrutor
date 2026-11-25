@@ -1,0 +1,131 @@
+/* =========================================================
+   PORTAL DO INSTRUTOR | animacoes.css
+
+   Movimento discreto e opcional: entrada suave dos blocos,
+   leve elevação dos cards ao passar o mouse e resposta dos
+   botões. Nenhuma regra altera tamanhos ou o fluxo do layout.
+
+   Carregado por shell.css (telas internas), index.html e
+   login.html. Respeita prefers-reduced-motion.
+========================================================= */
+
+@keyframes anim-subir {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes anim-aparecer {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes anim-pop {
+    from {
+        opacity: 0;
+        transform: scale(.97);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ---------- Entrada dos blocos das telas internas ---------- */
+
+.content > * {
+    animation: anim-subir .42s cubic-bezier(.22, .8, .3, 1) both;
+}
+
+.content > *:nth-child(2) { animation-delay: .05s; }
+.content > *:nth-child(3) { animation-delay: .10s; }
+.content > *:nth-child(4) { animation-delay: .15s; }
+.content > *:nth-child(5) { animation-delay: .20s; }
+.content > *:nth-child(6) { animation-delay: .25s; }
+
+/* ---------- Entrada das seções da página inicial ---------- */
+
+main > section {
+    animation: anim-subir .48s cubic-bezier(.22, .8, .3, 1) both;
+}
+
+main > section:nth-child(2) { animation-delay: .08s; }
+main > section:nth-child(3) { animation-delay: .16s; }
+main > section:nth-child(4) { animation-delay: .24s; }
+
+/* ---------- Login ---------- */
+
+.login-card {
+    animation: anim-pop .45s cubic-bezier(.22, .8, .3, 1) both;
+}
+
+.login-tema {
+    animation: anim-aparecer .5s ease-out both;
+}
+
+/* ---------- Toque leve nos cards ao passar o mouse ---------- */
+
+@media (hover: hover) and (pointer: fine) {
+    .stat-card {
+        transition: transform .18s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .class-card {
+        transition: transform .18s ease, background .15s ease,
+                    border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .resumo-card {
+        transition: transform .18s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .stat-card:hover,
+    .class-card:hover,
+    .resumo-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .sidebar .nav-icon {
+        transition: transform .18s ease;
+    }
+
+    .sidebar .nav-item:hover .nav-icon {
+        transform: translateX(2px);
+    }
+}
+
+/* ---------- Resposta dos botões ---------- */
+
+.btn:active:not(:disabled) {
+    transform: translateY(1px) scale(.99);
+}
+
+.btn-login:active:not(:disabled) {
+    transform: translateY(1px) scale(.99);
+}
+
+/* ---------- Acessibilidade ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .content > *,
+    main > section,
+    .login-card,
+    .login-tema {
+        animation: none !important;
+    }
+
+    .stat-card,
+    .class-card,
+    .resumo-card,
+    .sidebar .nav-icon,
+    .btn,
+    .btn-login {
+        transition: none !important;
+        transform: none !important;
+    }
+}

@@ -201,6 +201,7 @@ body {
 }
 /* Tema escuro (preferencia persistida em localStorage). */
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --bg-page: #0B1220;
   --bg-card: #111C2E;
   --text-main: #E9F0F8;

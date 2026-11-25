@@ -22,8 +22,31 @@ function mostrarErro(mensagem) {
     caixa.hidden = false;
 }
 
+function configurarTemaLogin() {
+    const botao = document.getElementById("btn-tema-login");
+    if (!botao) return;
+
+    const atualizarRotulo = () => {
+        const escuro = document.documentElement.dataset.theme === "dark";
+        const rotulo = escuro ? "Ativar tema claro" : "Ativar tema escuro";
+        botao.setAttribute("aria-label", rotulo);
+        botao.title = rotulo;
+    };
+
+    atualizarRotulo();
+
+    botao.addEventListener("click", () => {
+        if (typeof Tema === "undefined") return;
+        const escuro = document.documentElement.dataset.theme === "dark";
+        Tema.aplicar(escuro ? "light" : "dark", true);
+        atualizarRotulo();
+    });
+}
+
 // ====== EVENTOS ======
 document.addEventListener("DOMContentLoaded", () => {
+    configurarTemaLogin();
+
     if (localStorage.getItem(CHAVE_SESSAO) || sessionStorage.getItem(CHAVE_SESSAO)) {
         window.location.replace(PAGINA_PAINEL);
         return;

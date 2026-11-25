@@ -3,9 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#004A8D">
     <title>Login - Senac</title>
     <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
     <link rel="alternate icon" type="image/x-icon" href="img/favicon.ico">
+
+    <!-- Aplica o tema salvo antes do primeiro paint para não piscar a tela clara. -->
+    <script>
+        try {
+            var temaSalvo = localStorage.getItem("portal_tema") || "system";
+            var temaEscuro = temaSalvo === "dark" ||
+                (temaSalvo === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+            document.documentElement.dataset.theme = temaEscuro ? "dark" : "light";
+            document.documentElement.dataset.temaPreferido = temaSalvo;
+        } catch (e) { /* armazenamento indisponível */ }
+    </script>
 
     <!-- Redireciona antes do primeiro paint quando já existe sessão local. -->
     <script>
@@ -34,9 +46,28 @@
         .btn-login{width:100%;background-color:var(--accent-orange);color:#FFF;border:none;padding:.85rem;font-size:1rem;font-weight:600;border-radius:6px;cursor:pointer;box-shadow:0 4px 12px rgba(255,102,0,.25)}
         .btn-login:disabled{opacity:.75;cursor:wait}
         .login-erro{background:#fdecea;color:#b3261e;border:1px solid #f5c2be;border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:.9rem}
+        /* Botão de alternância de tema (canto superior direito) */
+        .login-tema{position:fixed;top:18px;right:18px;z-index:5;display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid var(--border-color);border-radius:50%;background:var(--bg-card);color:var(--text-main);box-shadow:var(--box-shadow);cursor:pointer;transition:transform .2s ease,background-color .2s ease,color .2s ease}
+        .login-tema:hover{transform:translateY(-2px)}
+        .login-tema:active{transform:scale(.94)}
+        .login-tema svg{width:20px;height:20px}
+        .login-tema .icone-sol{display:none}
+        :root[data-theme="dark"] .login-tema .icone-sol{display:block}
+        :root[data-theme="dark"] .login-tema .icone-lua{display:none}
+        /* Tema escuro: mesmas cores das telas internas */
+        :root[data-theme="dark"]{color-scheme:dark;--bg-page:#0B1220;--bg-card:#111C2E;--text-main:#E9F0F8;--text-muted:#A3B3C7;--brand-blue:#0D2A47;--border-color:#263A52;--accent-orange:#FF7A1A;--box-shadow:0 8px 24px rgba(0,0,0,.5)}
+        :root[data-theme="dark"] body{background:radial-gradient(900px 420px at 85% -10%,rgba(47,111,168,.22),transparent 60%),var(--bg-page)}
+        :root[data-theme="dark"] .login-brand{background:#0D2A47}
+        :root[data-theme="dark"] .login-header-text h2{color:#8FC5F4}
+        :root[data-theme="dark"] .input-group input{background-color:#0B1220;color:var(--text-main)}
+        :root[data-theme="dark"] .input-group input::placeholder{color:#7E92A8}
+        :root[data-theme="dark"] .input-group input:focus{background-color:#0B1220;border-color:#4D93D1}
+        :root[data-theme="dark"] .btn-login{color:#0B1220}
+        :root[data-theme="dark"] .login-erro{background:#2A1717;color:#FFB4AE;border-color:#5A2A26}
     </style>
 
     <!-- A folha completa complementa foco/hover sem bloquear a renderização. -->
+    <link rel="stylesheet" href="css/animacoes.css">
     <link rel="preload" href="css/login.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="css/login.css"></noscript>
 
@@ -45,6 +76,12 @@
     <link rel="prefetch" href="css/dashboard.css" as="style">
 </head>
 <body>
+
+    <!-- Alternância rápida de tema (claro/escuro) -->
+    <button type="button" class="login-tema" id="btn-tema-login" aria-label="Alternar tema" title="Alternar tema claro/escuro">
+        <svg class="icone-lua" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/></svg>
+        <svg class="icone-sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>
+    </button>
 
     <!-- Área Principal de Login -->
     <main class="login-main">
@@ -79,6 +116,7 @@
         </div>
     </main>
 
+    <script src="js/theme.js" defer></script>
     <script src="js/api.js" defer></script>
     <script src="js/login.js" defer></script>
 </body>

@@ -19,6 +19,8 @@
    .nav-item .nav-icon .sidebar-footer .nav-logout
 ========================================================= */
 
+@import url("animacoes.css");
+
 
 /* =========================================================
    TOPO
@@ -618,6 +620,22 @@ body.perfil-aberto {
 .perfil-foto-btn svg {
     width: 15px;
     height: 15px;
+}
+
+.perfil-foto-btn[hidden] {
+    display: none;
+}
+
+/* Remover foto fica no canto oposto ao botão da câmera. */
+.perfil-foto-remover {
+    right: auto;
+    left: -3px;
+    background: #C0392B;
+}
+
+.perfil-foto-remover:hover {
+    background: #A93226;
+    transform: scale(1.06);
 }
 
 .perfil-panel-texto {

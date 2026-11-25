@@ -918,3 +918,69 @@ body.modal-aberto {
         width: 100%;
     }
 }
+
+
+/* =========================================================
+   CHAMADA SALVA (SOMENTE LEITURA)
+========================================================= */
+
+.chamada-aviso {
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    font-size: .88rem;
+    font-weight: 600;
+    animation: chamada-aviso-in .25s ease-out;
+}
+
+.chamada-aviso[data-estado="trancada"] {
+    border-color: #B7D2EA;
+    background: #EAF3FB;
+    color: #1B4E7A;
+}
+
+.chamada-aviso[data-estado="aberta"] {
+    border-color: #F3C98F;
+    background: #FFF4E2;
+    color: #8A5300;
+}
+
+.chamada-trancada .table-wrap tbody tr {
+    background: var(--blue-50);
+}
+
+.bolinha:disabled {
+    cursor: not-allowed;
+    opacity: .75;
+    transform: none;
+}
+
+.bolinha:disabled:hover {
+    border-color: var(--border);
+    transform: none;
+}
+
+.bolinha.marcada {
+    animation: bolinha-pop .22s ease-out;
+}
+
+@keyframes chamada-aviso-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bolinha-pop {
+    0%   { transform: scale(.75); }
+    60%  { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chamada-aviso,
+    .bolinha.marcada {
+        animation: none !important;
+    }
+}

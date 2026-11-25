@@ -2,6 +2,7 @@ package br.senac.portalinstrutor.service;
 
 import br.senac.portalinstrutor.dto.request.FrequenciaRequest;
 import br.senac.portalinstrutor.dto.response.FrequenciaResponse;
+import br.senac.portalinstrutor.exception.ConflitoException;
 import br.senac.portalinstrutor.exception.RegraNegocioException;
 import br.senac.portalinstrutor.mapper.FrequenciaMapper;
 import br.senac.portalinstrutor.model.Aluno;
@@ -85,8 +86,14 @@ public class FrequenciaService {
             }
         }
 
+        // Uma chamada já salva só pode ser alterada depois de ser reaberta explicitamente.
+        List<Frequencia> existentes = frequenciaRepository.findByTurmaIdAndData(turmaId, data);
+        if (!existentes.isEmpty() && !Boolean.TRUE.equals(request.reabrir())) {
+            throw new ConflitoException("A chamada desta data já foi salva. Abra a chamada novamente para alterar.");
+        }
+
         // UPSERT: atualiza os registros existentes da turma na data e cria apenas os que faltam.
-        Map<Long, Frequencia> existentesPorAluno = frequenciaRepository.findByTurmaIdAndData(turmaId, data).stream()
+        Map<Long, Frequencia> existentesPorAluno = existentes.stream()
             .collect(Collectors.toMap(f -> f.getAluno().getId(), f -> f, (a, b) -> a));
 
         List<Frequencia> paraSalvar = new ArrayList<>();
